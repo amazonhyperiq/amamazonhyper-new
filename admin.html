@@ -22,8 +22,145 @@ body{background:#eef3ef}.admin{max-width:1280px;margin:auto;padding:22px}.top{ba
 <div class="panel" id="ticker"><h2>إدارة الشريط المتحرك</h2><textarea rows="3" placeholder="اكتب النص الذي سيظهر في الشريط المتحرك..."></textarea><br><button class="save">حفظ النص</button></div>
 <div class="panel"><h2>رسالة الوزن والسعر</h2><p class="note">النص المقترح الذي يظهر للزبون ويُرسل أيضاً مع الطلب: «بعض المواد تباع بالوزن، وقد يختلف الوزن الفعلي والسعر النهائي قليلاً بعد التجهيز. سيتم تأكيد الوزن والسعر النهائي مع الزبون قبل التسليم.»</p></div>
 </section></div></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
-const box=document.getElementById("offerRows");
-function addRow(){if(box.children.length>=8)return;const d=document.createElement("div");d.className="offer-row";d.innerHTML='<input placeholder="اسم المادة"><input type="number" placeholder="السعر الأصلي"><input type="number" placeholder="سعر العرض"><input type="file" accept="image/*"><button type="button" class="delete">حذف</button>';d.querySelector("button").onclick=()=>{if(box.children.length>5)d.remove()};box.appendChild(d)}
-for(let i=0;i<5;i++)addRow(); document.getElementById("addOfferRow").onclick=addRow;
-</script></body></html>
+const SUPABASE_URL = "https://wexorzjkpwduykinwsw.supabase.co";
+const SUPABASE_KEY = "sb_publishable_RoMHq19grLJWNu95uPSwug_XwiKt2bB";
+
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const box = document.getElementById("offerRows");
+
+function addRow() {
+  if (box.children.length >= 8) return;
+
+  const d = document.createElement("div");
+
+  d.className = "offer-row";
+
+  d.innerHTML =
+    '<input placeholder="اسم المادة">' +
+    '<input type="number" placeholder="السعر الأصلي">' +
+    '<input type="number" placeholder="سعر العرض">' +
+    '<input type="file" accept="image/*">' +
+    '<button type="button" class="delete">حذف</button>';
+
+  d.querySelector("button").onclick = () => {
+    if (box.children.length > 5) d.remove();
+  };
+
+  box.appendChild(d);
+}
+
+for (let i = 0; i < 5; i++) addRow();
+
+document.getElementById("addOfferRow").onclick = addRow;
+
+
+// ===============================
+// حفظ المادة
+// ===============================
+
+const productPanel = document.getElementById("products");
+
+const productSaveButton =
+  productPanel.querySelectorAll("button.save")[0];
+
+productSaveButton.addEventListener("click", async function () {
+
+  const selects = productPanel.querySelectorAll("select");
+  const inputs = productPanel.querySelectorAll("input");
+
+  const categoryName = selects[0].value;
+  const name = inputs[1].value.trim();
+  const price = Number(inputs[2].value);
+
+  if (!name) {
+    alert("يرجى كتابة اسم المادة");
+    return;
+  }
+
+  if (!price || price <= 0) {
+    alert("يرجى كتابة السعر بشكل صحيح");
+    return;
+  }
+
+  const categoryMap = {
+    "مواد غذائية": "food",
+    "لحوم ودواجن": "meat",
+    "خضروات وفواكه": "vegetables",
+    "منظفات": "cleaning",
+    "كوزمتك وعناية": "cosmetic"
+  };
+
+  const category = categoryMap[categoryName] || "food";
+
+  productSaveButton.disabled = true;
+  productSaveButton.textContent = "جاري الحفظ...";
+
+  try {
+
+    const { data: row, error: readError } = await db
+      .from("products")
+      .select("id,data")
+      .eq("id", 1)
+      .single();
+
+    if (readError) throw readError;
+
+    const oldData = row.data || {};
+
+    const products = Array.isArray(oldData.products)
+      ? [...oldData.products]
+      : [];
+
+    const newId = products.length
+      ? Math.max(...products.map(p => Number(p.id) || 0)) + 1
+      : 1;
+
+    products.push({
+      id: newId,
+      cat: category,
+      name: name,
+      price: price,
+      unit: "قطعة",
+      icon: "🛒",
+      active: true
+    });
+
+    const { error: updateError } = await db
+      .from("products")
+      .update({
+        data: {
+          ...oldData,
+          products: products
+        }
+      })
+      .eq("id", 1);
+
+    if (updateError) throw updateError;
+
+    alert("تم حفظ المادة بنجاح ✅");
+
+    inputs[1].value = "";
+    inputs[2].value = "";
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert("فشل الحفظ: " + error.message);
+
+  } finally {
+
+    productSaveButton.disabled = false;
+    productSaveButton.textContent = "حفظ";
+
+  }
+
+});
+</script>
+
+</body>
+</html>
