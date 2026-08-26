@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>أمازون هايبر ماركت</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="hero">
+  <div class="brand"><div class="cart-logo">🛒</div><div><h1>أمازون هايبر ماركت</h1><p>كل ما تحتاجه... بجودة عالية وأسعار مناسبة</p></div></div>
+  <div class="ticker"><span id="tickerText">عرض خاص: خصومات تصل إلى 20% على مجموعة مختارة من المنتجات</span></div>
+</header>
+<main class="container">
+<section class="categories" id="categories"></section>
+<section class="offers"><div class="section-title"><h2>عروض خاصة</h2><span>العروض تظهر حسب تاريخها</span></div><div class="offer-grid" id="offerCards"></div></section>
+<section class="products"><div class="section-title"><h2 id="productsTitle">مواد غذائية</h2><span>استخدم + و − لتحديد الكمية</span></div><div class="product-grid" id="productsGrid"></div></section>
+<section class="customer-box">
+<div class="section-title"><h2>بيانات الطلب</h2><span>مطلوبة قبل الإرسال عبر واتساب</span></div>
+<div class="form-grid">
+<label>الاسم<input id="customerName" placeholder="اكتب اسمك"></label>
+<label>رقم الهاتف<input id="customerPhone" inputmode="tel" placeholder="07xxxxxxxxx"></label>
+<label class="wide">العنوان<input id="customerAddress" placeholder="المحافظة، المنطقة، الشارع، أقرب نقطة دالة"></label>
+<label class="wide">ملاحظات / إضافات<textarea id="notes" placeholder="أي ملاحظات خاصة بالطلب..."></textarea></label>
+</div>
+<div class="weight-notice">تنبيه: بعض المواد تُباع بالوزن، وقد يختلف الوزن الفعلي والسعر النهائي قليلاً عند تجهيز الطلب. سيتم تأكيد الكمية والسعر النهائي قبل التسليم.</div>
+</section>
+<section class="checkout">
+<div class="basket"><div class="basket-icon">🛒<b id="cartCount">0</b></div><div><small>المبلغ الإجمالي التقديري</small><strong id="cartTotal">0 د.ع</strong></div></div>
+<button id="whatsappBtn" class="whatsapp">إرسال الطلب عبر واتساب</button>
+</section>
+</main>
+<footer>أمازون هايبر ماركت — جودة عالية وأسعار مناسبة — بغداد، العراق</footer>
+<script src="app.js"></script>
+</body>
+</html>
