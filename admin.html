@@ -1,165 +1,1658 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>لوحة تحكم — أمازون هايبر ماركت</title><link rel="stylesheet" href="style.css">
+
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>لوحة تحكم — أمازون هايبر ماركت</title>
+
+<link rel="stylesheet" href="style.css">
+
 <style>
-body{background:#eef3ef}.admin{max-width:1280px;margin:auto;padding:22px}.top{background:#064b24;color:#fff;border-radius:18px;padding:20px;display:flex;justify-content:space-between;align-items:center}.layout{display:grid;grid-template-columns:225px 1fr;gap:18px;margin-top:18px}.side{background:#0b3f26;color:#fff;border-radius:18px;padding:16px}.side a{display:block;padding:13px;border-radius:10px;color:#fff;text-decoration:none}.side a.active{background:#159447}.panel{background:#fff;border-radius:18px;padding:18px;margin-bottom:18px;border:1px solid #dce6df}.panel h2{color:#087438;margin-top:0}.admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.admin input,.admin select,.admin textarea{width:100%;padding:12px;border:1px solid #d4dfd7;border-radius:10px;margin-top:6px;font:inherit}.save{background:#07853b;color:#fff;border:0;padding:12px 20px;border-radius:10px;font-weight:800;cursor:pointer}.delete{background:#dc2626;color:#fff;border:0;padding:12px 20px;border-radius:10px;font-weight:800}.check{display:flex;gap:8px;align-items:center;margin:12px 0}.check input{width:auto}.table-wrap{overflow:auto}.table{width:100%;border-collapse:collapse}.table th,.table td{padding:10px;border-bottom:1px solid #e4ebe6;text-align:right}.table th{background:#eaf7ee;color:#075d2d}.offer-row{display:grid;grid-template-columns:1.15fr .8fr .8fr 1fr 70px;gap:8px;margin-bottom:8px}.unit-box{background:#f0f8f2;padding:14px;border-radius:12px;margin:12px 0}.hint{font-size:13px;color:#6b756e}.note{background:#fff8e7;color:#7b4d00;padding:13px;border-radius:12px;line-height:1.8;font-size:13px}@media(max-width:800px){.layout{grid-template-columns:1fr}.admin-grid{grid-template-columns:1fr}.offer-row{grid-template-columns:1fr 1fr}}
-</style></head>
-<body><script>if(sessionStorage.getItem('adminLoggedIn')!=='1'){location.replace('login.html');}</script><div class="admin">
-<header class="top"><div><h1 style="margin:0">أمازون هايبر ماركت</h1><small>لوحة التحكم الجديدة</small></div><div>👤 المدير</div></header><div style="margin-top:10px;text-align:left"><button onclick="sessionStorage.removeItem('adminLoggedIn');location.href='login.html'" style="background:#dc2626;color:#fff;border:0;padding:9px 15px;border-radius:9px;font-weight:800;cursor:pointer">تسجيل الخروج</button></div>
-<div class="layout"><aside class="side"><a class="active" href="#">الرئيسية</a><a href="#sections">الأقسام</a><a href="#products">المواد والمنتجات</a><a href="#offers">العروض الخاصة</a><a href="#ticker">الشريط المتحرك</a><a href="#">الطلبات</a><a href="#">الإعدادات</a></aside>
-<section>
-<div class="panel" id="sections"><h2>إضافة / تعديل قسم</h2><div class="admin-grid"><label>اسم القسم<input placeholder="مثال: لحوم ودواجن"></label><label>صورة القسم<input type="file" accept="image/*,.gif"></label></div>
-<div class="unit-box"><b>طريقة بيع القسم</b><p class="hint">هذا الخيار يحدد طريقة حساب الكمية للمواد التابعة للقسم.</p><label><input type="radio" name="unit" checked> يباع بالقطعة</label>　<label><input type="radio" name="unit"> يباع بالوزن (كغ)</label><br><label>خطوة الزيادة للوزن<select><option>0.25 كغ</option><option>0.50 كغ</option><option>1 كغ</option></select></label></div>
-<button class="save">حفظ القسم</button> <button class="delete">حذف القسم</button></div>
-
-<div class="panel" id="products"><h2>إضافة / تعديل مادة</h2><div class="admin-grid"><label>اختر القسم<select><option>مواد غذائية</option><option>لحوم ودواجن</option><option>خضروات وفواكه</option><option>منظفات</option><option>كوزمتك وعناية</option></select></label><label>اسم المادة<input placeholder="اسم المادة"></label><label>السعر الأساسي<input type="number" placeholder="السعر بالدينار"></label><label>صورة المادة<input type="file" accept="image/*"></label></div>
-<div class="unit-box"><b>طريقة بيع المادة</b><p class="hint">يمكن أن ترث إعداد القسم أو تخصيصها للمادة.</p><label><input type="radio" name="produnit" checked> قطعة</label>　<label><input type="radio" name="produnit"> وزن (كغ)</label>　<label>خطوة الوزن<select><option>0.25 كغ</option><option>0.50 كغ</option><option>1 كغ</option></select></label></div>
-<label class="check"><input type="checkbox" checked> ظهور المادة في الصفحة</label><button class="save">حفظ</button> <button class="delete">حذف</button>
-<div class="table-wrap"><table class="table"><thead><tr><th>القسم</th><th>المادة</th><th>الوحدة</th><th>السعر</th><th>ظهور</th><th>إجراء</th></tr></thead><tbody><tr><td>مواد غذائية</td><td>رز بسمتي هندي 5 كغ</td><td>قطعة</td><td>15,000</td><td>✓</td><td>تعديل / حذف</td></tr><tr><td>لحوم ودواجن</td><td>صدر دجاج</td><td>كغ</td><td>8,000 / كغ</td><td>✓</td><td>تعديل / حذف</td></tr></tbody></table></div></div>
-
-<div class="panel" id="offers"><h2>إدارة العروض الخاصة</h2><div class="admin-grid"><label>عنوان العرض<input placeholder="مثال: عرض خاص 20%"></label><label>من تاريخ<input type="date"></label><label>إلى تاريخ<input type="date"></label></div><p class="hint">أقل عدد 5 مواد، ويمكن رفع العدد حتى 8 مواد داخل العرض.</p><div id="offerRows"></div><button class="save" id="addOfferRow">+ إضافة مادة</button> <button class="save">حفظ العرض</button> <button class="delete">حذف العرض</button></div>
-
-<div class="panel" id="ticker"><h2>إدارة الشريط المتحرك</h2><textarea rows="3" placeholder="اكتب النص الذي سيظهر في الشريط المتحرك..."></textarea><br><button class="save">حفظ النص</button></div>
-<div class="panel"><h2>رسالة الوزن والسعر</h2><p class="note">النص المقترح الذي يظهر للزبون ويُرسل أيضاً مع الطلب: «بعض المواد تباع بالوزن، وقد يختلف الوزن الفعلي والسعر النهائي قليلاً بعد التجهيز. سيتم تأكيد الوزن والسعر النهائي مع الزبون قبل التسليم.»</p></div>
-</section></div></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script>
-const SUPABASE_URL = "https://wexorzjkpwduykinwsw.supabase.co";
-const SUPABASE_KEY = "sb_publishable_RoMHq19grLJWNu95uPSwug_XwiKt2bB";
-
-const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-const box = document.getElementById("offerRows");
-
-function addRow() {
-  if (box.children.length >= 8) return;
-
-  const d = document.createElement("div");
-
-  d.className = "offer-row";
-
-  d.innerHTML =
-    '<input placeholder="اسم المادة">' +
-    '<input type="number" placeholder="السعر الأصلي">' +
-    '<input type="number" placeholder="سعر العرض">' +
-    '<input type="file" accept="image/*">' +
-    '<button type="button" class="delete">حذف</button>';
-
-  d.querySelector("button").onclick = () => {
-    if (box.children.length > 5) d.remove();
-  };
-
-  box.appendChild(d);
+body{
+  background:#eef3ef
 }
 
-for (let i = 0; i < 5; i++) addRow();
+.admin{
+  max-width:1280px;
+  margin:auto;
+  padding:22px
+}
 
-document.getElementById("addOfferRow").onclick = addRow;
+.top{
+  background:#064b24;
+  color:#fff;
+  border-radius:18px;
+  padding:20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center
+}
+
+.layout{
+  display:grid;
+  grid-template-columns:225px 1fr;
+  gap:18px;
+  margin-top:18px
+}
+
+.side{
+  background:#0b3f26;
+  color:#fff;
+  border-radius:18px;
+  padding:16px
+}
+
+.side a{
+  display:block;
+  padding:13px;
+  border-radius:10px;
+  color:#fff;
+  text-decoration:none
+}
+
+.side a.active{
+  background:#159447
+}
+
+.panel{
+  background:#fff;
+  border-radius:18px;
+  padding:18px;
+  margin-bottom:18px;
+  border:1px solid #dce6df
+}
+
+.panel h2{
+  color:#087438;
+  margin-top:0
+}
+
+.admin-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px
+}
+
+.admin input,
+.admin select,
+.admin textarea{
+  width:100%;
+  padding:12px;
+  border:1px solid #d4dfd7;
+  border-radius:10px;
+  margin-top:6px;
+  font:inherit;
+  box-sizing:border-box
+}
+
+.save{
+  background:#07853b;
+  color:#fff;
+  border:0;
+  padding:12px 20px;
+  border-radius:10px;
+  font-weight:800;
+  cursor:pointer
+}
+
+.save:disabled{
+  opacity:.6;
+  cursor:not-allowed
+}
+
+.delete{
+  background:#dc2626;
+  color:#fff;
+  border:0;
+  padding:12px 20px;
+  border-radius:10px;
+  font-weight:800;
+  cursor:pointer
+}
+
+.check{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  margin:12px 0
+}
+
+.check input{
+  width:auto
+}
+
+.table-wrap{
+  overflow:auto;
+  margin-top:18px
+}
+
+.table{
+  width:100%;
+  border-collapse:collapse
+}
+
+.table th,
+.table td{
+  padding:10px;
+  border-bottom:1px solid #e4ebe6;
+  text-align:right
+}
+
+.table th{
+  background:#eaf7ee;
+  color:#075d2d
+}
+
+.offer-row{
+  display:grid;
+  grid-template-columns:1.15fr .8fr .8fr 1fr 70px;
+  gap:8px;
+  margin-bottom:8px
+}
+
+.unit-box{
+  background:#f0f8f2;
+  padding:14px;
+  border-radius:12px;
+  margin:12px 0
+}
+
+.hint{
+  font-size:13px;
+  color:#6b756e
+}
+
+.note{
+  background:#fff8e7;
+  color:#7b4d00;
+  padding:13px;
+  border-radius:12px;
+  line-height:1.8;
+  font-size:13px
+}
+
+#editProductBox{
+  display:none;
+}
+
+@media(max-width:800px){
+  .layout{
+    grid-template-columns:1fr
+  }
+
+  .admin-grid{
+    grid-template-columns:1fr
+  }
+
+  .offer-row{
+    grid-template-columns:1fr 1fr
+  }
+}
+</style>
+
+</head>
+
+<body>
+
+<script>
+if(sessionStorage.getItem('adminLoggedIn')!=='1'){
+  location.replace('login.html');
+}
+</script>
+
+<div class="admin">
+
+<header class="top">
+  <div>
+    <h1 style="margin:0">أمازون هايبر ماركت</h1>
+    <small>لوحة التحكم الجديدة</small>
+  </div>
+
+  <div>👤 المدير</div>
+</header>
+
+<div style="margin-top:10px;text-align:left">
+
+<button
+onclick="sessionStorage.removeItem('adminLoggedIn');location.href='login.html'"
+style="background:#dc2626;color:#fff;border:0;padding:9px 15px;border-radius:9px;font-weight:800;cursor:pointer">
+تسجيل الخروج
+</button>
+
+</div>
 
 
-// ===============================
-// حفظ المادة
-// ===============================
+<div class="layout">
 
-const productPanel = document.getElementById("products");
+<aside class="side">
+
+<a class="active" href="#">الرئيسية</a>
+<a href="#sections">الأقسام</a>
+<a href="#products">المواد والمنتجات</a>
+<a href="#offers">العروض الخاصة</a>
+<a href="#ticker">الشريط المتحرك</a>
+<a href="#">الطلبات</a>
+<a href="#">الإعدادات</a>
+
+</aside>
+
+
+<section>
+
+
+<!-- =========================
+     الأقسام
+========================= -->
+
+<div class="panel" id="sections">
+
+<h2>إضافة / تعديل قسم</h2>
+
+<div class="admin-grid">
+
+<label>
+اسم القسم
+<input placeholder="مثال: لحوم ودواجن">
+</label>
+
+<label>
+صورة القسم
+<input type="file" accept="image/*,.gif">
+</label>
+
+</div>
+
+
+<div class="unit-box">
+
+<b>طريقة بيع القسم</b>
+
+<p class="hint">
+هذا الخيار يحدد طريقة حساب الكمية للمواد التابعة للقسم.
+</p>
+
+<label>
+<input type="radio" name="unit" checked>
+يباع بالقطعة
+</label>
+
+<label>
+<input type="radio" name="unit">
+يباع بالوزن (كغ)
+</label>
+
+<br>
+
+<label>
+خطوة الزيادة للوزن
+
+<select>
+
+<option>0.25 كغ</option>
+<option>0.50 كغ</option>
+<option>1 كغ</option>
+
+</select>
+
+</label>
+
+</div>
+
+<button class="save">
+حفظ القسم
+</button>
+
+<button class="delete">
+حذف القسم
+</button>
+
+</div>
+
+
+
+<!-- =========================
+     المواد
+========================= -->
+
+<div class="panel" id="products">
+
+<h2>إضافة / تعديل مادة</h2>
+
+
+<div class="admin-grid">
+
+
+<label>
+
+نوع العملية
+
+<select id="productMode">
+
+<option value="add">
+إضافة مادة جديدة
+</option>
+
+<option value="edit">
+تعديل مادة موجودة
+</option>
+
+</select>
+
+</label>
+
+
+<label>
+
+اختر القسم
+
+<select id="productCategory">
+
+<option value="food">
+مواد غذائية
+</option>
+
+<option value="meat">
+لحوم ودواجن
+</option>
+
+<option value="vegetables">
+خضروات وفواكه
+</option>
+
+<option value="cleaning">
+منظفات
+</option>
+
+<option value="cosmetic">
+كوزمتك وعناية
+</option>
+
+</select>
+
+</label>
+
+
+<div id="editProductBox">
+
+<label>
+
+اختر المادة الموجودة
+
+<select id="existingProduct">
+
+<option value="">
+اختر المادة
+</option>
+
+</select>
+
+</label>
+
+</div>
+
+
+<label>
+
+اسم المادة
+
+<input
+id="productName"
+placeholder="اسم المادة"
+>
+
+</label>
+
+
+<label>
+
+السعر الأساسي
+
+<input
+id="productPrice"
+type="number"
+placeholder="السعر بالدينار"
+>
+
+</label>
+
+
+<label>
+
+صورة المادة
+
+<input
+id="productImage"
+type="file"
+accept="image/*"
+>
+
+</label>
+
+
+</div>
+
+
+
+<div class="unit-box">
+
+<b>طريقة بيع المادة</b>
+
+<p class="hint">
+يمكن أن ترث إعداد القسم أو تخصيصها للمادة.
+</p>
+
+<label>
+
+<input
+type="radio"
+name="produnit"
+value="قطعة"
+checked
+>
+
+قطعة
+
+</label>
+
+<label>
+
+<input
+type="radio"
+name="produnit"
+value="وزن (كغ)"
+>
+
+وزن (كغ)
+
+</label>
+
+<label>
+
+خطوة الوزن
+
+<select id="weightStep">
+
+<option value="0.25">
+0.25 كغ
+</option>
+
+<option value="0.50">
+0.50 كغ
+</option>
+
+<option value="1">
+1 كغ
+</option>
+
+</select>
+
+</label>
+
+</div>
+
+
+<label class="check">
+
+<input
+id="productActive"
+type="checkbox"
+checked
+>
+
+ظهور المادة في الصفحة
+
+</label>
+
+
+<button
+class="save"
+id="productSaveButton"
+>
+
+حفظ
+
+</button>
+
+
+<button
+class="delete"
+id="productDeleteButton"
+>
+
+حذف
+
+</button>
+
+
+<div class="table-wrap">
+
+<table class="table">
+
+<thead>
+
+<tr>
+
+<th>القسم</th>
+<th>المادة</th>
+<th>الوحدة</th>
+<th>السعر</th>
+<th>ظهور</th>
+<th>إجراء</th>
+
+</tr>
+
+</thead>
+
+<tbody id="productsTableBody">
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+
+
+<!-- =========================
+     العروض
+========================= -->
+
+<div class="panel" id="offers">
+
+<h2>إدارة العروض الخاصة</h2>
+
+<div class="admin-grid">
+
+<label>
+عنوان العرض
+<input placeholder="مثال: عرض خاص 20%">
+</label>
+
+<label>
+من تاريخ
+<input type="date">
+</label>
+
+<label>
+إلى تاريخ
+<input type="date">
+</label>
+
+</div>
+
+<p class="hint">
+أقل عدد 5 مواد، ويمكن رفع العدد حتى 8 مواد داخل العرض.
+</p>
+
+<div id="offerRows"></div>
+
+<button
+class="save"
+id="addOfferRow"
+>
++ إضافة مادة
+</button>
+
+<button class="save">
+حفظ العرض
+</button>
+
+<button class="delete">
+حذف العرض
+</button>
+
+</div>
+
+
+
+<!-- =========================
+     الشريط المتحرك
+========================= -->
+
+<div class="panel" id="ticker">
+
+<h2>إدارة الشريط المتحرك</h2>
+
+<textarea
+rows="3"
+placeholder="اكتب النص الذي سيظهر في الشريط المتحرك..."
+></textarea>
+
+<br>
+
+<button class="save">
+حفظ النص
+</button>
+
+</div>
+
+
+
+<div class="panel">
+
+<h2>رسالة الوزن والسعر</h2>
+
+<p class="note">
+
+النص المقترح الذي يظهر للزبون ويُرسل أيضاً مع الطلب:
+
+«بعض المواد تباع بالوزن، وقد يختلف الوزن الفعلي والسعر النهائي قليلاً بعد التجهيز. سيتم تأكيد الوزن والسعر النهائي مع الزبون قبل التسليم.»
+
+</p>
+
+</div>
+
+
+</section>
+
+</div>
+
+</div>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+<script>
+
+/* =====================================================
+   SUPABASE
+===================================================== */
+
+const SUPABASE_URL =
+"https://wexorzjkpwduykinwsw.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_RoMHq19grLJWNu95uPSwug_XwiKt2bB";
+
+const db =
+supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+
+/* =====================================================
+   أسماء الأقسام
+===================================================== */
+
+const categoryNames = {
+
+  food:"مواد غذائية",
+
+  meat:"لحوم ودواجن",
+
+  vegetables:"خضروات وفواكه",
+
+  cleaning:"منظفات",
+
+  cosmetic:"كوزمتك وعناية"
+
+};
+
+
+/* =====================================================
+   عناصر لوحة المواد
+===================================================== */
+
+const productMode =
+document.getElementById("productMode");
+
+const productCategory =
+document.getElementById("productCategory");
+
+const existingProduct =
+document.getElementById("existingProduct");
+
+const editProductBox =
+document.getElementById("editProductBox");
+
+const productName =
+document.getElementById("productName");
+
+const productPrice =
+document.getElementById("productPrice");
+
+const productActive =
+document.getElementById("productActive");
 
 const productSaveButton =
-  productPanel.querySelectorAll("button.save")[0];
+document.getElementById("productSaveButton");
 
-productSaveButton.addEventListener("click", async function () {
+const productDeleteButton =
+document.getElementById("productDeleteButton");
 
-  const selects = productPanel.querySelectorAll("select");
-  const inputs = productPanel.querySelectorAll("input");
+const productsTableBody =
+document.getElementById("productsTableBody");
 
- const categoryName = selects[0].value;
-const name = productPanel.querySelector('input[placeholder="اسم المادة"]').value.trim();
-const price = Number(productPanel.querySelector('input[type="number"]').value);
 
-  if (!name) {
-    alert("يرجى كتابة اسم المادة");
-    return;
-  }
+/* =====================================================
+   متغيرات المنتجات
+===================================================== */
 
-  if (!price || price <= 0) {
-    alert("يرجى كتابة السعر بشكل صحيح");
-    return;
-  }
+let allProducts = [];
 
-  const categoryMap = {
-    "مواد غذائية": "food",
-    "لحوم ودواجن": "meat",
-    "خضروات وفواكه": "vegetables",
-    "منظفات": "cleaning",
-    "كوزمتك وعناية": "cosmetic"
-  };
+let currentRowData = null;
 
-  const category = categoryMap[categoryName] || "food";
 
-  productSaveButton.disabled = true;
-  productSaveButton.textContent = "جاري الحفظ...";
+/* =====================================================
+   تحميل المنتجات من Supabase
+===================================================== */
 
-  try {
+async function loadProducts(){
 
-    const { data: row, error: readError } = await db
+  try{
+
+    const { data: row, error } = await db
       .from("products")
       .select("id,data")
-      .eq("id", 1)
+      .eq("id",1)
       .single();
 
-    if (readError) throw readError;
+    if(error){
+      throw error;
+    }
 
-    const oldData = row.data || {};
+    currentRowData = row;
 
-    const products = Array.isArray(oldData.products)
-      ? [...oldData.products]
-      : [];
+    const savedProducts =
+      row.data && Array.isArray(row.data.products)
+        ? row.data.products
+        : [];
 
-    const newId = products.length
-      ? Math.max(...products.map(p => Number(p.id) || 0)) + 1
-      : 1;
+    allProducts = savedProducts;
 
-    products.push({
-      id: newId,
-      cat: category,
-      name: name,
-      price: price,
-      unit: "قطعة",
-      icon: "🛒",
-      active: true
-    });
+    refreshProductSelector();
 
-    const { error: updateError } = await db
-      .from("products")
-      .update({
-        data: {
-          ...oldData,
-          products: products
-        }
-      })
-      .eq("id", 1);
+    renderProductsTable();
 
-    if (updateError) throw updateError;
-
-    alert("تم حفظ المادة بنجاح ✅");
-
-    inputs[1].value = "";
-    inputs[2].value = "";
-
-  } catch (error) {
+  }catch(error){
 
     console.error(error);
 
-    alert("فشل الحفظ: " + error.message);
-
-  } finally {
-
-    productSaveButton.disabled = false;
-    productSaveButton.textContent = "حفظ";
+    alert(
+      "تعذر تحميل المواد: " +
+      error.message
+    );
 
   }
 
-});
+}
+
+
+/* =====================================================
+   تحديث قائمة المواد حسب القسم
+===================================================== */
+
+function refreshProductSelector(){
+
+  existingProduct.innerHTML =
+    '<option value="">اختر المادة</option>';
+
+  const category =
+    productCategory.value;
+
+  const filtered =
+    allProducts.filter(
+      p => p.cat === category
+    );
+
+  filtered.forEach(product => {
+
+    const option =
+      document.createElement("option");
+
+    option.value =
+      String(product.id);
+
+    option.textContent =
+      product.name +
+      " — " +
+      Number(product.price || 0).toLocaleString("en-US");
+
+    existingProduct.appendChild(option);
+
+  });
+
+}
+
+
+/* =====================================================
+   اختيار إضافة / تعديل
+===================================================== */
+
+productMode.addEventListener(
+  "change",
+  function(){
+
+    if(this.value === "edit"){
+
+      editProductBox.style.display =
+        "block";
+
+      refreshProductSelector();
+
+    }else{
+
+      editProductBox.style.display =
+        "none";
+
+      existingProduct.value =
+        "";
+
+      clearProductForm();
+
+    }
+
+  }
+);
+
+
+/* =====================================================
+   تغيير القسم
+===================================================== */
+
+productCategory.addEventListener(
+  "change",
+  function(){
+
+    if(productMode.value === "edit"){
+
+      refreshProductSelector();
+
+      clearProductForm();
+
+    }
+
+  }
+);
+
+
+/* =====================================================
+   اختيار مادة موجودة
+===================================================== */
+
+existingProduct.addEventListener(
+  "change",
+  function(){
+
+    const id =
+      Number(this.value);
+
+    if(!id){
+
+      clearProductForm();
+
+      return;
+    }
+
+    const product =
+      allProducts.find(
+        p => Number(p.id) === id
+      );
+
+    if(!product){
+      return;
+    }
+
+    productName.value =
+      product.name || "";
+
+    productPrice.value =
+      product.price || "";
+
+    productActive.checked =
+      product.active !== false;
+
+    const unitRadios =
+      document.querySelectorAll(
+        'input[name="produnit"]'
+      );
+
+    unitRadios.forEach(
+      radio => {
+
+        radio.checked =
+          radio.value ===
+          (product.unit || "قطعة");
+
+      }
+    );
+
+  }
+);
+
+
+/* =====================================================
+   تنظيف الحقول
+===================================================== */
+
+function clearProductForm(){
+
+  productName.value = "";
+
+  productPrice.value = "";
+
+  productActive.checked = true;
+
+  document.querySelector(
+    'input[name="produnit"][value="قطعة"]'
+  ).checked = true;
+
+}
+
+
+/* =====================================================
+   حفظ المادة
+===================================================== */
+
+productSaveButton.addEventListener(
+  "click",
+  async function(){
+
+    const category =
+      productCategory.value;
+
+    const name =
+      productName.value.trim();
+
+    const price =
+      Number(productPrice.value);
+
+    const active =
+      productActive.checked;
+
+    const unitRadio =
+      document.querySelector(
+        'input[name="produnit"]:checked'
+      );
+
+    const unit =
+      unitRadio
+        ? unitRadio.value
+        : "قطعة";
+
+
+    /* التحقق من الاسم */
+
+    if(!name){
+
+      alert(
+        "يرجى كتابة اسم المادة"
+      );
+
+      return;
+
+    }
+
+
+    /* التحقق من السعر */
+
+    if(!price || price <= 0){
+
+      alert(
+        "يرجى كتابة السعر بشكل صحيح"
+      );
+
+      return;
+
+    }
+
+
+    productSaveButton.disabled =
+      true;
+
+    productSaveButton.textContent =
+      "جاري الحفظ...";
+
+
+    try{
+
+      /* قراءة البيانات الحالية */
+
+      const { data: row, error: readError } =
+        await db
+
+        .from("products")
+
+        .select("id,data")
+
+        .eq("id",1)
+
+        .single();
+
+
+      if(readError){
+
+        throw readError;
+
+      }
+
+
+      const oldData =
+        row.data || {};
+
+
+      const products =
+        Array.isArray(oldData.products)
+          ? [...oldData.products]
+          : [];
+
+
+      /* ==========================================
+         تعديل مادة موجودة
+      ========================================== */
+
+      if(productMode.value === "edit"){
+
+        const selectedId =
+          Number(existingProduct.value);
+
+
+        if(!selectedId){
+
+          alert(
+            "اختر المادة التي تريد تعديلها"
+          );
+
+          return;
+
+        }
+
+
+        const index =
+          products.findIndex(
+            p =>
+              Number(p.id) ===
+              selectedId
+          );
+
+
+        if(index === -1){
+
+          alert(
+            "المادة غير موجودة"
+          );
+
+          return;
+
+        }
+
+
+        /* تعديل نفس المادة */
+
+        products[index] = {
+
+          ...products[index],
+
+          cat: category,
+
+          name: name,
+
+          price: price,
+
+          unit: unit,
+
+          active: active
+
+        };
+
+
+        const { error: updateError } =
+          await db
+
+          .from("products")
+
+          .update({
+
+            data: {
+
+              ...oldData,
+
+              products: products
+
+            }
+
+          })
+
+          .eq("id",1);
+
+
+        if(updateError){
+
+          throw updateError;
+
+        }
+
+
+        allProducts =
+          products;
+
+
+        refreshProductSelector();
+
+        renderProductsTable();
+
+
+        alert(
+          "تم تعديل المادة بنجاح ✅"
+        );
+
+
+      }
+
+      /* ==========================================
+         إضافة مادة جديدة
+      ========================================== */
+
+      else{
+
+        const newId =
+          products.length
+
+            ? Math.max(
+                ...products.map(
+                  p =>
+                    Number(p.id) || 0
+                )
+              ) + 1
+
+            : 1;
+
+
+        products.push({
+
+          id:newId,
+
+          cat:category,
+
+          name:name,
+
+          price:price,
+
+          unit:unit,
+
+          icon:"🛒",
+
+          active:active
+
+        });
+
+
+        const { error: updateError } =
+          await db
+
+          .from("products")
+
+          .update({
+
+            data: {
+
+              ...oldData,
+
+              products:products
+
+            }
+
+          })
+
+          .eq("id",1);
+
+
+        if(updateError){
+
+          throw updateError;
+
+        }
+
+
+        allProducts =
+          products;
+
+
+        renderProductsTable();
+
+
+        alert(
+          "تمت إضافة المادة بنجاح ✅"
+        );
+
+
+        clearProductForm();
+
+      }
+
+
+    }catch(error){
+
+      console.error(error);
+
+      alert(
+        "فشل الحفظ: " +
+        error.message
+      );
+
+    }
+
+    finally{
+
+      productSaveButton.disabled =
+        false;
+
+      productSaveButton.textContent =
+        "حفظ";
+
+    }
+
+  }
+);
+
+
+/* =====================================================
+   حذف المادة
+===================================================== */
+
+productDeleteButton.addEventListener(
+  "click",
+  async function(){
+
+    if(productMode.value !== "edit"){
+
+      alert(
+        "اختر وضع تعديل مادة موجودة أولاً"
+      );
+
+      return;
+
+    }
+
+
+    const selectedId =
+      Number(existingProduct.value);
+
+
+    if(!selectedId){
+
+      alert(
+        "اختر المادة التي تريد حذفها"
+      );
+
+      return;
+
+    }
+
+
+    const product =
+      allProducts.find(
+        p =>
+          Number(p.id) ===
+          selectedId
+      );
+
+
+    if(!product){
+
+      alert(
+        "المادة غير موجودة"
+      );
+
+      return;
+
+    }
+
+
+    const confirmed =
+      confirm(
+        "هل أنت متأكد من حذف مادة:\n" +
+        product.name +
+        " ؟"
+      );
+
+
+    if(!confirmed){
+
+      return;
+
+    }
+
+
+    productDeleteButton.disabled =
+      true;
+
+
+    try{
+
+      const { data: row, error: readError } =
+        await db
+
+        .from("products")
+
+        .select("id,data")
+
+        .eq("id",1)
+
+        .single();
+
+
+      if(readError){
+
+        throw readError;
+
+      }
+
+
+      const oldData =
+        row.data || {};
+
+
+      const products =
+        Array.isArray(oldData.products)
+          ? [...oldData.products]
+          : [];
+
+
+      const newProducts =
+        products.filter(
+          p =>
+            Number(p.id) !==
+            selectedId
+        );
+
+
+      const { error: updateError } =
+        await db
+
+        .from("products")
+
+        .update({
+
+          data: {
+
+            ...oldData,
+
+            products:newProducts
+
+          }
+
+        })
+
+        .eq("id",1);
+
+
+      if(updateError){
+
+        throw updateError;
+
+      }
+
+
+      allProducts =
+        newProducts;
+
+
+      refreshProductSelector();
+
+      clearProductForm();
+
+      renderProductsTable();
+
+
+      alert(
+        "تم حذف المادة بنجاح ✅"
+      );
+
+
+    }catch(error){
+
+      console.error(error);
+
+      alert(
+        "فشل الحذف: " +
+        error.message
+      );
+
+    }
+
+    finally{
+
+      productDeleteButton.disabled =
+        false;
+
+    }
+
+  }
+);
+
+
+/* =====================================================
+   عرض جدول المواد
+===================================================== */
+
+function renderProductsTable(){
+
+  productsTableBody.innerHTML = "";
+
+
+  allProducts.forEach(product => {
+
+    const tr =
+      document.createElement("tr");
+
+
+    const category =
+      categoryNames[product.cat] ||
+      product.cat ||
+      "";
+
+
+    const unit =
+      product.unit ||
+      "قطعة";
+
+
+    const price =
+      Number(product.price || 0)
+        .toLocaleString("en-US");
+
+
+    const active =
+      product.active !== false
+        ? "✓"
+        : "✕";
+
+
+    tr.innerHTML = `
+
+      <td>${category}</td>
+
+      <td>${product.name || ""}</td>
+
+      <td>${unit}</td>
+
+      <td>${price}</td>
+
+      <td>${active}</td>
+
+      <td>
+
+        <button
+          type="button"
+          class="save"
+          style="padding:7px 12px"
+          onclick="editProductFromTable(${Number(product.id)})"
+        >
+          تعديل
+        </button>
+
+      </td>
+
+    `;
+
+
+    productsTableBody.appendChild(tr);
+
+  });
+
+}
+
+
+/* =====================================================
+   تعديل المادة من الجدول
+===================================================== */
+
+window.editProductFromTable =
+function(id){
+
+  const product =
+    allProducts.find(
+      p =>
+        Number(p.id) ===
+        Number(id)
+    );
+
+
+  if(!product){
+
+    return;
+
+  }
+
+
+  productMode.value =
+    "edit";
+
+
+  editProductBox.style.display =
+    "block";
+
+
+  productCategory.value =
+    product.cat;
+
+
+  refreshProductSelector();
+
+
+  existingProduct.value =
+    String(product.id);
+
+
+  productName.value =
+    product.name || "";
+
+
+  productPrice.value =
+    product.price || "";
+
+
+  productActive.checked =
+    product.active !== false;
+
+
+  const radio =
+    document.querySelector(
+      `input[name="produnit"][value="${product.unit || "قطعة"}"]`
+    );
+
+
+  if(radio){
+
+    radio.checked = true;
+
+  }
+
+
+  document.getElementById(
+    "products"
+  ).scrollIntoView({
+    behavior:"smooth"
+  });
+
+};
+
+
+/* =====================================================
+   العروض
+===================================================== */
+
+const box =
+document.getElementById("offerRows");
+
+
+function addRow(){
+
+  if(box.children.length >= 8){
+
+    return;
+
+  }
+
+
+  const d =
+    document.createElement("div");
+
+
+  d.className =
+    "offer-row";
+
+
+  d.innerHTML =
+
+    '<input placeholder="اسم المادة">' +
+
+    '<input type="number" placeholder="السعر الأصلي">' +
+
+    '<input type="number" placeholder="سعر العرض">' +
+
+    '<input type="file" accept="image/*">' +
+
+    '<button type="button" class="delete">حذف</button>';
+
+
+  d.querySelector("button").onclick =
+    () => {
+
+      if(box.children.length > 5){
+
+        d.remove();
+
+      }
+
+    };
+
+
+  box.appendChild(d);
+
+}
+
+
+for(
+  let i=0;
+  i<5;
+  i++
+){
+
+  addRow();
+
+}
+
+
+document.getElementById(
+  "addOfferRow"
+).onclick =
+  addRow;
+
+
+/* =====================================================
+   بدء تشغيل لوحة المواد
+===================================================== */
+
+loadProducts();
+
 </script>
 
 </body>
