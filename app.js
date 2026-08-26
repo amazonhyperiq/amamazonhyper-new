@@ -1,3 +1,8 @@
+const SUPABASE_URL = "https://vexorzjkpwduykinwsw.supabase.co";
+const SUPABASE_KEY = "sb_publishable_RoMHq19grLJWNu95uPSwug_XwiKt2bB";
+
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
 const categories = [
   {id:"food", name:"مواد غذائية", icon:"🛒"},
   {id:"cleaning", name:"منظفات", icon:"🧴"},
