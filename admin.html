@@ -72,9 +72,9 @@ productSaveButton.addEventListener("click", async function () {
   const selects = productPanel.querySelectorAll("select");
   const inputs = productPanel.querySelectorAll("input");
 
-  const categoryName = selects[0].value;
-  const name = inputs[1].value.trim();
-  const price = Number(inputs[2].value);
+ const categoryName = selects[0].value;
+const name = productPanel.querySelector('input[placeholder="اسم المادة"]').value.trim();
+const price = Number(productPanel.querySelector('input[type="number"]').value);
 
   if (!name) {
     alert("يرجى كتابة اسم المادة");
