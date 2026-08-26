@@ -14,7 +14,7 @@ const categories = [
   {id:"drinks", name:"مشروبات", icon:"🥤"}
 ];
 
-const products = [
+let products = [
   {id:1,cat:"food",name:"رز عنبر",price:3000,unit:"قطعة",icon:"🍚"},
   {id:2,cat:"food",name:"زيت طبخ",price:4500,unit:"قطعة",icon:"🫗"},
   {id:3,cat:"food",name:"سكر",price:1500,unit:"قطعة",icon:"🍬"},
@@ -28,7 +28,56 @@ const products = [
   {id:11,cat:"chicken",name:"دجاج ذبح عراقي",price:5750,unit:"قطعة",icon:"🍗"},
   {id:12,cat:"vegetables",name:"طماطم",price:2000,unit:"كغم",icon:"🍅"}
 ];
+async function loadProductsFromSupabase() {
+    try {
+        const { data, error } = await supabaseClient
+            .from("products")
+            .select("data")
+            .limit(1)
+            .single();
 
+        if (error) {
+            console.error("Supabase products error:", error);
+            return;
+        }
+
+        if (!data || !data.data || !data.data.store) {
+            console.error("لم يتم العثور على بيانات المنتجات");
+            return;
+        }
+
+        const dbProducts = [];
+
+        data.data.store.forEach(category => {
+            if (!category.products) return;
+
+            category.products.forEach(product => {
+                if (product.active === false) return;
+
+                dbProducts.push({
+                    id: dbProducts.length + 1,
+                    cat: category.category || "food",
+                    name: product.name,
+                    price: Number(product.price) || 0,
+                    unit: product.unit || "قطعة",
+                    icon: product.icon || "🛒"
+                });
+            });
+        });
+
+        if (dbProducts.length > 0) {
+            products = dbProducts;
+
+            console.log("تم تحميل المنتجات من Supabase:", products.length);
+
+            renderProducts();
+            updateCart();
+        }
+
+    } catch (err) {
+        console.error("Supabase connection error:", err);
+    }
+}
 const offers = [
   {title:"عرض الأسبوع",from:"01/09",to:"05/09",items:[
     ["رز عنبر","2,500 د.ع"],["زيت طبخ","4,000 د.ع"],["سكر","1,250 د.ع"],["معجون طماطم","800 د.ع"]
@@ -128,3 +177,4 @@ document.getElementById("whatsappBtn").addEventListener("click",()=>{
 
 document.getElementById("tickerText").textContent="عروض خاصة • خصومات مميزة • توصيل داخل بغداد • الكمية والأسعار حسب توفر المخزون";
 renderCategories(); renderOffers(); renderProducts(); updateCart();
+loadProductsFromSupabase();
