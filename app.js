@@ -1,4 +1,4 @@
-const SUPABASE_URL = "https://vexorzjkpwduykinwsw.supabase.co";
+const SUPABASE_URL = "https://vvexorzjkpwduykinwsw.supabase.co";
 const SUPABASE_KEY = "sb_publishable_RoMHq19grLJWNu95uPSwug_XwiKt2bB";
 
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -29,54 +29,89 @@ let products = [
   {id:12,cat:"vegetables",name:"طماطم",price:2000,unit:"كغم",icon:"🍅"}
 ];
 async function loadProductsFromSupabase() {
-    try {
-        const { data, error } = await supabaseClient
-            .from("products")
-            .select("data")
-            .limit(1)
-            .single();
 
-        if (error) {
-            console.error("Supabase products error:", error);
-            return;
-        }
+  try {
 
-        if (!data || !data.data || !data.data.store) {
-            console.error("لم يتم العثور على بيانات المنتجات");
-            return;
-        }
+    const { data, error } = await supabaseClient
+      .from("products")
+      .select("id,data")
+      .eq("id", 1)
+      .single();
 
-        const dbProducts = [];
 
-        data.data.store.forEach(category => {
-            if (!category.products) return;
+    if (error) {
 
-            category.products.forEach(product => {
-                if (product.active === false) return;
+      console.error(
+        "Supabase products error:",
+        error
+      );
 
-                dbProducts.push({
-                    id: dbProducts.length + 1,
-                    cat: category.category || "food",
-                    name: product.name,
-                    price: Number(product.price) || 0,
-                    unit: product.unit || "قطعة",
-                    icon: product.icon || "🛒"
-                });
-            });
-        });
+      return;
 
-        if (dbProducts.length > 0) {
-            products = dbProducts;
-
-            console.log("تم تحميل المنتجات من Supabase:", products.length);
-
-            renderProducts();
-            updateCart();
-        }
-
-    } catch (err) {
-        console.error("Supabase connection error:", err);
     }
+
+
+    if (
+      !data ||
+      !data.data ||
+      !Array.isArray(data.data.products)
+    ) {
+
+      console.error(
+        "لم يتم العثور على قائمة المنتجات"
+      );
+
+      return;
+
+    }
+
+
+    const dbProducts =
+      data.data.products
+        .filter(product =>
+          product &&
+          product.active !== false
+        )
+        .map(product => ({
+
+          id: Number(product.id),
+
+          cat: product.cat || "food",
+
+          name: product.name || "",
+
+          price: Number(product.price) || 0,
+
+          unit: product.unit || "قطعة",
+
+          icon: product.icon || "🛒"
+
+        }));
+
+
+    products = dbProducts;
+
+
+    console.log(
+      "تم تحميل المنتجات من Supabase:",
+      products
+    );
+
+
+    renderProducts();
+
+    updateCart();
+
+
+  } catch (err) {
+
+    console.error(
+      "Supabase connection error:",
+      err
+    );
+
+  }
+
 }
 const offers = [
   {title:"عرض الأسبوع",from:"01/09",to:"05/09",items:[
