@@ -1561,7 +1561,7 @@ if(whatsappBtn){
 
 
       const whatsappNumber =
-        "9647700000000";
+        "9647842000516";
 
 
       window.open(
