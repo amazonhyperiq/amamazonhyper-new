@@ -77,11 +77,17 @@
       <label>رقم الهاتف
         <input id="customerPhone" inputmode="tel" placeholder="07xxxxxxxxx">
       </label>
-      <label>منطقة التوصيل
-        <select id="deliveryArea">
-          <option value="">اختر منطقة التوصيل</option>
-        </select>
-      </label>
+     <label>منطقة التوصيل الرئيسية
+  <select id="deliveryGroup">
+    <option value="">اختر المنطقة الرئيسية</option>
+  </select>
+</label>
+
+<label>المنطقة
+  <select id="deliveryArea" disabled>
+    <option value="">اختر المنطقة</option>
+  </select>
+</label>
       <label>العنوان التفصيلي
         <input id="customerAddress" placeholder="الشارع، المحلة، أقرب نقطة دالة">
       </label>
