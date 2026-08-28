@@ -1127,42 +1127,48 @@ function setupDeliveryUI(){
     };
 
 
-  areaSelect.onchange =
-    function(){
+ areaSelect.onchange =
+  function(){
 
-      selectedDeliveryArea =
-        this.value;
+    const group =
+      deliveryGroups.find(
+        g =>
+          getDeliveryGroupName(g) ===
+          selectedDeliveryGroup
+      );
 
+    const areas =
+      getDeliveryAreas(group);
 
-      const group =
-        deliveryGroups.find(
-          g =>
-            getDeliveryGroupName(g)
-            ===
-            selectedDeliveryGroup
-        );
+    const index =
+      Number(this.value);
 
+    if(
+      !group ||
+      !Array.isArray(areas) ||
+      !areas[index]
+    ){
 
-      const area =
-        getDeliveryAreas(
-          group
-        ).find(
-          a =>
-            getDeliveryAreaName(a)
-            ===
-            selectedDeliveryArea
-        );
-
-
-      deliveryFee =
-        getDeliveryAreaFee(
-          area
-        );
-
+      selectedDeliveryArea = "";
+      deliveryFee = 0;
 
       updateCart();
 
-    };
+      return;
+    }
+
+    const area =
+      areas[index];
+
+    selectedDeliveryArea =
+      getDeliveryAreaName(area);
+
+    deliveryFee =
+      getDeliveryAreaFee(area);
+
+    updateCart();
+
+  };
 
 }
 
