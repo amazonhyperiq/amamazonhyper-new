@@ -1127,8 +1127,11 @@ function setupDeliveryUI(){
     };
 
 
- areaSelect.onchange =
+areaSelect.onchange =
   function(){
+
+    selectedDeliveryArea =
+      this.value;
 
     const group =
       deliveryGroups.find(
@@ -1140,16 +1143,15 @@ function setupDeliveryUI(){
     const areas =
       getDeliveryAreas(group);
 
-    const index =
-      Number(this.value);
+    const area =
+      areas.find(
+        a =>
+          getDeliveryAreaName(a) ===
+          selectedDeliveryArea
+      );
 
-    if(
-      !group ||
-      !Array.isArray(areas) ||
-      !areas[index]
-    ){
+    if(!area){
 
-      selectedDeliveryArea = "";
       deliveryFee = 0;
 
       updateCart();
@@ -1157,21 +1159,12 @@ function setupDeliveryUI(){
       return;
     }
 
-    const area =
-      areas[index];
-
-    selectedDeliveryArea =
-      getDeliveryAreaName(area);
-
     deliveryFee =
       getDeliveryAreaFee(area);
 
     updateCart();
 
   };
-
-}
-
 
 /* =====================================================
    عرض المناطق الرئيسية
