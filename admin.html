@@ -1525,18 +1525,27 @@ function renderProductsTable(){
 
       <td>${active}</td>
 
-      <td>
+     <td>
 
-        <button
-          type="button"
-          class="save"
-          style="padding:7px 12px"
-          onclick="editProductFromTable(${Number(product.id)})"
-        >
-          تعديل
-        </button>
+  <button
+    type="button"
+    class="save"
+    style="padding:7px 12px"
+    onclick="editProductFromTable(${Number(product.id)})"
+  >
+    تعديل
+  </button>
 
-      </td>
+  <button
+    type="button"
+    class="delete"
+    style="padding:7px 12px;margin-right:5px"
+    onclick="deleteProductFromTable(${Number(product.id)})"
+  >
+    حذف
+  </button>
+
+</td>
 
     `;
 
@@ -1614,7 +1623,7 @@ function(id){
   }
 
 
-  document.getElementById(
+   document.getElementById(
     "products"
   ).scrollIntoView({
     behavior:"smooth"
@@ -1623,6 +1632,112 @@ function(id){
 };
 
 
+/* =====================================================
+   حذف المادة من جدول المواد
+===================================================== */
+
+window.deleteProductFromTable =
+async function(id){
+
+  const product =
+    allProducts.find(
+      p =>
+        Number(p.id) ===
+        Number(id)
+    );
+
+  if(!product){
+    alert("المادة غير موجودة");
+    return;
+  }
+
+  const confirmed =
+    confirm(
+      "هل أنت متأكد من حذف المادة:\n\n" +
+      product.name +
+      "\n\nلا يمكن التراجع عن هذا الإجراء."
+    );
+
+  if(!confirmed){
+    return;
+  }
+
+  try{
+
+    const {
+      data:row,
+      error:readError
+    } =
+      await db
+        .from("products")
+        .select("id,data")
+        .eq("id",1)
+        .single();
+
+    if(readError){
+      throw readError;
+    }
+
+    const oldData =
+      row.data || {};
+
+    const products =
+      Array.isArray(oldData.products)
+        ? [...oldData.products]
+        : [];
+
+    const newProducts =
+      products.filter(
+        p =>
+          Number(p.id) !==
+          Number(id)
+      );
+
+    const {
+      error:updateError
+    } =
+      await db
+        .from("products")
+        .update({
+          data:{
+            ...oldData,
+            products:newProducts
+          }
+        })
+        .eq("id",1);
+
+    if(updateError){
+      throw updateError;
+    }
+
+    allProducts =
+      newProducts;
+
+    refreshProductSelector();
+    clearProductForm();
+    renderProductsTable();
+
+    alert(
+      "تم حذف المادة بنجاح ✅"
+    );
+
+  }catch(error){
+
+    console.error(error);
+
+    alert(
+      "فشل حذف المادة:\n" +
+      error.message
+    );
+
+  }
+
+};
+
+
+/* =====================================================
+   إدارة العروض والشريط
+===================================================== */
 /* =====================================================
    إدارة العروض والشريط
 ===================================================== */
