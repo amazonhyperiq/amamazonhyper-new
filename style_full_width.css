@@ -556,3 +556,245 @@ input:focus,textarea:focus,select:focus{
     grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
   }
 }
+/* =====================================================
+   إصلاح نهائي لعرض الهاتف
+===================================================== */
+
+html,
+body{
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  margin:0;
+  padding:0;
+  overflow-x:hidden !important;
+}
+
+*,
+*::before,
+*::after{
+  box-sizing:border-box;
+}
+
+.site-header,
+.site-footer,
+.page,
+.container,
+.section,
+.section-heading,
+.categories-section,
+.offers-section,
+.products-section,
+.order-section{
+  width:100%;
+  max-width:100%;
+  min-width:0;
+}
+
+.page{
+  margin:0;
+  padding-left:8px;
+  padding-right:8px;
+}
+
+.section{
+  overflow:hidden;
+}
+
+.section-heading{
+  width:100%;
+  max-width:100%;
+  min-width:0;
+}
+
+.section-heading > div{
+  min-width:0;
+  max-width:100%;
+}
+
+.section-heading h2,
+.section-heading p{
+  max-width:100%;
+  overflow-wrap:anywhere;
+}
+
+/* الأقسام */
+.category-scroller{
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  overflow-x:auto !important;
+  overflow-y:hidden;
+  display:flex;
+}
+
+.category{
+  flex:0 0 118px;
+  width:118px;
+  min-width:118px;
+  max-width:118px;
+}
+
+/* العروض */
+.offer-grid{
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  grid-template-columns:minmax(0,1fr) !important;
+}
+
+.offer-card{
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  overflow:hidden;
+}
+
+.offer-item{
+  width:100%;
+  max-width:100%;
+  min-width:0;
+}
+
+.offer-item span{
+  min-width:0;
+  max-width:100%;
+  overflow-wrap:anywhere;
+}
+
+/* المنتجات */
+.product-grid{
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+}
+
+.product{
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  overflow:hidden;
+}
+
+/* نموذج الطلب */
+.form-grid{
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  grid-template-columns:minmax(0,1fr) !important;
+}
+
+.form-grid label{
+  width:100%;
+  max-width:100%;
+  min-width:0;
+}
+
+input,
+textarea,
+select{
+  width:100%;
+  max-width:100%;
+  min-width:0;
+}
+
+/* شريط الطلب السفلي */
+.checkout-card{
+  max-width:calc(100vw - 12px) !important;
+  min-width:0;
+}
+
+.checkout-summary{
+  min-width:0;
+  max-width:100%;
+}
+
+.checkout-summary > div{
+  min-width:0;
+  max-width:100%;
+}
+
+.whatsapp{
+  max-width:140px;
+  min-width:110px;
+}
+
+/* الفوتر */
+.footer-inner{
+  width:100%;
+  max-width:100%;
+  min-width:0;
+}
+
+/* الهاتف */
+@media(max-width:620px){
+
+  .topbar{
+    width:100%;
+    max-width:100%;
+    min-width:0;
+  }
+
+  .brand{
+    min-width:0;
+    max-width:calc(100% - 55px);
+  }
+
+  .brand strong,
+  .brand small{
+    max-width:100%;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  .header-cart{
+    flex-shrink:0;
+  }
+
+  .ticker{
+    width:100%;
+    max-width:100%;
+    min-width:0;
+  }
+
+  .page{
+    width:100vw;
+    max-width:100vw;
+    margin:0;
+    padding-left:8px;
+    padding-right:8px;
+  }
+
+  .section{
+    width:100%;
+    max-width:100%;
+    margin-left:0;
+    margin-right:0;
+  }
+
+  .category-scroller{
+    margin-left:0;
+    margin-right:0;
+    padding-left:2px;
+    padding-right:2px;
+  }
+
+  .offer-grid,
+  .product-grid{
+    width:100%;
+    max-width:100%;
+  }
+
+  .offer-card,
+  .product{
+    width:100%;
+    max-width:100%;
+  }
+
+  .checkout-card{
+    left:6px !important;
+    right:6px !important;
+    width:auto !important;
+  }
+}
