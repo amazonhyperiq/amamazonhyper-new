@@ -1,821 +1,385 @@
-/* =====================================================
-   AMAZON HYPERMARKET - APP.JS
-===================================================== */
+const SUPABASE_URL = "https://vexorzjkpwduykinwsw.supabase.co";
+const SUPABASE_KEY = "sb_publishable_RoMHq19grLJWNu95uPSwug_XwiKt2bB";
 
-const SUPABASE_URL =
-  "https://vvexorzjkpwduykinwsw.supabase.co";
-
-const SUPABASE_KEY =
-  "sb_publishable_RoMHq19grLJWNu95uPSwug_XwiKt2bB";
-
-const supabaseClient =
-  supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const supabaseClient = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
 
 
 /* =====================================================
    الأقسام
 ===================================================== */
 
-const categories = [
-  { id:"food",        name:"مواد غذائية",  icon:"🛒" },
-  { id:"cleaning",    name:"منظفات",       icon:"🧴" },
-  { id:"cosmetic",    name:"كوزمتك",       icon:"💄" },
-  { id:"meat",        name:"لحوم",         icon:"🥩" },
-  { id:"chicken",     name:"دجاج",         icon:"🍗" },
-  { id:"vegetables",  name:"خضار وفواكه",  icon:"🥬" },
-  { id:"dairy",       name:"ألبان وأجبان", icon:"🥛" },
-  { id:"drinks",      name:"مشروبات",      icon:"🥤" }
+let categories = [
+  {id:"meat",name:"اللحوم الطازجة",icon:"🥩"},
+  {id:"chicken",name:"الدجاج فريش",icon:"🍗"},
+  {id:"vegetables",name:"الفواكه والخضار",icon:"🥬"},
+  {id:"canned-veg",name:"الخضراوات المعلبة (فريش)",icon:"🥫"},
+  {id:"food",name:"الرز والزيت والمعجون (المواد الغذائية)",icon:"🛒"},
+  {id:"deli-pickles",name:"الأجبان والألبان والمخللات (الدلي)",icon:"🧀"},
+  {id:"legumes-packaging",name:"البقوليات ومواد التعبئة (الوزن)",icon:"⚖️"},
+  {id:"drinks",name:"العصائر والمشروبات",icon:"🥤"},
+  {id:"dairy",name:"الأجبان والألبان",icon:"🥛"},
+  {id:"cleaning",name:"مواد التنظيف المنزلية",icon:"🧴"},
+  {id:"laundry",name:"مساحيق غسيل الملابس",icon:"🧺"},
+  {id:"cosmetic",name:"مواد العناية بالشعر والبشرة والجسم",icon:"💄"},
+  {id:"tissues-paper",name:"الكلينس والورقيات",icon:"🧻"},
+  {id:"cleaning-tools",name:"أدوات التنظيف المنزلية",icon:"🧽"}
 ];
 
 
 /* =====================================================
-   المتغيرات
+   المنتجات الافتراضية
 ===================================================== */
 
-let products = [];
-let offers = [];
-let deliveryGroups = [];
+let products = [
+  {
+    id:1,
+    cat:"food",
+    name:"رز عنبر",
+    price:3000,
+    unit:"قطعة",
+    icon:"🍚"
+  },
 
-let selectedCategory = "food";
+  {
+    id:2,
+    cat:"food",
+    name:"زيت طبخ",
+    price:4500,
+    unit:"قطعة",
+    icon:"🫗"
+  },
 
-let selectedDeliveryGroup = "";
-let selectedDeliveryArea = "";
-let deliveryFee = 0;
+  {
+    id:3,
+    cat:"food",
+    name:"سكر",
+    price:1500,
+    unit:"قطعة",
+    icon:"🍬"
+  },
 
-const cart = new Map();
+  {
+    id:4,
+    cat:"food",
+    name:"معجون طماطم",
+    price:1000,
+    unit:"قطعة",
+    icon:"🥫"
+  },
+
+  {
+    id:5,
+    cat:"cleaning",
+    name:"مسحوق غسيل",
+    price:7500,
+    unit:"قطعة",
+    icon:"🧺"
+  },
+
+  {
+    id:6,
+    cat:"cleaning",
+    name:"سائل جلي",
+    price:3000,
+    unit:"قطعة",
+    icon:"🧽"
+  },
+
+  {
+    id:7,
+    cat:"cosmetic",
+    name:"شامبو",
+    price:6500,
+    unit:"قطعة",
+    icon:"🧴"
+  },
+
+  {
+    id:8,
+    cat:"cosmetic",
+    name:"كريم مرطب",
+    price:8500,
+    unit:"قطعة",
+    icon:"🧴"
+  },
+
+  {
+    id:9,
+    cat:"meat",
+    name:"لحم غنم بالعظم",
+    price:22000,
+    unit:"كغم",
+    icon:"🥩"
+  },
+
+  {
+    id:10,
+    cat:"meat",
+    name:"لحم غنم شرح",
+    price:27000,
+    unit:"كغم",
+    icon:"🥩"
+  },
+
+  {
+    id:11,
+    cat:"chicken",
+    name:"دجاج ذبح عراقي",
+    price:5750,
+    unit:"قطعة",
+    icon:"🍗"
+  },
+
+  {
+    id:12,
+    cat:"vegetables",
+    name:"طماطم",
+    price:2000,
+    unit:"كغم",
+    icon:"🍅"
+  }
+];
 
 
 /* =====================================================
-   أدوات
+   تحميل الأقسام والمنتجات من Supabase
 ===================================================== */
 
-function money(value) {
-  return (
-    new Intl.NumberFormat("ar-IQ").format(
-      Number(value) || 0
-    ) + " د.ع"
-  );
-}
+async function loadProductsFromSupabase(){
 
+  try{
 
-/* =====================================================
-   أدوات مناطق التوصيل
-===================================================== */
-
-function getDeliveryGroupName(group) {
-
-  if (typeof group === "string") {
-    return group.trim();
-  }
-
-  return String(
-    group?.name ??
-    group?.title ??
-    group?.groupName ??
-    ""
-  ).trim();
-}
-
-
-function getDeliveryAreas(group) {
-
-  if (!group) {
-    return [];
-  }
-
-  if (Array.isArray(group.areas)) {
-    return group.areas;
-  }
-
-  if (Array.isArray(group.regions)) {
-    return group.regions;
-  }
-
-  if (Array.isArray(group.items)) {
-    return group.items;
-  }
-
-  return [];
-}
-
-
-function getDeliveryAreaName(area) {
-
-  if (typeof area === "string") {
-    return area.trim();
-  }
-
-  return String(
-    area?.name ??
-    area?.title ??
-    area?.area ??
-    area?.region ??
-    ""
-  ).trim();
-}
-
-
-function getDeliveryAreaFee(area) {
-
-  if (typeof area === "number") {
-    return Number(area) || 0;
-  }
-
-  return Number(
-    area?.fee ??
-    area?.price ??
-    area?.deliveryFee ??
-    area?.deliveryPrice ??
-    0
-  ) || 0;
-}
-
-
-/* =====================================================
-   تحميل البيانات من Supabase
-===================================================== */
-
-async function loadPageData() {
-
-  try {
-
-    const result =
+    const { data, error } =
       await supabaseClient
         .from("products")
         .select("data")
-        .eq("id", 1)
+        .limit(1)
         .single();
 
-    if (result.error) {
-      throw result.error;
-    }
 
-    const saved =
-      result.data?.data || {};
+    if(error){
 
-
-    /* المنتجات */
-
-    products =
-      Array.isArray(saved.products)
-        ? saved.products
-            .filter(
-              p =>
-                p &&
-                p.active !== false
-            )
-            .map(
-              p => ({
-                id: Number(p.id),
-                cat: p.cat || "food",
-                name: p.name || "",
-                price: Number(p.price) || 0,
-                unit: p.unit || "قطعة",
-                icon: p.icon || "🛒"
-              })
-            )
-            .filter(
-              p =>
-                p.id &&
-                p.name
-            )
-        : [];
-
-
-    /* العروض */
-
-    offers =
-      Array.isArray(saved.offers)
-        ? saved.offers
-        : [];
-
-
-    /* مناطق التوصيل */
-
-    deliveryGroups =
-      Array.isArray(saved.deliveryGroups)
-        ? saved.deliveryGroups
-        : [];
-
-
-    /* الشريط */
-
-    const ticker =
-      typeof saved.ticker === "string"
-        ? saved.ticker.trim()
-        : "";
-
-    const tickerEl =
-      document.getElementById("tickerText");
-
-    if (tickerEl) {
-
-      tickerEl.textContent =
-        ticker ||
-        "عروض خاصة • خصومات مميزة • توصيل داخل بغداد";
-
-    }
-
-
-    renderCategories();
-    renderProducts();
-    renderOffers();
-    renderDeliveryGroups();
-    updateCart();
-
-  }
-
-  catch (error) {
-
-    console.error(
-      "خطأ تحميل البيانات:",
-      error
-    );
-
-    renderCategories();
-    renderProducts();
-    renderOffers();
-    renderDeliveryGroups();
-    updateCart();
-
-  }
-}
-
-
-/* =====================================================
-   الأقسام
-===================================================== */
-
-function renderCategories() {
-
-  const box =
-    document.getElementById("categories");
-
-  if (!box) {
-    return;
-  }
-
-  box.innerHTML =
-    categories
-      .map(
-        category => `
-
-          <button
-            type="button"
-            class="category ${
-              selectedCategory === category.id
-                ? "active"
-                : ""
-            }"
-            data-cat="${category.id}"
-          >
-
-            <div class="category-icon">
-              ${category.icon}
-            </div>
-
-            <strong>
-              ${category.name}
-            </strong>
-
-          </button>
-
-        `
-      )
-      .join("");
-
-
-  box
-    .querySelectorAll(".category")
-    .forEach(
-      button => {
-
-        button.addEventListener(
-          "click",
-          function () {
-
-            selectedCategory =
-              this.dataset.cat;
-
-            const category =
-              categories.find(
-                c =>
-                  c.id ===
-                  selectedCategory
-              );
-
-            const title =
-              document.getElementById(
-                "productsTitle"
-              );
-
-            if (title) {
-
-              title.textContent =
-                category?.name ||
-                "المواد";
-
-            }
-
-            renderCategories();
-            renderProducts();
-
-          }
-        );
-
-      }
-    );
-}
-
-
-/* =====================================================
-   المنتجات
-===================================================== */
-
-function renderProducts() {
-
-  const box =
-    document.getElementById(
-      "productsGrid"
-    );
-
-  if (!box) {
-    return;
-  }
-
-  const list =
-    products.filter(
-      product =>
-        product.cat ===
-        selectedCategory
-    );
-
-
-  if (!list.length) {
-
-    box.innerHTML = `
-      <div
-        style="
-          grid-column:1/-1;
-          text-align:center;
-          padding:30px;
-        "
-      >
-        لا توجد مواد في هذا القسم حالياً.
-      </div>
-    `;
-
-    return;
-  }
-
-
-  box.innerHTML =
-    list
-      .map(
-        product => {
-
-          const quantity =
-            cart.get(product.id) || 0;
-
-          return `
-
-            <article class="product">
-
-              <div class="product-top">
-
-                <div>
-
-                  <h3>
-                    ${product.name}
-                  </h3>
-
-                  <div class="product-meta">
-                    يباع بـ ${product.unit}
-                  </div>
-
-                </div>
-
-                <div class="product-icon">
-                  ${product.icon}
-                </div>
-
-              </div>
-
-
-              <div class="product-price">
-                ${money(product.price)}
-
-                <small>
-                  / ${product.unit}
-                </small>
-              </div>
-
-
-              <div class="qty">
-
-                <button
-                  type="button"
-                  onclick="changeQty(${product.id},1)"
-                >
-                  +
-                </button>
-
-                <span>
-                  ${quantity}
-                </span>
-
-                <button
-                  type="button"
-                  onclick="changeQty(${product.id},-1)"
-                >
-                  −
-                </button>
-
-              </div>
-
-            </article>
-
-          `;
-
-        }
-      )
-      .join("");
-}
-
-
-/* =====================================================
-   السلة
-===================================================== */
-
-function changeQty(id, change) {
-
-  const oldQuantity =
-    Number(
-      cart.get(id) || 0
-    );
-
-  const newQuantity =
-    Math.max(
-      0,
-      oldQuantity + change
-    );
-
-
-  if (newQuantity > 0) {
-
-    cart.set(
-      id,
-      newQuantity
-    );
-
-  } else {
-
-    cart.delete(id);
-
-  }
-
-
-  renderProducts();
-  updateCart();
-}
-
-
-window.changeQty = changeQty;
-
-
-function getProductsTotal() {
-
-  let total = 0;
-
-  for (
-    const [id, quantity]
-    of cart
-  ) {
-
-    const product =
-      products.find(
-        p =>
-          Number(p.id) ===
-          Number(id)
+      console.error(
+        "Supabase products error:",
+        error
       );
 
-    if (product) {
+      return;
+    }
 
-      total +=
-        Number(product.price) *
-        Number(quantity);
+
+    if(!data || !data.data){
+
+      console.error(
+        "لم يتم العثور على بيانات المتجر"
+      );
+
+      return;
+    }
+
+
+    const saved =
+      data.data;
+
+
+    /* ==============================================
+       تحميل الأقسام التي أنشأها المدير
+    ============================================== */
+
+    if(
+      Array.isArray(saved.categories) &&
+      saved.categories.length
+    ){
+
+      categories =
+        saved.categories.map(c => ({
+
+          id:String(c.id),
+
+          name:String(
+            c.name || "قسم"
+          ),
+
+          icon:String(
+            c.icon || "🛒"
+          )
+
+        }));
 
     }
-  }
 
-  return total;
-}
 
+    /* ==============================================
+       تحميل المنتجات
+    ============================================== */
 
-function updateCart() {
+    const dbProducts = [];
 
-  const productsTotal =
-    getProductsTotal();
 
-  const finalTotal =
-    productsTotal +
-    Number(deliveryFee || 0);
+    if(
+      Array.isArray(saved.products)
+    ){
 
+      saved.products.forEach(
+        product => {
 
-  let count = 0;
+          if(
+            product.active === false
+          ){
 
-  for (
-    const [, quantity]
-    of cart
-  ) {
+            return;
 
-    count +=
-      Number(quantity);
+          }
 
-  }
 
+          dbProducts.push({
 
-  const total =
-    document.getElementById(
-      "cartTotal"
-    );
+            id:product.id,
 
-  const countEl =
-    document.getElementById(
-      "cartCount"
-    );
+            cat:product.cat,
 
-  const topCount =
-    document.getElementById(
-      "cartCountTop"
-    );
+            name:product.name,
 
-  const delivery =
-    document.getElementById(
-      "deliveryFee"
-    );
+            price:
+              Number(product.price) || 0,
 
-  const grand =
-    document.getElementById(
-      "grandTotal"
-    );
+            unit:
+              product.unit || "قطعة",
 
-  const deliveryText =
-    document.getElementById(
-      "deliveryAreaText"
-    );
+            icon:
+              product.icon || "🛒"
 
-  const deliverySummary =
-    document.getElementById(
-      "deliverySummary"
-    );
+          });
 
-
-  if (total) {
-    total.textContent =
-      money(finalTotal);
-  }
-
-  if (countEl) {
-    countEl.textContent =
-      count;
-  }
-
-  if (topCount) {
-    topCount.textContent =
-      count;
-  }
-
-  if (delivery) {
-    delivery.textContent =
-      money(deliveryFee);
-  }
-
-  if (grand) {
-    grand.textContent =
-      money(finalTotal);
-  }
-
-  if (deliveryText) {
-
-    deliveryText.textContent =
-      selectedDeliveryArea
-        ? `${selectedDeliveryGroup} / ${selectedDeliveryArea}`
-        : "";
-
-  }
-
-  if (deliverySummary) {
-
-    deliverySummary.style.display =
-      selectedDeliveryArea
-        ? "flex"
-        : "none";
-
-  }
-}
-
-
-/* =====================================================
-   مناطق التوصيل
-===================================================== */
-
-function setupDelivery() {
-
-  const groupSelect =
-    document.getElementById(
-      "deliveryGroup"
-    );
-
-  const areaSelect =
-    document.getElementById(
-      "deliveryArea"
-    );
-
-
-  if (
-    !groupSelect ||
-    !areaSelect
-  ) {
-    return;
-  }
-
-
-  groupSelect.onchange =
-    function () {
-
-      selectedDeliveryGroup =
-        this.value;
-
-      selectedDeliveryArea =
-        "";
-
-      deliveryFee =
-        0;
-
-      renderDeliveryAreas();
-      updateCart();
-
-    };
-
-
-  areaSelect.onchange =
-    function () {
-
-      selectedDeliveryArea =
-        this.value;
-
-      const group =
-        deliveryGroups.find(
-          g =>
-            getDeliveryGroupName(g) ===
-            selectedDeliveryGroup
-        );
-
-      const areas =
-        getDeliveryAreas(group);
-
-      const area =
-        areas.find(
-          item =>
-            getDeliveryAreaName(item) ===
-            selectedDeliveryArea
-        );
-
-      if (!area) {
-
-        deliveryFee = 0;
-
-        updateCart();
-
-        return;
-      }
-
-      deliveryFee =
-        getDeliveryAreaFee(area);
-
-      updateCart();
-
-    };
-}
-
-
-function renderDeliveryGroups() {
-
-  const select =
-    document.getElementById(
-      "deliveryGroup"
-    );
-
-  if (!select) {
-    return;
-  }
-
-
-  select.innerHTML = `
-    <option value="">
-      اختر المنطقة الرئيسية
-    </option>
-  `;
-
-
-  deliveryGroups.forEach(
-    group => {
-
-      const name =
-        getDeliveryGroupName(group);
-
-      if (!name) {
-        return;
-      }
-
-      const option =
-        document.createElement(
-          "option"
-        );
-
-      option.value = name;
-      option.textContent = name;
-
-      select.appendChild(option);
+        }
+      );
 
     }
-  );
 
 
-  selectedDeliveryGroup = "";
-  selectedDeliveryArea = "";
-  deliveryFee = 0;
+    /* ==============================================
+       دعم البيانات القديمة
+    ============================================== */
 
-  renderDeliveryAreas();
-  setupDelivery();
-  updateCart();
-}
+    else if(
+      Array.isArray(saved.store)
+    ){
 
+      saved.store.forEach(
+        category => {
 
-function renderDeliveryAreas() {
+          if(!category.products){
 
-  const select =
-    document.getElementById(
-      "deliveryArea"
-    );
+            return;
 
-  if (!select) {
-    return;
-  }
+          }
 
 
-  select.innerHTML = `
-    <option value="">
-      اختر المنطقة
-    </option>
-  `;
+          category.products.forEach(
+            product => {
+
+              if(
+                product.active === false
+              ){
+
+                return;
+
+              }
 
 
-  const group =
-    deliveryGroups.find(
-      g =>
-        getDeliveryGroupName(g) ===
-        selectedDeliveryGroup
-    );
+              const rawCat =
+                category.category ||
+                "food";
 
 
-  const areas =
-    getDeliveryAreas(group);
+              const matched =
+                categories.find(
+                  c =>
+                    c.id === rawCat ||
+                    c.name === rawCat
+                );
 
 
-  select.disabled =
-    !selectedDeliveryGroup ||
-    !areas.length;
+              dbProducts.push({
 
+                id:
+                  dbProducts.length + 1,
 
-  areas.forEach(
-    area => {
+                cat:
+                  matched
+                    ? matched.id
+                    : rawCat,
 
-      const name =
-        getDeliveryAreaName(area);
+                name:
+                  product.name,
 
-      if (!name) {
-        return;
-      }
+                price:
+                  Number(product.price) || 0,
 
-      const fee =
-        getDeliveryAreaFee(area);
+                unit:
+                  product.unit || "قطعة",
 
-      const option =
-        document.createElement(
-          "option"
-        );
+                icon:
+                  product.icon || "🛒"
 
-      option.value = name;
+              });
 
-      option.textContent =
-        `${name} — ${money(fee)}`;
+            }
+          );
 
-      select.appendChild(option);
+        }
+      );
 
     }
-  );
+
+
+    products =
+      dbProducts;
+
+
+    /* ==============================================
+       التأكد من وجود القسم المحدد
+    ============================================== */
+
+    if(
+      !categories.some(
+        c =>
+          c.id === selectedCategory
+      )
+    ){
+
+      selectedCategory =
+        categories[0]?.id || "";
+
+    }
+
+
+    renderCategories();
+
+    renderProducts();
+
+    updateCart();
+
+
+    console.log(
+      "تم تحميل الأقسام والمنتجات من Supabase:",
+      categories.length,
+      products.length
+    );
+
+
+  }catch(err){
+
+    console.error(
+      "Supabase connection error:",
+      err
+    );
+
+  }
+
 }
 
 
@@ -823,311 +387,664 @@ function renderDeliveryAreas() {
    العروض
 ===================================================== */
 
-function renderOffers() {
+const offers = [
 
-  const box =
+  {
+    title:"عرض الأسبوع",
+
+    from:"01/09",
+
+    to:"05/09",
+
+    items:[
+      ["رز عنبر","2,500 د.ع"],
+      ["زيت طبخ","4,000 د.ع"],
+      ["سكر","1,250 د.ع"],
+      ["معجون طماطم","800 د.ع"]
+    ]
+
+  },
+
+  {
+    title:"عرض المنظفات",
+
+    from:"01/09",
+
+    to:"05/09",
+
+    items:[
+      ["مسحوق غسيل","6,900 د.ع"],
+      ["سائل جلي","2,500 د.ع"],
+      ["مناديل","1,500 د.ع"]
+    ]
+
+  }
+
+];
+
+
+/* =====================================================
+   السلة والقسم المحدد
+===================================================== */
+
+let selectedCategory = "food";
+
+const cart = new Map();
+
+
+/* =====================================================
+   تنسيق العملة
+===================================================== */
+
+const money = n =>
+  new Intl.NumberFormat("ar-IQ")
+    .format(n) +
+  " د.ع";
+
+
+/* =====================================================
+   عرض الأقسام
+===================================================== */
+
+function renderCategories(){
+
+  const el =
+    document.getElementById(
+      "categories"
+    );
+
+
+  if(!el){
+
+    return;
+
+  }
+
+
+  el.innerHTML =
+    categories
+      .map(c => `
+
+        <button
+          class="category ${
+            c.id === selectedCategory
+              ? "active"
+              : ""
+          }"
+          data-cat="${c.id}"
+        >
+
+          <div class="category-icon">
+            ${c.icon}
+          </div>
+
+          <strong>
+            ${c.name}
+          </strong>
+
+        </button>
+
+      `)
+      .join("");
+
+
+  el
+    .querySelectorAll(
+      ".category"
+    )
+    .forEach(btn => {
+
+      btn.addEventListener(
+        "click",
+        () => {
+
+          selectedCategory =
+            btn.dataset.cat;
+
+
+          renderCategories();
+
+          renderProducts();
+
+
+          const title =
+            document.getElementById(
+              "productsTitle"
+            );
+
+
+          if(title){
+
+            title.textContent =
+              categories.find(
+                c =>
+                  c.id ===
+                  selectedCategory
+              )?.name ||
+              "المواد";
+
+          }
+
+        }
+      );
+
+    });
+
+}
+
+
+/* =====================================================
+   عرض العروض
+===================================================== */
+
+function renderOffers(){
+
+  const el =
     document.getElementById(
       "offerCards"
     );
 
-  if (!box) {
-    return;
-  }
 
+  if(!el){
 
-  if (!Array.isArray(offers)) {
-
-    box.innerHTML = "";
     return;
 
   }
 
 
-  box.innerHTML =
+  el.innerHTML =
     offers
-      .map(
-        offer => {
+      .map(o => `
 
-          const items =
-            Array.isArray(offer.items)
-              ? offer.items
-              : [];
+        <article class="offer-card">
+
+          <div class="offer-head">
+
+            <span class="offer-badge">
+              عرض خاص
+            </span>
+
+            <h3>
+              ${o.title}
+            </h3>
+
+            <div class="offer-date">
+
+              من ${o.from}
+              إلى ${o.to}
+
+            </div>
+
+          </div>
 
 
-          return `
+          <div class="offer-body">
 
-            <article class="offer-card">
+            ${
+              o.items
+                .map(
+                  i => `
 
-              <div class="offer-head">
+                    <div class="offer-item">
 
-                <span class="offer-badge">
-                  عرض خاص
-                </span>
+                      <span>
+                        ${i[0]}
+                      </span>
+
+                      <span class="offer-price">
+                        ${i[1]}
+                      </span>
+
+                    </div>
+
+                  `
+                )
+                .join("")
+            }
+
+          </div>
+
+        </article>
+
+      `)
+      .join("");
+
+}
+
+
+/* =====================================================
+   عرض المنتجات
+===================================================== */
+
+function renderProducts(){
+
+  const el =
+    document.getElementById(
+      "productsGrid"
+    );
+
+
+  if(!el){
+
+    return;
+
+  }
+
+
+  const list =
+    products.filter(
+      p =>
+        p.cat ===
+        selectedCategory
+    );
+
+
+  el.innerHTML =
+    list
+      .map(p => {
+
+        const q =
+          cart.get(p.id) || 0;
+
+
+        return `
+
+          <article class="product">
+
+            <div class="product-top">
+
+              <div>
 
                 <h3>
-                  ${offer.title || "عرض خاص"}
+                  ${p.name}
                 </h3>
 
-                <div class="offer-date">
+                <div class="product-meta">
 
-                  ${
-                    offer.from
-                      ? "من " + offer.from
-                      : ""
-                  }
-
-                  ${
-                    offer.to
-                      ? " إلى " + offer.to
-                      : ""
-                  }
+                  يباع بـ
+                  ${p.unit}
 
                 </div>
 
               </div>
 
 
-              <div class="offer-body">
+              <div class="product-icon">
 
-                ${
-                  items
-                    .map(
-                      item => {
-
-                        const name =
-                          item?.name ||
-                          item?.title ||
-                          "";
-
-                        const oldPrice =
-                          item?.price ??
-                          item?.originalPrice ??
-                          item?.oldPrice ??
-                          "";
-
-                        const newPrice =
-                          item?.offerPrice ??
-                          item?.salePrice ??
-                          item?.discountPrice ??
-                          "";
-
-
-                        return `
-
-                          <div class="offer-item">
-
-                            <span>
-                              ${name}
-                            </span>
-
-                            <span class="offer-price">
-
-                              ${
-                                oldPrice !== "" &&
-                                newPrice !== "" &&
-                                Number(oldPrice) !== Number(newPrice)
-
-                                  ? `
-                                    <del>
-                                      ${money(oldPrice)}
-                                    </del>
-
-                                    <strong>
-                                      ${money(newPrice)}
-                                    </strong>
-                                  `
-
-                                  : money(
-                                      newPrice !== ""
-                                        ? newPrice
-                                        : oldPrice
-                                    )
-                              }
-
-                            </span>
-
-                          </div>
-
-                        `;
-
-                      }
-                    )
-                    .join("")
-                }
+                ${p.icon}
 
               </div>
 
-            </article>
+            </div>
 
-          `;
 
-        }
-      )
-      .join("");
+            <div class="product-price">
+
+              ${money(p.price)}
+
+              <small>
+                / ${p.unit}
+              </small>
+
+            </div>
+
+
+            <div class="qty">
+
+              <button
+                aria-label="زيادة"
+                onclick="changeQty(${p.id},1)"
+              >
+                +
+              </button>
+
+
+              <span>
+                ${q}
+              </span>
+
+
+              <button
+                aria-label="نقصان"
+                onclick="changeQty(${p.id},-1)"
+              >
+                −
+              </button>
+
+            </div>
+
+          </article>
+
+        `;
+
+      })
+      .join("")
+
+
+    ||
+
+    `
+
+      <div
+        style="
+          grid-column:1/-1;
+          text-align:center;
+          padding:30px;
+          color:#6b756f
+        "
+      >
+
+        لا توجد مواد في هذا القسم حالياً.
+
+      </div>
+
+    `;
+
 }
 
 
 /* =====================================================
-   واتساب
+   تغيير الكمية
 ===================================================== */
 
-function setupWhatsApp() {
+function changeQty(
+  id,
+  delta
+){
 
-  const button =
-    document.getElementById(
-      "whatsappBtn"
+  const q =
+    Math.max(
+      0,
+      (cart.get(id) || 0) +
+      delta
     );
 
-  if (!button) {
-    return;
+
+  if(q){
+
+    cart.set(
+      id,
+      q
+    );
+
+  }else{
+
+    cart.delete(id);
+
   }
 
 
-  button.onclick =
-    function () {
+  renderProducts();
 
-      if (!cart.size) {
+  updateCart();
+
+}
+
+
+/* =====================================================
+   تحديث السلة
+===================================================== */
+
+function updateCart(){
+
+  let total = 0;
+
+  let count = 0;
+
+
+  for(
+    const [id,q]
+    of cart
+  ){
+
+    const p =
+      products.find(
+        x =>
+          x.id === id
+      );
+
+
+    if(p){
+
+      total +=
+        p.price * q;
+
+      count +=
+        q;
+
+    }
+
+  }
+
+
+  const cartTotal =
+    document.getElementById(
+      "cartTotal"
+    );
+
+
+  if(cartTotal){
+
+    cartTotal.textContent =
+      money(total);
+
+  }
+
+
+  const cartCount =
+    document.getElementById(
+      "cartCount"
+    );
+
+
+  if(cartCount){
+
+    cartCount.textContent =
+      count;
+
+  }
+
+
+  const cartCountTop =
+    document.getElementById(
+      "cartCountTop"
+    );
+
+
+  if(cartCountTop){
+
+    cartCountTop.textContent =
+      count;
+
+  }
+
+}
+
+
+/* =====================================================
+   إرسال الطلب إلى واتساب
+===================================================== */
+
+const whatsappBtn =
+  document.getElementById(
+    "whatsappBtn"
+  );
+
+
+if(whatsappBtn){
+
+  whatsappBtn.addEventListener(
+    "click",
+    () => {
+
+
+      if(
+        cart.size === 0
+      ){
 
         alert(
           "السلة فارغة. أضف مادة واحدة على الأقل."
         );
 
         return;
+
       }
 
 
       const name =
-        document.getElementById(
-          "customerName"
-        )?.value.trim() || "";
+        document
+          .getElementById(
+            "customerName"
+          )
+          .value
+          .trim();
 
 
       const phone =
-        document.getElementById(
-          "customerPhone"
-        )?.value.trim() || "";
+        document
+          .getElementById(
+            "customerPhone"
+          )
+          .value
+          .trim();
 
 
       const address =
-        document.getElementById(
-          "customerAddress"
-        )?.value.trim() || "";
+        document
+          .getElementById(
+            "customerAddress"
+          )
+          .value
+          .trim();
 
 
       const notes =
-        document.getElementById(
-          "notes"
-        )?.value.trim() || "";
+        document
+          .getElementById(
+            "notes"
+          )
+          .value
+          .trim();
 
 
-      if (
+      if(
         !name ||
         !phone ||
         !address
-      ) {
+      ){
 
         alert(
           "يرجى إدخال الاسم ورقم الهاتف والعنوان."
         );
 
         return;
+
       }
 
 
-      if (
-        deliveryGroups.length &&
-        (
-          !selectedDeliveryGroup ||
-          !selectedDeliveryArea
-        )
-      ) {
+      let lines = [
 
-        alert(
-          "يرجى اختيار منطقة التوصيل."
-        );
-
-        return;
-      }
-
-
-      const productsTotal =
-        getProductsTotal();
-
-      const finalTotal =
-        productsTotal +
-        Number(deliveryFee || 0);
-
-
-      const lines = [];
-
-
-      lines.push(
         "طلب جديد — أمازون هايبر ماركت",
+
         ""
-      );
+
+      ];
 
 
-      for (
-        const [id, quantity]
+      for(
+        const [id,q]
         of cart
-      ) {
+      ){
 
-        const product =
+        const p =
           products.find(
-            p =>
-              Number(p.id) ===
-              Number(id)
+            x =>
+              x.id === id
           );
 
-        if (product) {
+
+        if(p){
 
           lines.push(
-            `- ${product.name}: ${quantity} ${product.unit}`
+            `- ${p.name}: ${q} ${p.unit}`
           );
 
         }
+
       }
 
 
       lines.push(
+
         "",
-        `قيمة المواد: ${money(productsTotal)}`,
-        `منطقة التوصيل الرئيسية: ${selectedDeliveryGroup || "غير محددة"}`,
-        `منطقة التوصيل: ${selectedDeliveryArea || "غير محددة"}`,
-        `أجور التوصيل: ${money(deliveryFee)}`,
-        `المجموع النهائي: ${money(finalTotal)}`,
-        "",
+
         `الاسم: ${name}`,
+
         `الهاتف: ${phone}`,
+
         `العنوان: ${address}`,
-        `الملاحظات: ${notes || "لا توجد"}`,
+
+        `الملاحظات: ${
+          notes || "لا توجد"
+        }`,
+
         "",
-        "بعض المواد تباع بالوزن، وقد يختلف الوزن الفعلي والسعر النهائي قليلاً بعد التجهيز."
+
+        "تنويه: المواد التي تباع بالوزن قد يختلف وزنها وسعرها النهائي قليلاً بعد التجهيز، وسيتم تأكيد السعر النهائي قبل التسليم."
+
       );
 
 
       const whatsappNumber =
-        "9647842000516";
+        "9647700000000";
 
 
-      const url =
-        "https://wa.me/" +
-        whatsappNumber +
-        "?text=" +
-        encodeURIComponent(
-          lines.join("\n")
-        );
+      window.open(
 
+        `https://wa.me/${whatsappNumber}?text=${
+          encodeURIComponent(
+            lines.join("\n")
+          )
+        }`,
 
-      window.location.href =
-        url;
+        "_blank"
 
-    };
+      );
+
+    }
+  );
+
 }
 
 
 /* =====================================================
-   التشغيل
+   الشريط المتحرك
 ===================================================== */
 
-loadPageData();
+const tickerText =
+  document.getElementById(
+    "tickerText"
+  );
+
+
+if(tickerText){
+
+  tickerText.textContent =
+    "عروض خاصة • خصومات مميزة • توصيل داخل بغداد • الكمية والأسعار حسب توفر المخزون";
+
+}
+
+
+/* =====================================================
+   تشغيل الموقع
+===================================================== */
+
+renderCategories();
+
+renderOffers();
+
+renderProducts();
+
+updateCart();
+
+loadProductsFromSupabase();
