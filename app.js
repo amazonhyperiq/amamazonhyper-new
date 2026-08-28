@@ -1130,10 +1130,4 @@ function setupWhatsApp() {
    التشغيل
 ===================================================== */
 
-renderCategories();
-renderProducts();
-renderOffers();
-setupDelivery();
-setupWhatsApp();
-updateCart();
 loadPageData();
