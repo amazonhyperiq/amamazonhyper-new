@@ -77,12 +77,25 @@
       <label>رقم الهاتف
         <input id="customerPhone" inputmode="tel" placeholder="07xxxxxxxxx">
       </label>
-      <label class="wide">العنوان
-        <input id="customerAddress" placeholder="المحافظة، المنطقة، الشارع، أقرب نقطة دالة">
+      <label>منطقة التوصيل
+        <select id="deliveryArea">
+          <option value="">اختر منطقة التوصيل</option>
+        </select>
+      </label>
+      <label>العنوان التفصيلي
+        <input id="customerAddress" placeholder="الشارع، المحلة، أقرب نقطة دالة">
       </label>
       <label class="wide">ملاحظات / إضافات
         <textarea id="notes" rows="3" placeholder="أي ملاحظات خاصة بالطلب..."></textarea>
       </label>
+    </div>
+
+    <div class="delivery-summary" id="deliverySummary" style="display:none">
+      <span>🚚</span>
+      <div>
+        <strong>أجور التوصيل: <b id="deliveryFee">0 د.ع</b></strong>
+        <p id="deliveryAreaText"></p>
+      </div>
     </div>
 
     <div class="weight-notice">
