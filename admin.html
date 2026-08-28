@@ -163,8 +163,23 @@ body{
   color:#6b756e
 }
 
-.category-actions{display:flex;gap:8px;flex-wrap:wrap}
-.category-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:999px;background:#eef7f0;color:#075d2d;font-weight:800}
+.category-actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap
+}
+
+.category-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:5px 9px;
+  border-radius:999px;
+  background:#eef7f0;
+  color:#075d2d;
+  font-weight:800
+}
+
 .note{
   background:#fff8e7;
   color:#7b4d00;
@@ -179,6 +194,7 @@ body{
 }
 
 @media(max-width:800px){
+
   .layout{
     grid-template-columns:1fr
   }
@@ -190,23 +206,85 @@ body{
   .offer-row{
     grid-template-columns:1fr 1fr
   }
+
 }
 
 /* إدارة مناطق التوصيل */
-.delivery-admin-box{width:100%}
-.delivery-group{border:1px solid #dce6df;border-radius:14px;margin-top:14px;overflow:hidden;background:#fbfdfb}
-.delivery-group-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;background:#eaf7ee;color:#075d2d}
-.delivery-group-actions{display:flex;gap:7px;flex-wrap:wrap}
-.delivery-area-row{display:grid;grid-template-columns:1fr 180px auto auto;gap:8px;align-items:end;padding:10px 12px;border-top:1px solid #e4ebe6}
-.delivery-area-row input{margin-top:0}
-.delivery-empty{padding:14px;color:#6b756e;font-size:13px}
-.delivery-add-area{margin:10px 12px 12px}
-.delivery-actions{display:flex;align-items:end}
-@media(max-width:700px){
-  .delivery-area-row{grid-template-columns:1fr 1fr}
-  .delivery-area-row .delivery-area-save,.delivery-area-row .delivery-area-delete{width:100%}
-  .delivery-group-head{align-items:flex-start;flex-direction:column}
+
+.delivery-admin-box{
+  width:100%
 }
+
+.delivery-group{
+  border:1px solid #dce6df;
+  border-radius:14px;
+  margin-top:14px;
+  overflow:hidden;
+  background:#fbfdfb
+}
+
+.delivery-group-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:12px 14px;
+  background:#eaf7ee;
+  color:#075d2d
+}
+
+.delivery-group-actions{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap
+}
+
+.delivery-area-row{
+  display:grid;
+  grid-template-columns:1fr 180px auto auto;
+  gap:8px;
+  align-items:end;
+  padding:10px 12px;
+  border-top:1px solid #e4ebe6
+}
+
+.delivery-area-row input{
+  margin-top:0
+}
+
+.delivery-empty{
+  padding:14px;
+  color:#6b756e;
+  font-size:13px
+}
+
+.delivery-add-area{
+  margin:10px 12px 12px
+}
+
+.delivery-actions{
+  display:flex;
+  align-items:end
+}
+
+@media(max-width:700px){
+
+  .delivery-area-row{
+    grid-template-columns:1fr 1fr
+  }
+
+  .delivery-area-row .delivery-area-save,
+  .delivery-area-row .delivery-area-delete{
+    width:100%
+  }
+
+  .delivery-group-head{
+    align-items:flex-start;
+    flex-direction:column
+  }
+
+}
+
 </style>
 
 </head>
@@ -214,20 +292,33 @@ body{
 <body>
 
 <script>
+
 if(sessionStorage.getItem('adminLoggedIn')!=='1'){
   location.replace('login.html');
 }
+
 </script>
 
 <div class="admin">
 
 <header class="top">
+
   <div>
-    <h1 style="margin:0">أمازون هايبر ماركت</h1>
-    <small>لوحة التحكم الجديدة</small>
+
+    <h1 style="margin:0">
+      أمازون هايبر ماركت
+    </h1>
+
+    <small>
+      لوحة التحكم الجديدة
+    </small>
+
   </div>
 
-  <div>👤 المدير</div>
+  <div>
+    👤 المدير
+  </div>
+
 </header>
 
 <div style="margin-top:10px;text-align:left">
@@ -235,7 +326,9 @@ if(sessionStorage.getItem('adminLoggedIn')!=='1'){
 <button
 onclick="sessionStorage.removeItem('adminLoggedIn');location.href='login.html'"
 style="background:#dc2626;color:#fff;border:0;padding:9px 15px;border-radius:9px;font-weight:800;cursor:pointer">
+
 تسجيل الخروج
+
 </button>
 
 </div>
@@ -245,14 +338,37 @@ style="background:#dc2626;color:#fff;border:0;padding:9px 15px;border-radius:9px
 
 <aside class="side">
 
-<a class="active" href="#">الرئيسية</a>
-<a href="#sections">الأقسام</a>
-<a href="#products">المواد والمنتجات</a>
-<a href="#offers">العروض الخاصة</a>
-<a href="#delivery">مناطق التوصيل</a>
-<a href="#ticker">الشريط المتحرك</a>
-<a href="#">الطلبات</a>
-<a href="#">الإعدادات</a>
+<a class="active" href="#">
+الرئيسية
+</a>
+
+<a href="#sections">
+الأقسام
+</a>
+
+<a href="#products">
+المواد والمنتجات
+</a>
+
+<a href="#offers">
+العروض الخاصة
+</a>
+
+<a href="#delivery">
+مناطق التوصيل
+</a>
+
+<a href="#ticker">
+الشريط المتحرك
+</a>
+
+<a href="#">
+الطلبات
+</a>
+
+<a href="#">
+الإعدادات
+</a>
 
 </aside>
 
@@ -265,54 +381,220 @@ style="background:#dc2626;color:#fff;border:0;padding:9px 15px;border-radius:9px
 ========================= -->
 
 <div class="panel" id="sections">
-<h2>إدارة الأقسام</h2>
-<p class="hint">من هنا تستطيع إضافة قسم جديد، تعديل اسم أي قسم، حذف قسم، وتحديد طريقة البيع. التغييرات تُحفظ في قاعدة البيانات وتظهر في المتجر.</p>
+
+<h2>
+إدارة الأقسام
+</h2>
+
+<p class="hint">
+من هنا تستطيع إضافة قسم جديد، تعديل اسم أي قسم، حذف قسم، وتحديد طريقة البيع. التغييرات تُحفظ في قاعدة البيانات وتظهر في المتجر.
+</p>
+
 
 <div class="admin-grid">
+
 <label>
+
 اختر العملية
+
 <select id="categoryMode">
-<option value="add">إضافة قسم جديد</option>
-<option value="edit">تعديل قسم موجود</option>
+
+<option value="add">
+إضافة قسم جديد
+</option>
+
+<option value="edit">
+تعديل قسم موجود
+</option>
+
 </select>
+
 </label>
 
-<label id="existingCategoryBox" style="display:none">
+
+<label
+id="existingCategoryBox"
+style="display:none">
+
 اختر القسم
-<select id="existingCategory"><option value="">اختر القسم</option></select>
+
+<select id="existingCategory">
+
+<option value="">
+اختر القسم
+</option>
+
+</select>
+
 </label>
 
+
 <label>
+
 اسم القسم
-<input id="categoryName" placeholder="مثال: اللحوم الطازجة">
+
+<input
+id="categoryName"
+placeholder="مثال: اللحوم الطازجة"
+>
+
 </label>
 
+
 <label>
+
 أيقونة القسم
-<input id="categoryIcon" maxlength="4" placeholder="🥩">
+
+<input
+id="categoryIcon"
+maxlength="4"
+placeholder="🥩"
+>
+
 </label>
+
 </div>
+
 
 <div class="unit-box">
-<b>طريقة بيع القسم</b>
-<p class="hint">يمكن تحديد طريقة البيع الافتراضية للمواد التابعة للقسم. ويمكن تخصيص الوحدة لكل مادة من قسم المواد والمنتجات.</p>
-<label><input type="radio" name="categoryUnit" value="قطعة" checked> يباع بالقطعة</label>
-<label><input type="radio" name="categoryUnit" value="وزن (كغ)"> يباع بالوزن (كغ)</label>
-<label>خطوة الزيادة للوزن<select id="categoryWeightStep"><option value="0.25">0.25 كغ</option><option value="0.50">0.50 كغ</option><option value="1">1 كغ</option></select></label>
+
+<b>
+طريقة بيع القسم
+</b>
+
+<p class="hint">
+
+يمكن تحديد طريقة البيع الافتراضية للمواد التابعة للقسم. ويمكن تخصيص الوحدة لكل مادة من قسم المواد والمنتجات.
+
+</p>
+
+<label>
+
+<input
+type="radio"
+name="categoryUnit"
+value="قطعة"
+checked
+>
+
+يباع بالقطعة
+
+</label>
+
+
+<label>
+
+<input
+type="radio"
+name="categoryUnit"
+value="وزن (كغ)"
+>
+
+يباع بالوزن (كغ)
+
+</label>
+
+
+<label>
+
+خطوة الزيادة للوزن
+
+<select id="categoryWeightStep">
+
+<option value="0.25">
+0.25 كغ
+</option>
+
+<option value="0.50">
+0.50 كغ
+</option>
+
+<option value="1">
+1 كغ
+</option>
+
+</select>
+
+</label>
+
 </div>
 
-<button type="button" class="save" id="categorySaveButton">حفظ القسم</button>
-<button type="button" class="delete" id="categoryDeleteButton">حذف القسم</button>
-<button type="button" class="save" id="categoryClearButton" style="background:#64748b">تفريغ الحقول</button>
+
+<button
+type="button"
+class="save"
+id="categorySaveButton"
+>
+
+حفظ القسم
+
+</button>
+
+
+<button
+type="button"
+class="delete"
+id="categoryDeleteButton"
+>
+
+حذف القسم
+
+</button>
+
+
+<button
+type="button"
+class="save"
+id="categoryClearButton"
+style="background:#64748b"
+>
+
+تفريغ الحقول
+
+</button>
+
 
 <div class="table-wrap">
+
 <table class="table">
-<thead><tr><th>القسم</th><th>الأيقونة</th><th>طريقة البيع</th><th>عدد المواد</th><th>إجراء</th></tr></thead>
-<tbody id="categoriesTableBody"></tbody>
+
+<thead>
+
+<tr>
+
+<th>
+القسم
+</th>
+
+<th>
+الأيقونة
+</th>
+
+<th>
+طريقة البيع
+</th>
+
+<th>
+عدد المواد
+</th>
+
+<th>
+إجراء
+</th>
+
+</tr>
+
+</thead>
+
+<tbody id="categoriesTableBody">
+
+</tbody>
+
 </table>
-</div>
+
 </div>
 
+</div>
 
 
 <!-- =========================
@@ -321,7 +603,9 @@ style="background:#dc2626;color:#fff;border:0;padding:9px 15px;border-radius:9px
 
 <div class="panel" id="products">
 
-<h2>إضافة / تعديل مادة</h2>
+<h2>
+إضافة / تعديل مادة
+</h2>
 
 
 <div class="admin-grid">
@@ -350,7 +634,8 @@ style="background:#dc2626;color:#fff;border:0;padding:9px 15px;border-radius:9px
 
 اختر القسم
 
-<select id="productCategory"></select>
+<select id="productCategory">
+</select>
 
 </label>
 
@@ -415,14 +700,18 @@ accept="image/*"
 </div>
 
 
-
 <div class="unit-box">
 
-<b>طريقة بيع المادة</b>
+<b>
+طريقة بيع المادة
+</b>
 
 <p class="hint">
+
 يمكن أن ترث إعداد القسم أو تخصيصها للمادة.
+
 </p>
+
 
 <label>
 
@@ -437,6 +726,7 @@ checked
 
 </label>
 
+
 <label>
 
 <input
@@ -448,6 +738,7 @@ value="وزن (كغ)"
 وزن (كغ)
 
 </label>
+
 
 <label>
 
@@ -515,12 +806,29 @@ id="productDeleteButton"
 
 <tr>
 
-<th>القسم</th>
-<th>المادة</th>
-<th>الوحدة</th>
-<th>السعر</th>
-<th>ظهور</th>
-<th>إجراء</th>
+<th>
+القسم
+</th>
+
+<th>
+المادة
+</th>
+
+<th>
+الوحدة
+</th>
+
+<th>
+السعر
+</th>
+
+<th>
+ظهور
+</th>
+
+<th>
+إجراء
+</th>
 
 </tr>
 
@@ -537,56 +845,96 @@ id="productDeleteButton"
 </div>
 
 
-
 <!-- =========================
      العروض
 ========================= -->
 
 <div class="panel" id="offers">
 
-<h2>إدارة العروض الخاصة</h2>
+<h2>
+إدارة العروض الخاصة
+</h2>
 
 <div class="admin-grid">
 
 <label>
+
 عنوان العرض
-<input id="offerTitle" placeholder="مثال: عرض خاص 20%">
+
+<input
+id="offerTitle"
+placeholder="مثال: عرض خاص 20%"
+>
+
 </label>
 
+
 <label>
+
 من تاريخ
-<input id="offerFrom" type="date">
+
+<input
+id="offerFrom"
+type="date"
+>
+
 </label>
 
+
 <label>
+
 إلى تاريخ
-<input id="offerTo" type="date">
+
+<input
+id="offerTo"
+type="date"
+>
+
 </label>
 
 </div>
 
 <p class="hint">
+
 أقل عدد 5 مواد، ويمكن رفع العدد حتى 8 مواد داخل العرض.
+
 </p>
 
-<div id="offerRows"></div>
+<div id="offerRows">
+</div>
+
 
 <button
 class="save"
 id="addOfferRow"
 >
+
 + إضافة مادة
-</button>
-<button class="save" id="offerSaveButton">
-  حفظ العرض
+
 </button>
 
-<button type="button" class="delete" id="offerDeleteButton">
+
+<button
+class="save"
+id="offerSaveButton"
+>
+
+حفظ العرض
+
+</button>
+
+
+<button
+type="button"
+class="delete"
+id="offerDeleteButton"
+>
+
 حذف العرض
+
 </button>
 
 </div>
-
 
 
 <!-- =========================
@@ -595,32 +943,57 @@ id="addOfferRow"
 
 <div class="panel" id="delivery">
 
-  <h2>إدارة مناطق التوصيل</h2>
+<h2>
+إدارة مناطق التوصيل
+</h2>
 
-  <p class="hint">
-    أضف منطقة رئيسية مثل الكرخ أو الرصافة، ثم أضف المناطق التابعة لها وحدد أجور التوصيل.
-  </p>
+<p class="hint">
 
-  <div class="delivery-admin-box">
+أضف منطقة رئيسية مثل الكرخ أو الرصافة، ثم أضف المناطق التابعة لها وحدد أجور التوصيل.
 
-    <div class="admin-grid">
-      <label>
-        اسم المنطقة الرئيسية
-        <input id="deliveryGroupName" placeholder="مثال: الكرخ">
-      </label>
+</p>
 
-      <div class="delivery-actions">
-        <button type="button" class="save" id="addDeliveryGroupButton">
-          + إضافة منطقة رئيسية
-        </button>
-      </div>
-    </div>
 
-    <div id="deliveryGroupsList"></div>
+<div class="delivery-admin-box">
 
-  </div>
+<div class="admin-grid">
+
+<label>
+
+اسم المنطقة الرئيسية
+
+<input
+id="deliveryGroupName"
+placeholder="مثال: الكرخ"
+>
+
+</label>
+
+
+<div class="delivery-actions">
+
+<button
+type="button"
+class="save"
+id="addDeliveryGroupButton"
+>
+
++ إضافة منطقة رئيسية
+
+</button>
 
 </div>
+
+</div>
+
+
+<div id="deliveryGroupsList">
+</div>
+
+</div>
+
+</div>
+
 
 <!-- =========================
      الشريط المتحرك
@@ -628,7 +1001,9 @@ id="addOfferRow"
 
 <div class="panel" id="ticker">
 
-<h2>إدارة الشريط المتحرك</h2>
+<h2>
+إدارة الشريط المتحرك
+</h2>
 
 <textarea
 id="tickerInput"
@@ -637,17 +1012,24 @@ placeholder="اكتب النص الذي سيظهر في الشريط المتح�
 ></textarea>
 
 <br>
-<button class="save" id="tickerSaveButton">
-  حفظ النص
+
+<button
+class="save"
+id="tickerSaveButton"
+>
+
+حفظ النص
+
 </button>
 
 </div>
 
 
-
 <div class="panel">
 
-<h2>رسالة الوزن والسعر</h2>
+<h2>
+رسالة الوزن والسعر
+</h2>
 
 <p class="note">
 
@@ -667,7 +1049,6 @@ placeholder="اكتب النص الذي سيظهر في الشريط المتح�
 </div>
 
 
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 
@@ -677,10 +1058,13 @@ placeholder="اكتب النص الذي سيظهر في الشريط المتح�
    SUPABASE
 ===================================================== */
 
-const SUPABASE_URL = "https://vvexorzjkpwduykinwsw.supabase.co";
+const SUPABASE_URL =
+"https://vvexorzjkpwduykinwsw.supabase.co";
+
 
 const SUPABASE_KEY =
 "sb_publishable_RoMHq19grLJWNu95uPSwug_XwiKt2bB";
+
 
 const db =
 supabase.createClient(
@@ -688,17 +1072,65 @@ supabase.createClient(
   SUPABASE_KEY
 );
 
-const categoryMode = document.getElementById("categoryMode");
-const existingCategoryBox = document.getElementById("existingCategoryBox");
-const existingCategory = document.getElementById("existingCategory");
-const categoryName = document.getElementById("categoryName");
-const categoryIcon = document.getElementById("categoryIcon");
-const categoryWeightStep = document.getElementById("categoryWeightStep");
-const categorySaveButton = document.getElementById("categorySaveButton");
-const categoryDeleteButton = document.getElementById("categoryDeleteButton");
-const categoryClearButton = document.getElementById("categoryClearButton");
-const categoriesTableBody = document.getElementById("categoriesTableBody");
 
+const categoryMode =
+document.getElementById(
+  "categoryMode"
+);
+
+
+const existingCategoryBox =
+document.getElementById(
+  "existingCategoryBox"
+);
+
+
+const existingCategory =
+document.getElementById(
+  "existingCategory"
+);
+
+
+const categoryName =
+document.getElementById(
+  "categoryName"
+);
+
+
+const categoryIcon =
+document.getElementById(
+  "categoryIcon"
+);
+
+
+const categoryWeightStep =
+document.getElementById(
+  "categoryWeightStep"
+);
+
+
+const categorySaveButton =
+document.getElementById(
+  "categorySaveButton"
+);
+
+
+const categoryDeleteButton =
+document.getElementById(
+  "categoryDeleteButton"
+);
+
+
+const categoryClearButton =
+document.getElementById(
+  "categoryClearButton"
+);
+
+
+const categoriesTableBody =
+document.getElementById(
+  "categoriesTableBody"
+);
 
 
 /* =====================================================
@@ -707,28 +1139,144 @@ const categoriesTableBody = document.getElementById("categoriesTableBody");
 
 let categories = [];
 
+
 const defaultCategories = [
-  {id:"meat",name:"اللحوم الطازجة",icon:"🥩",unit:"وزن (كغ)",step:0.5},
-  {id:"chicken",name:"الدجاج فريش",icon:"🍗",unit:"قطعة",step:1},
-  {id:"vegetables",name:"الفواكه والخضار",icon:"🥬",unit:"وزن (كغ)",step:0.5},
-  {id:"canned-veg",name:"الخضراوات المعلبة (فريش)",icon:"🥫",unit:"قطعة",step:1},
-  {id:"food",name:"الرز والزيت والمعجون (المواد الغذائية)",icon:"🛒",unit:"قطعة",step:1},
-  {id:"deli-pickles",name:"الأجبان والألبان والمخللات (الدلي)",icon:"🧀",unit:"وزن (كغ)",step:0.5},
-  {id:"legumes-packaging",name:"البقوليات ومواد التعبئة (الوزن)",icon:"⚖️",unit:"وزن (كغ)",step:1},
-  {id:"drinks",name:"العصائر والمشروبات",icon:"🥤",unit:"قطعة",step:1},
-  {id:"dairy",name:"الأجبان والألبان",icon:"🥛",unit:"وزن (كغ)",step:0.5},
-  {id:"cleaning",name:"مواد التنظيف المنزلية",icon:"🧴",unit:"قطعة",step:1},
-  {id:"laundry",name:"مساحيق غسيل الملابس",icon:"🧺",unit:"قطعة",step:1},
-  {id:"cosmetic",name:"مواد العناية بالشعر والبشرة والجسم",icon:"💄",unit:"قطعة",step:1},
-  {id:"tissues-paper",name:"الكلينس والورقيات",icon:"🧻",unit:"قطعة",step:1},
-  {id:"cleaning-tools",name:"أدوات التنظيف المنزلية",icon:"🧽",unit:"قطعة",step:1}
+
+  {
+    id:"meat",
+    name:"اللحوم الطازجة",
+    icon:"🥩",
+    unit:"وزن (كغ)",
+    step:0.5
+  },
+
+  {
+    id:"chicken",
+    name:"الدجاج فريش",
+    icon:"🍗",
+    unit:"قطعة",
+    step:1
+  },
+
+  {
+    id:"vegetables",
+    name:"الفواكه والخضار",
+    icon:"🥬",
+    unit:"وزن (كغ)",
+    step:0.5
+  },
+
+  {
+    id:"canned-veg",
+    name:"الخضراوات المعلبة (فريش)",
+    icon:"🥫",
+    unit:"قطعة",
+    step:1
+  },
+
+  {
+    id:"food",
+    name:"الرز والزيت والمعجون (المواد الغذائية)",
+    icon:"🛒",
+    unit:"قطعة",
+    step:1
+  },
+
+  {
+    id:"deli-pickles",
+    name:"الأجبان والألبان والمخللات (الدلي)",
+    icon:"🧀",
+    unit:"وزن (كغ)",
+    step:0.5
+  },
+
+  {
+    id:"legumes-packaging",
+    name:"البقوليات ومواد التعبئة (الوزن)",
+    icon:"⚖️",
+    unit:"وزن (كغ)",
+    step:1
+  },
+
+  {
+    id:"drinks",
+    name:"العصائر والمشروبات",
+    icon:"🥤",
+    unit:"قطعة",
+    step:1
+  },
+
+  {
+    id:"dairy",
+    name:"الأجبان والألبان",
+    icon:"🥛",
+    unit:"وزن (كغ)",
+    step:0.5
+  },
+
+  {
+    id:"cleaning",
+    name:"مواد التنظيف المنزلية",
+    icon:"🧴",
+    unit:"قطعة",
+    step:1
+  },
+
+  {
+    id:"laundry",
+    name:"مساحيق غسيل الملابس",
+    icon:"🧺",
+    unit:"قطعة",
+    step:1
+  },
+
+  {
+    id:"cosmetic",
+    name:"مواد العناية بالشعر والبشرة والجسم",
+    icon:"💄",
+    unit:"قطعة",
+    step:1
+  },
+
+  {
+    id:"tissues-paper",
+    name:"الكلينس والورقيات",
+    icon:"🧻",
+    unit:"قطعة",
+    step:1
+  },
+
+  {
+    id:"cleaning-tools",
+    name:"أدوات التنظيف المنزلية",
+    icon:"🧽",
+    unit:"قطعة",
+    step:1
+  }
+
 ];
+
 
 const categoryNames = {};
 
+
 function rebuildCategoryNames(){
-  Object.keys(categoryNames).forEach(k => delete categoryNames[k]);
-  categories.forEach(c => { categoryNames[c.id] = c.name; });
+
+  Object.keys(categoryNames)
+    .forEach(
+      k =>
+        delete categoryNames[k]
+    );
+
+  categories.forEach(
+    c => {
+
+      categoryNames[c.id] =
+        c.name;
+
+    }
+  );
+
 }
 
 
@@ -737,179 +1285,775 @@ function rebuildCategoryNames(){
 ===================================================== */
 
 function slugifyCategory(name){
-  const base = String(name || "قسم").trim().toLowerCase()
-    .replace(/[^\u0600-\u06ffa-z0-9]+/g,"-")
-    .replace(/^-+|-+$/g,"");
+
+  const base =
+    String(
+      name || "قسم"
+    )
+    .trim()
+    .toLowerCase()
+    .replace(
+      /[^\u0600-\u06ffa-z0-9]+/g,
+      "-"
+    )
+    .replace(
+      /^-+|-+$/g,
+      ""
+    );
+
   return base || "category";
+
 }
+
 
 function normalizeCategories(saved){
-  if(!Array.isArray(saved) || !saved.length) return defaultCategories.map(c=>({...c}));
-  return saved.map(c=>({
-    id:String(c.id || slugifyCategory(c.name)),
-    name:String(c.name || "قسم جديد"),
-    icon:String(c.icon || "🛒"),
-    unit:c.unit === "وزن (كغ)" ? "وزن (كغ)" : "قطعة",
-    step:Number(c.step) > 0 ? Number(c.step) : 1
-  }));
+
+  if(
+    !Array.isArray(saved) ||
+    !saved.length
+  ){
+
+    return defaultCategories
+      .map(
+        c => ({...c})
+      );
+
+  }
+
+
+  return saved.map(
+    c => ({
+
+      id:
+        String(
+          c.id ||
+          slugifyCategory(c.name)
+        ),
+
+      name:
+        String(
+          c.name ||
+          "قسم جديد"
+        ),
+
+      icon:
+        String(
+          c.icon ||
+          "🛒"
+        ),
+
+      unit:
+        c.unit === "وزن (كغ)"
+          ? "وزن (كغ)"
+          : "قطعة",
+
+      step:
+        Number(c.step) > 0
+          ? Number(c.step)
+          : 1
+
+    })
+  );
+
 }
+
 
 function renderCategoryOptions(){
+
   rebuildCategoryNames();
+
   productCategory.innerHTML = "";
-  categories.forEach(c=>{
-    const o=document.createElement("option");
-    o.value=c.id; o.textContent=c.name;
-    productCategory.appendChild(o);
-  });
+
+  categories.forEach(
+    c => {
+
+      const o =
+        document.createElement(
+          "option"
+        );
+
+      o.value =
+        c.id;
+
+      o.textContent =
+        c.name;
+
+      productCategory.appendChild(
+        o
+      );
+
+    }
+  );
+
   refreshProductSelector();
+
 }
+
 
 function renderCategoriesTable(){
-  categoriesTableBody.innerHTML="";
-  categories.forEach(c=>{
-    const count=allProducts.filter(p=>p.cat===c.id).length;
-    const tr=document.createElement("tr");
-    tr.innerHTML=`<td><span class="category-badge">${c.icon} ${c.name}</span></td><td>${c.icon}</td><td>${c.unit}${c.unit==="وزن (كغ)"?` — ${c.step} كغ`:""}</td><td>${count}</td><td><button type="button" class="save" style="padding:7px 12px" onclick="editCategory('${c.id}')">تعديل</button></td>`;
-    categoriesTableBody.appendChild(tr);
-  });
+
+  categoriesTableBody.innerHTML =
+    "";
+
+  categories.forEach(
+    c => {
+
+      const count =
+        allProducts.filter(
+          p =>
+            p.cat === c.id
+        ).length;
+
+
+      const tr =
+        document.createElement(
+          "tr"
+        );
+
+
+      tr.innerHTML = `
+        <td>
+          <span class="category-badge">
+            ${c.icon} ${c.name}
+          </span>
+        </td>
+
+        <td>
+          ${c.icon}
+        </td>
+
+        <td>
+          ${c.unit}
+          ${
+            c.unit === "وزن (كغ)"
+              ? ` — ${c.step} كغ`
+              : ""
+          }
+        </td>
+
+        <td>
+          ${count}
+        </td>
+
+        <td>
+
+          <button
+            type="button"
+            class="save"
+            style="padding:7px 12px"
+            onclick="editCategory('${c.id}')"
+          >
+            تعديل
+          </button>
+
+        </td>
+      `;
+
+
+      categoriesTableBody.appendChild(
+        tr
+      );
+
+    }
+  );
+
 }
+
 
 function clearCategoryForm(){
-  categoryName.value="";
-  categoryIcon.value="🛒";
-  document.querySelector('input[name="categoryUnit"][value="قطعة"]').checked=true;
-  categoryWeightStep.value="1";
-  existingCategory.value="";
+
+  categoryName.value =
+    "";
+
+  categoryIcon.value =
+    "🛒";
+
+  document
+    .querySelector(
+      'input[name="categoryUnit"][value="قطعة"]'
+    )
+    .checked = true;
+
+  categoryWeightStep.value =
+    "1";
+
+  existingCategory.value =
+    "";
+
 }
+
 
 function fillCategoryForm(c){
+
   if(!c) return;
-  categoryName.value=c.name;
-  categoryIcon.value=c.icon || "🛒";
-  document.querySelectorAll('input[name="categoryUnit"]').forEach(r=>r.checked=r.value===c.unit);
-  categoryWeightStep.value=String(c.step || 1);
+
+  categoryName.value =
+    c.name;
+
+  categoryIcon.value =
+    c.icon || "🛒";
+
+  document
+    .querySelectorAll(
+      'input[name="categoryUnit"]'
+    )
+    .forEach(
+      r => {
+
+        r.checked =
+          r.value === c.unit;
+
+      }
+    );
+
+  categoryWeightStep.value =
+    String(
+      c.step || 1
+    );
+
 }
 
-window.editCategory=function(id){
-  const c=categories.find(x=>x.id===id); if(!c) return;
-  categoryMode.value="edit";
-  existingCategoryBox.style.display="block";
-  existingCategory.value=id;
+
+window.editCategory =
+function(id){
+
+  const c =
+    categories.find(
+      x =>
+        x.id === id
+    );
+
+  if(!c) return;
+
+  categoryMode.value =
+    "edit";
+
+  existingCategoryBox.style.display =
+    "block";
+
+  existingCategory.value =
+    id;
+
   fillCategoryForm(c);
-  document.getElementById("sections").scrollIntoView({behavior:"smooth"});
+
+  document
+    .getElementById("sections")
+    .scrollIntoView({
+      behavior:"smooth"
+    });
+
 };
 
+
 async function readStoreRow(){
-  const {data:row,error}=await db.from("products").select("id,data").eq("id",1).single();
-  if(error) throw error;
+
+  const {
+    data:row,
+    error
+  } = await db
+
+    .from("products")
+
+    .select("id,data")
+
+    .eq("id",1)
+
+    .single();
+
+
+  if(error)
+    throw error;
+
   return row;
+
 }
 
-async function saveCategoryData(newCategories){
-  const row=await readStoreRow();
-  const oldData=row.data || {};
-  const {error}=await db.from("products").update({data:{...oldData,categories:newCategories}}).eq("id",1);
-  if(error) throw error;
-  categories=newCategories;
+
+async function saveCategoryData(
+  newCategories
+){
+
+  const row =
+    await readStoreRow();
+
+
+  const oldData =
+    row.data || {};
+
+
+  const {
+    error
+  } = await db
+
+    .from("products")
+
+    .update({
+
+      data:{
+        ...oldData,
+        categories:
+          newCategories
+      }
+
+    })
+
+    .eq("id",1);
+
+
+  if(error)
+    throw error;
+
+
+  categories =
+    newCategories;
+
+
   renderCategoryOptions();
+
   renderCategoriesTable();
+
 }
 
-categoryMode.addEventListener("change",()=>{
-  const edit=categoryMode.value==="edit";
-  existingCategoryBox.style.display=edit?"block":"none";
-  if(!edit) clearCategoryForm();
-  if(edit){
-    existingCategory.innerHTML='<option value="">اختر القسم</option>';
-    categories.forEach(c=>existingCategory.add(new Option(c.name,c.id)));
-  }
-});
 
-existingCategory.addEventListener("change",()=>{
-  fillCategoryForm(categories.find(c=>c.id===existingCategory.value));
-});
+categoryMode.addEventListener(
+  "change",
+  () => {
 
-categorySaveButton.addEventListener("click",async()=>{
-  const name=categoryName.value.trim();
-  if(!name){alert("يرجى كتابة اسم القسم");return;}
-  const unit=document.querySelector('input[name="categoryUnit"]:checked')?.value || "قطعة";
-  const step=unit==="وزن (كغ)" ? Number(categoryWeightStep.value) : 1;
-  categorySaveButton.disabled=true;
-  try{
-    let next=categories.map(c=>({...c}));
-    if(categoryMode.value==="edit"){
-      const id=existingCategory.value;
-      if(!id){alert("اختر القسم الذي تريد تعديله");return;}
-      const index=next.findIndex(c=>c.id===id);
-      if(index<0) throw new Error("القسم غير موجود");
-      next[index]={...next[index],name,icon:categoryIcon.value.trim()||"🛒",unit,step};
-    }else{
-      let id=slugifyCategory(name), n=2;
-      while(next.some(c=>c.id===id)){id=`${slugifyCategory(name)}-${n++}`;}
-      next.push({id,name,icon:categoryIcon.value.trim()||"🛒",unit,step});
+    const edit =
+      categoryMode.value ===
+      "edit";
+
+
+    existingCategoryBox.style.display =
+      edit
+        ? "block"
+        : "none";
+
+
+    if(!edit){
+
+      clearCategoryForm();
+
     }
-    await saveCategoryData(next);
-    clearCategoryForm();
-    categoryMode.value="add"; existingCategoryBox.style.display="none";
-    alert(wasEdit?"تم تعديل القسم بنجاح ✅":"تم حفظ القسم بنجاح ✅");
-  }catch(e){console.error(e);alert("فشل حفظ القسم: "+e.message);}
-  finally{categorySaveButton.disabled=false;}
-});
 
-categoryDeleteButton.addEventListener("click",async()=>{
-  if(categoryMode.value!=="edit" || !existingCategory.value){alert("اختر وضع تعديل ثم اختر القسم المراد حذفه");return;}
-  const c=categories.find(x=>x.id===existingCategory.value); if(!c) return;
-  const count=allProducts.filter(p=>p.cat===c.id).length;
-  if(count>0){
-    alert(`لا يمكن حذف القسم «${c.name}» لأنه يحتوي على ${count} مادة. انقل المواد إلى قسم آخر أولاً.`);
-    return;
+
+    if(edit){
+
+      existingCategory.innerHTML =
+        '<option value="">اختر القسم</option>';
+
+
+      categories.forEach(
+        c =>
+
+          existingCategory.add(
+            new Option(
+              c.name,
+              c.id
+            )
+          )
+
+      );
+
+    }
+
   }
-  if(!confirm(`هل أنت متأكد من حذف قسم «${c.name}»؟`)) return;
-  categoryDeleteButton.disabled=true;
-  try{
-    await saveCategoryData(categories.filter(x=>x.id!==c.id));
-    clearCategoryForm(); categoryMode.value="add"; existingCategoryBox.style.display="none";
-    alert("تم حذف القسم بنجاح ✅");
-  }catch(e){console.error(e);alert("فشل حذف القسم: "+e.message);}
-  finally{categoryDeleteButton.disabled=false;}
-});
+);
 
-categoryClearButton.addEventListener("click",()=>{categoryMode.value="add";existingCategoryBox.style.display="none";clearCategoryForm();});
+
+existingCategory.addEventListener(
+  "change",
+  () => {
+
+    fillCategoryForm(
+      categories.find(
+        c =>
+          c.id ===
+          existingCategory.value
+      )
+    );
+
+  }
+);
+
+
+/* =====================================================
+   حفظ القسم — تم إصلاح الخطأ هنا
+===================================================== */
+
+categorySaveButton.addEventListener(
+  "click",
+  async () => {
+
+    const name =
+      categoryName.value.trim();
+
+
+    if(!name){
+
+      alert(
+        "يرجى كتابة اسم القسم"
+      );
+
+      return;
+
+    }
+
+
+    const unit =
+      document.querySelector(
+        'input[name="categoryUnit"]:checked'
+      )?.value ||
+      "قطعة";
+
+
+    const step =
+      unit === "وزن (كغ)"
+        ? Number(
+            categoryWeightStep.value
+          )
+        : 1;
+
+
+    categorySaveButton.disabled =
+      true;
+
+
+    const wasEdit =
+      categoryMode.value ===
+      "edit";
+
+
+    try{
+
+      let next =
+        categories.map(
+          c => ({...c})
+        );
+
+
+      if(wasEdit){
+
+        const id =
+          existingCategory.value;
+
+
+        if(!id){
+
+          alert(
+            "اختر القسم الذي تريد تعديله"
+          );
+
+          return;
+
+        }
+
+
+        const index =
+          next.findIndex(
+            c =>
+              c.id === id
+          );
+
+
+        if(index < 0){
+
+          throw new Error(
+            "القسم غير موجود"
+          );
+
+        }
+
+
+        next[index] = {
+
+          ...next[index],
+
+          name:name,
+
+          icon:
+            categoryIcon.value.trim()
+            || "🛒",
+
+          unit:unit,
+
+          step:step
+
+        };
+
+      }
+
+
+      else{
+
+        let id =
+          slugifyCategory(name);
+
+        let n = 2;
+
+
+        while(
+          next.some(
+            c =>
+              c.id === id
+          )
+        ){
+
+          id =
+            `${slugifyCategory(name)}-${n++}`;
+
+        }
+
+
+        next.push({
+
+          id:id,
+
+          name:name,
+
+          icon:
+            categoryIcon.value.trim()
+            || "🛒",
+
+          unit:unit,
+
+          step:step
+
+        });
+
+      }
+
+
+      await saveCategoryData(
+        next
+      );
+
+
+      clearCategoryForm();
+
+
+      categoryMode.value =
+        "add";
+
+
+      existingCategoryBox.style.display =
+        "none";
+
+
+      alert(
+        wasEdit
+          ? "تم تعديل القسم بنجاح ✅"
+          : "تم حفظ القسم بنجاح ✅"
+      );
+
+
+    }catch(e){
+
+      console.error(e);
+
+      alert(
+        "فشل حفظ القسم: " +
+        e.message
+      );
+
+    }finally{
+
+      categorySaveButton.disabled =
+        false;
+
+    }
+
+  }
+);
+
+
+categoryDeleteButton.addEventListener(
+  "click",
+  async () => {
+
+    if(
+      categoryMode.value !==
+        "edit" ||
+      !existingCategory.value
+    ){
+
+      alert(
+        "اختر وضع تعديل ثم اختر القسم المراد حذفه"
+      );
+
+      return;
+
+    }
+
+
+    const c =
+      categories.find(
+        x =>
+          x.id ===
+          existingCategory.value
+      );
+
+
+    if(!c) return;
+
+
+    const count =
+      allProducts.filter(
+        p =>
+          p.cat === c.id
+      ).length;
+
+
+    if(count > 0){
+
+      alert(
+        `لا يمكن حذف القسم «${c.name}» لأنه يحتوي على ${count} مادة. انقل المواد إلى قسم آخر أولاً.`
+      );
+
+      return;
+
+    }
+
+
+    if(
+      !confirm(
+        `هل أنت متأكد من حذف قسم «${c.name}»؟`
+      )
+    ){
+
+      return;
+
+    }
+
+
+    categoryDeleteButton.disabled =
+      true;
+
+
+    try{
+
+      await saveCategoryData(
+        categories.filter(
+          x =>
+            x.id !== c.id
+        )
+      );
+
+
+      clearCategoryForm();
+
+
+      categoryMode.value =
+        "add";
+
+
+      existingCategoryBox.style.display =
+        "none";
+
+
+      alert(
+        "تم حذف القسم بنجاح ✅"
+      );
+
+
+    }catch(e){
+
+      console.error(e);
+
+      alert(
+        "فشل حذف القسم: " +
+        e.message
+      );
+
+    }finally{
+
+      categoryDeleteButton.disabled =
+        false;
+
+    }
+
+  }
+);
+
+
+categoryClearButton.addEventListener(
+  "click",
+  () => {
+
+    categoryMode.value =
+      "add";
+
+    existingCategoryBox.style.display =
+      "none";
+
+    clearCategoryForm();
+
+  }
+);
+
 
 /* =====================================================
    عناصر لوحة المواد
 ===================================================== */
 
 const productMode =
-document.getElementById("productMode");
+document.getElementById(
+  "productMode"
+);
+
 
 const productCategory =
-document.getElementById("productCategory");
+document.getElementById(
+  "productCategory"
+);
+
 
 const existingProduct =
-document.getElementById("existingProduct");
+document.getElementById(
+  "existingProduct"
+);
+
 
 const editProductBox =
-document.getElementById("editProductBox");
+document.getElementById(
+  "editProductBox"
+);
+
 
 const productName =
-document.getElementById("productName");
+document.getElementById(
+  "productName"
+);
+
 
 const productPrice =
-document.getElementById("productPrice");
+document.getElementById(
+  "productPrice"
+);
+
 
 const productActive =
-document.getElementById("productActive");
+document.getElementById(
+  "productActive"
+);
+
 
 const productSaveButton =
-document.getElementById("productSaveButton");
+document.getElementById(
+  "productSaveButton"
+);
+
 
 const productDeleteButton =
-document.getElementById("productDeleteButton");
+document.getElementById(
+  "productDeleteButton"
+);
+
 
 const productsTableBody =
-document.getElementById("productsTableBody");
+document.getElementById(
+  "productsTableBody"
+);
 
 
 /* =====================================================
@@ -929,31 +2073,63 @@ async function loadProducts(){
 
   try{
 
-    const { data: row, error } = await db
+    const {
+      data: row,
+      error
+    } = await db
+
       .from("products")
+
       .select("id,data")
+
       .eq("id",1)
+
       .single();
 
+
     if(error){
+
       throw error;
+
     }
 
-    currentRowData = row;
 
-    categories = normalizeCategories(row.data && row.data.categories);
+    currentRowData =
+      row;
+
+
+    categories =
+      normalizeCategories(
+        row.data &&
+        row.data.categories
+      );
+
+
     renderCategoryOptions();
 
+
     const savedProducts =
-      row.data && Array.isArray(row.data.products)
+
+      row.data &&
+      Array.isArray(
+        row.data.products
+      )
+
         ? row.data.products
+
         : [];
 
-    allProducts = savedProducts;
+
+    allProducts =
+      savedProducts;
+
 
     refreshProductSelector();
+
     renderCategoriesTable();
+
     renderProductsTable();
+
 
   }catch(error){
 
@@ -978,30 +2154,49 @@ function refreshProductSelector(){
   existingProduct.innerHTML =
     '<option value="">اختر المادة</option>';
 
+
   const category =
     productCategory.value;
 
+
   const filtered =
     allProducts.filter(
-      p => p.cat === category
+      p =>
+        p.cat === category
     );
 
-  filtered.forEach(product => {
 
-    const option =
-      document.createElement("option");
+  filtered.forEach(
+    product => {
 
-    option.value =
-      String(product.id);
+      const option =
+        document.createElement(
+          "option"
+        );
 
-    option.textContent =
-      product.name +
-      " — " +
-      Number(product.price || 0).toLocaleString("en-US");
 
-    existingProduct.appendChild(option);
+      option.value =
+        String(
+          product.id
+        );
 
-  });
+
+      option.textContent =
+        product.name +
+        " — " +
+        Number(
+          product.price || 0
+        ).toLocaleString(
+          "en-US"
+        );
+
+
+      existingProduct.appendChild(
+        option
+      );
+
+    }
+  );
 
 }
 
@@ -1014,7 +2209,10 @@ productMode.addEventListener(
   "change",
   function(){
 
-    if(this.value === "edit"){
+    if(
+      this.value ===
+      "edit"
+    ){
 
       editProductBox.style.display =
         "block";
@@ -1045,7 +2243,10 @@ productCategory.addEventListener(
   "change",
   function(){
 
-    if(productMode.value === "edit"){
+    if(
+      productMode.value ===
+      "edit"
+    ){
 
       refreshProductSelector();
 
@@ -1066,44 +2267,62 @@ existingProduct.addEventListener(
   function(){
 
     const id =
-      Number(this.value);
+      Number(
+        this.value
+      );
+
 
     if(!id){
 
       clearProductForm();
 
       return;
+
     }
+
 
     const product =
       allProducts.find(
-        p => Number(p.id) === id
+        p =>
+          Number(p.id) ===
+          id
       );
 
+
     if(!product){
+
       return;
+
     }
+
 
     productName.value =
       product.name || "";
 
+
     productPrice.value =
       product.price || "";
 
+
     productActive.checked =
       product.active !== false;
+
 
     const unitRadios =
       document.querySelectorAll(
         'input[name="produnit"]'
       );
 
+
     unitRadios.forEach(
       radio => {
 
         radio.checked =
           radio.value ===
-          (product.unit || "قطعة");
+          (
+            product.unit ||
+            "قطعة"
+          );
 
       }
     );
@@ -1118,15 +2337,21 @@ existingProduct.addEventListener(
 
 function clearProductForm(){
 
-  productName.value = "";
+  productName.value =
+    "";
 
-  productPrice.value = "";
+  productPrice.value =
+    "";
 
-  productActive.checked = true;
+  productActive.checked =
+    true;
 
-  document.querySelector(
-    'input[name="produnit"][value="قطعة"]'
-  ).checked = true;
+
+  document
+    .querySelector(
+      'input[name="produnit"][value="قطعة"]'
+    )
+    .checked = true;
 
 }
 
@@ -1142,27 +2367,32 @@ productSaveButton.addEventListener(
     const category =
       productCategory.value;
 
+
     const name =
       productName.value.trim();
 
+
     const price =
-      Number(productPrice.value);
+      Number(
+        productPrice.value
+      );
+
 
     const active =
       productActive.checked;
+
 
     const unitRadio =
       document.querySelector(
         'input[name="produnit"]:checked'
       );
 
+
     const unit =
       unitRadio
         ? unitRadio.value
         : "قطعة";
 
-
-    /* التحقق من الاسم */
 
     if(!name){
 
@@ -1175,9 +2405,10 @@ productSaveButton.addEventListener(
     }
 
 
-    /* التحقق من السعر */
-
-    if(!price || price <= 0){
+    if(
+      !price ||
+      price <= 0
+    ){
 
       alert(
         "يرجى كتابة السعر بشكل صحيح"
@@ -1191,16 +2422,17 @@ productSaveButton.addEventListener(
     productSaveButton.disabled =
       true;
 
+
     productSaveButton.textContent =
       "جاري الحفظ...";
 
 
     try{
 
-      /* قراءة البيانات الحالية */
-
-      const { data: row, error: readError } =
-        await db
+      const {
+        data: row,
+        error: readError
+      } = await db
 
         .from("products")
 
@@ -1223,19 +2455,26 @@ productSaveButton.addEventListener(
 
 
       const products =
-        Array.isArray(oldData.products)
-          ? [...oldData.products]
+        Array.isArray(
+          oldData.products
+        )
+
+          ? [
+              ...oldData.products
+            ]
+
           : [];
 
 
-      /* ==========================================
-         تعديل مادة موجودة
-      ========================================== */
-
-      if(productMode.value === "edit"){
+      if(
+        productMode.value ===
+        "edit"
+      ){
 
         const selectedId =
-          Number(existingProduct.value);
+          Number(
+            existingProduct.value
+          );
 
 
         if(!selectedId){
@@ -1268,37 +2507,37 @@ productSaveButton.addEventListener(
         }
 
 
-        /* تعديل نفس المادة */
-
         products[index] = {
 
           ...products[index],
 
-          cat: category,
+          cat:category,
 
-          name: name,
+          name:name,
 
-          price: price,
+          price:price,
 
-          unit: unit,
+          unit:unit,
 
-          active: active
+          active:active
 
         };
 
 
-        const { error: updateError } =
-          await db
+        const {
+          error:updateError
+        } = await db
 
           .from("products")
 
           .update({
 
-            data: {
+            data:{
 
               ...oldData,
 
-              products: products
+              products:
+                products
 
             }
 
@@ -1327,22 +2566,19 @@ productSaveButton.addEventListener(
           "تم تعديل المادة بنجاح ✅"
         );
 
-
       }
-
-      /* ==========================================
-         إضافة مادة جديدة
-      ========================================== */
 
       else{
 
         const newId =
+
           products.length
 
             ? Math.max(
                 ...products.map(
                   p =>
-                    Number(p.id) || 0
+                    Number(p.id) ||
+                    0
                 )
               ) + 1
 
@@ -1368,18 +2604,20 @@ productSaveButton.addEventListener(
         });
 
 
-        const { error: updateError } =
-          await db
+        const {
+          error:updateError
+        } = await db
 
           .from("products")
 
           .update({
 
-            data: {
+            data:{
 
               ...oldData,
 
-              products:products
+              products:
+                products
 
             }
 
@@ -1423,6 +2661,7 @@ productSaveButton.addEventListener(
 
     }
 
+
     finally{
 
       productSaveButton.disabled =
@@ -1435,9 +2674,7 @@ productSaveButton.addEventListener(
 
   }
 );
-
-
-/* =====================================================
+  /* =====================================================
    حذف المادة
 ===================================================== */
 
@@ -1445,7 +2682,10 @@ productDeleteButton.addEventListener(
   "click",
   async function(){
 
-    if(productMode.value !== "edit"){
+    if(
+      productMode.value !==
+      "edit"
+    ){
 
       alert(
         "اختر وضع تعديل مادة موجودة أولاً"
@@ -1457,7 +2697,9 @@ productDeleteButton.addEventListener(
 
 
     const selectedId =
-      Number(existingProduct.value);
+      Number(
+        existingProduct.value
+      );
 
 
     if(!selectedId){
@@ -1511,8 +2753,10 @@ productDeleteButton.addEventListener(
 
     try{
 
-      const { data: row, error: readError } =
-        await db
+      const {
+        data: row,
+        error: readError
+      } = await db
 
         .from("products")
 
@@ -1535,8 +2779,14 @@ productDeleteButton.addEventListener(
 
 
       const products =
-        Array.isArray(oldData.products)
-          ? [...oldData.products]
+        Array.isArray(
+          oldData.products
+        )
+
+          ? [
+              ...oldData.products
+            ]
+
           : [];
 
 
@@ -1548,18 +2798,20 @@ productDeleteButton.addEventListener(
         );
 
 
-      const { error: updateError } =
-        await db
+      const {
+        error:updateError
+      } = await db
 
         .from("products")
 
         .update({
 
-          data: {
+          data:{
 
             ...oldData,
 
-            products:newProducts
+            products:
+              newProducts
 
           }
 
@@ -1602,6 +2854,7 @@ productDeleteButton.addEventListener(
 
     }
 
+
     finally{
 
       productDeleteButton.disabled =
@@ -1619,68 +2872,92 @@ productDeleteButton.addEventListener(
 
 function renderProductsTable(){
 
-  productsTableBody.innerHTML = "";
+  productsTableBody.innerHTML =
+    "";
 
 
-  allProducts.forEach(product => {
+  allProducts.forEach(
+    product => {
 
-    const tr =
-      document.createElement("tr");
-
-
-    const category =
-      categoryNames[product.cat] ||
-      product.cat ||
-      "";
+      const tr =
+        document.createElement(
+          "tr"
+        );
 
 
-    const unit =
-      product.unit ||
-      "قطعة";
+      const category =
+        categoryNames[
+          product.cat
+        ] ||
+        product.cat ||
+        "";
 
 
-    const price =
-      Number(product.price || 0)
-        .toLocaleString("en-US");
+      const unit =
+        product.unit ||
+        "قطعة";
 
 
-    const active =
-      product.active !== false
-        ? "✓"
-        : "✕";
+      const price =
+        Number(
+          product.price || 0
+        ).toLocaleString(
+          "en-US"
+        );
 
 
-    tr.innerHTML = `
-
-      <td>${category}</td>
-
-      <td>${product.name || ""}</td>
-
-      <td>${unit}</td>
-
-      <td>${price}</td>
-
-      <td>${active}</td>
-
-      <td>
-
-        <button
-          type="button"
-          class="save"
-          style="padding:7px 12px"
-          onclick="editProductFromTable(${Number(product.id)})"
-        >
-          تعديل
-        </button>
-
-      </td>
-
-    `;
+      const active =
+        product.active !== false
+          ? "✓"
+          : "✕";
 
 
-    productsTableBody.appendChild(tr);
+      tr.innerHTML = `
 
-  });
+        <td>
+          ${category}
+        </td>
+
+        <td>
+          ${product.name || ""}
+        </td>
+
+        <td>
+          ${unit}
+        </td>
+
+        <td>
+          ${price}
+        </td>
+
+        <td>
+          ${active}
+        </td>
+
+        <td>
+
+          <button
+            type="button"
+            class="save"
+            style="padding:7px 12px"
+            onclick="editProductFromTable(${Number(product.id)})"
+          >
+
+            تعديل
+
+          </button>
+
+        </td>
+
+      `;
+
+
+      productsTableBody.appendChild(
+        tr
+      );
+
+    }
+  );
 
 }
 
@@ -1723,7 +3000,9 @@ function(id){
 
 
   existingProduct.value =
-    String(product.id);
+    String(
+      product.id
+    );
 
 
   productName.value =
@@ -1746,16 +3025,19 @@ function(id){
 
   if(radio){
 
-    radio.checked = true;
+    radio.checked =
+      true;
 
   }
 
 
-  document.getElementById(
-    "products"
-  ).scrollIntoView({
-    behavior:"smooth"
-  });
+  document
+    .getElementById(
+      "products"
+    )
+    .scrollIntoView({
+      behavior:"smooth"
+    });
 
 };
 
@@ -1764,98 +3046,631 @@ function(id){
    إدارة العروض والشريط
 ===================================================== */
 
-const box = document.getElementById("offerRows");
-const offerTitle = document.getElementById("offerTitle");
-const offerFrom = document.getElementById("offerFrom");
-const offerTo = document.getElementById("offerTo");
-const offerSaveButton = document.getElementById("offerSaveButton");
-const offerDeleteButton = document.getElementById("offerDeleteButton");
-const tickerInput = document.getElementById("tickerInput");
-const tickerSaveButton = document.getElementById("tickerSaveButton");
+const box =
+document.getElementById(
+  "offerRows"
+);
+
+
+const offerTitle =
+document.getElementById(
+  "offerTitle"
+);
+
+
+const offerFrom =
+document.getElementById(
+  "offerFrom"
+);
+
+
+const offerTo =
+document.getElementById(
+  "offerTo"
+);
+
+
+const offerSaveButton =
+document.getElementById(
+  "offerSaveButton"
+);
+
+
+const offerDeleteButton =
+document.getElementById(
+  "offerDeleteButton"
+);
+
+
+const tickerInput =
+document.getElementById(
+  "tickerInput"
+);
+
+
+const tickerSaveButton =
+document.getElementById(
+  "tickerSaveButton"
+);
+
+
+/* =====================================================
+   إضافة مادة إلى العرض
+===================================================== */
 
 function addRow(){
-  if(box.children.length >= 8){ alert("الحد الأقصى 8 مواد"); return; }
-  const d = document.createElement("div");
-  d.className = "offer-row";
-  d.innerHTML = '<input placeholder="اسم المادة">' +
+
+  if(
+    box.children.length >= 8
+  ){
+
+    alert(
+      "الحد الأقصى 8 مواد"
+    );
+
+    return;
+
+  }
+
+
+  const d =
+    document.createElement(
+      "div"
+    );
+
+
+  d.className =
+    "offer-row";
+
+
+  d.innerHTML =
+
+    '<input placeholder="اسم المادة">' +
+
     '<input type="number" placeholder="السعر الأصلي">' +
+
     '<input type="number" placeholder="سعر العرض">' +
+
     '<input type="file" accept="image/*">' +
+
     '<button type="button" class="delete">حذف</button>';
-  d.querySelector("button").onclick = function(){
-    if(box.children.length > 5) d.remove();
-    else alert("يجب أن يبقى في العرض 5 مواد على الأقل");
+
+
+  d.querySelector(
+    "button"
+  ).onclick =
+  function(){
+
+    if(
+      box.children.length > 5
+    ){
+
+      d.remove();
+
+    }else{
+
+      alert(
+        "يجب أن يبقى في العرض 5 مواد على الأقل"
+      );
+
+    }
+
   };
-  box.appendChild(d);
+
+
+  box.appendChild(
+    d
+  );
+
 }
 
-for(let i=0;i<5;i++) addRow();
-document.getElementById("addOfferRow").onclick = addRow;
 
-offerSaveButton.addEventListener("click", async function(){
-  const title=offerTitle.value.trim(), from=offerFrom.value, to=offerTo.value;
-  if(!title){ alert("يرجى كتابة عنوان العرض"); return; }
-  if(!from || !to){ alert("يرجى تحديد تاريخ بداية ونهاية العرض"); return; }
-  const rows=box.querySelectorAll(".offer-row");
-  if(rows.length<5){ alert("يجب أن يحتوي العرض على 5 مواد على الأقل"); return; }
-  const items=[];
-  rows.forEach(row=>{
-    const inputs=row.querySelectorAll("input");
-    const name=inputs[0].value.trim();
-    const originalPrice=Number(inputs[1].value)||0;
-    const offerPrice=Number(inputs[2].value)||0;
-    if(name) items.push({name,originalPrice,offerPrice});
-  });
-  if(items.length<5){ alert("يرجى إدخال أسماء 5 مواد على الأقل"); return; }
-  offerSaveButton.disabled=true; offerSaveButton.textContent="جاري الحفظ...";
-  try{
-    const {data:row,error:readError}=await db.from("products").select("id,data").eq("id",1).single();
-    if(readError) throw readError;
-    const oldData=row.data||{};
-    const offer={title,from,to,items};
-    const {error:updateError}=await db.from("products").update({data:{...oldData,offers:[offer]}}).eq("id",1);
-    if(updateError) throw updateError;
-    alert("تم حفظ العرض بنجاح ✅");
-  }catch(error){
-    console.error(error); alert("فشل حفظ العرض: " + error.message);
-  }finally{
-    offerSaveButton.disabled=false; offerSaveButton.textContent="حفظ العرض";
+/* إنشاء أول 5 خانات */
+
+for(
+  let i = 0;
+  i < 5;
+  i++
+){
+
+  addRow();
+
+}
+
+
+document
+  .getElementById(
+    "addOfferRow"
+  )
+  .onclick =
+  addRow;
+
+
+/* =====================================================
+   حفظ العرض
+===================================================== */
+
+offerSaveButton.addEventListener(
+  "click",
+  async function(){
+
+    const title =
+      offerTitle.value.trim();
+
+
+    const from =
+      offerFrom.value;
+
+
+    const to =
+      offerTo.value;
+
+
+    if(!title){
+
+      alert(
+        "يرجى كتابة عنوان العرض"
+      );
+
+      return;
+
+    }
+
+
+    if(
+      !from ||
+      !to
+    ){
+
+      alert(
+        "يرجى تحديد تاريخ بداية ونهاية العرض"
+      );
+
+      return;
+
+    }
+
+
+    if(
+      from > to
+    ){
+
+      alert(
+        "تاريخ البداية يجب أن يكون قبل تاريخ النهاية"
+      );
+
+      return;
+
+    }
+
+
+    const rows =
+      box.querySelectorAll(
+        ".offer-row"
+      );
+
+
+    if(
+      rows.length < 5
+    ){
+
+      alert(
+        "يجب أن يحتوي العرض على 5 مواد على الأقل"
+      );
+
+      return;
+
+    }
+
+
+    const items = [];
+
+
+    rows.forEach(
+      row => {
+
+        const inputs =
+          row.querySelectorAll(
+            "input"
+          );
+
+
+        const name =
+          inputs[0]
+            .value
+            .trim();
+
+
+        const originalPrice =
+          Number(
+            inputs[1].value
+          ) || 0;
+
+
+        const offerPrice =
+          Number(
+            inputs[2].value
+          ) || 0;
+
+
+        if(name){
+
+          items.push({
+
+            name,
+
+            originalPrice,
+
+            offerPrice
+
+          });
+
+        }
+
+      }
+    );
+
+
+    if(
+      items.length < 5
+    ){
+
+      alert(
+        "يرجى إدخال أسماء 5 مواد على الأقل"
+      );
+
+      return;
+
+    }
+
+
+    offerSaveButton.disabled =
+      true;
+
+
+    offerSaveButton.textContent =
+      "جاري الحفظ...";
+
+
+    try{
+
+      const {
+        data:row,
+        error:readError
+      } = await db
+
+        .from("products")
+
+        .select(
+          "id,data"
+        )
+
+        .eq("id",1)
+
+        .single();
+
+
+      if(readError){
+
+        throw readError;
+
+      }
+
+
+      const oldData =
+        row.data || {};
+
+
+      const offer = {
+
+        title,
+
+        from,
+
+        to,
+
+        items
+
+      };
+
+
+      const {
+        error:updateError
+      } = await db
+
+        .from("products")
+
+        .update({
+
+          data:{
+
+            ...oldData,
+
+            offers:[
+              offer
+            ]
+
+          }
+
+        })
+
+        .eq("id",1);
+
+
+      if(updateError){
+
+        throw updateError;
+
+      }
+
+
+      alert(
+        "تم حفظ العرض بنجاح ✅"
+      );
+
+
+    }catch(error){
+
+      console.error(error);
+
+      alert(
+        "فشل حفظ العرض: " +
+        error.message
+      );
+
+    }
+
+
+    finally{
+
+      offerSaveButton.disabled =
+        false;
+
+      offerSaveButton.textContent =
+        "حفظ العرض";
+
+    }
+
   }
-});
+);
 
-offerDeleteButton.addEventListener("click", async function(){
-  if(!confirm("هل أنت متأكد من حذف العرض الحالي؟")) return;
-  offerDeleteButton.disabled=true;
-  try{
-    const {data:row,error:readError}=await db.from("products").select("id,data").eq("id",1).single();
-    if(readError) throw readError;
-    const oldData=row.data||{};
-    const {error:updateError}=await db.from("products").update({data:{...oldData,offers:[]}}).eq("id",1);
-    if(updateError) throw updateError;
-    offerTitle.value=""; offerFrom.value=""; offerTo.value="";
-    alert("تم حذف العرض بنجاح ✅");
-  }catch(error){
-    console.error(error); alert("فشل حذف العرض: " + error.message);
-  }finally{ offerDeleteButton.disabled=false; }
-});
 
-tickerSaveButton.addEventListener("click", async function(){
-  const text=tickerInput.value.trim();
-  if(!text){ alert("يرجى كتابة نص الشريط المتحرك"); return; }
-  tickerSaveButton.disabled=true; tickerSaveButton.textContent="جاري الحفظ...";
-  try{
-    const {data:row,error:readError}=await db.from("products").select("id,data").eq("id",1).single();
-    if(readError) throw readError;
-    const oldData=row.data||{};
-    const {error:updateError}=await db.from("products").update({data:{...oldData,ticker:text}}).eq("id",1);
-    if(updateError) throw updateError;
-    alert("تم حفظ الشريط بنجاح ✅");
-  }catch(error){
-    console.error(error); alert("فشل حفظ الشريط: " + error.message);
-  }finally{
-    tickerSaveButton.disabled=false; tickerSaveButton.textContent="حفظ النص";
+/* =====================================================
+   حذف العرض
+===================================================== */
+
+offerDeleteButton.addEventListener(
+  "click",
+  async function(){
+
+    if(
+      !confirm(
+        "هل أنت متأكد من حذف العرض الحالي؟"
+      )
+    ){
+
+      return;
+
+    }
+
+
+    offerDeleteButton.disabled =
+      true;
+
+
+    try{
+
+      const {
+        data:row,
+        error:readError
+      } = await db
+
+        .from("products")
+
+        .select(
+          "id,data"
+        )
+
+        .eq("id",1)
+
+        .single();
+
+
+      if(readError){
+
+        throw readError;
+
+      }
+
+
+      const oldData =
+        row.data || {};
+
+
+      const {
+        error:updateError
+      } = await db
+
+        .from("products")
+
+        .update({
+
+          data:{
+
+            ...oldData,
+
+            offers:[]
+
+          }
+
+        })
+
+        .eq("id",1);
+
+
+      if(updateError){
+
+        throw updateError;
+
+      }
+
+
+      offerTitle.value =
+        "";
+
+      offerFrom.value =
+        "";
+
+      offerTo.value =
+        "";
+
+
+      alert(
+        "تم حذف العرض بنجاح ✅"
+      );
+
+
+    }catch(error){
+
+      console.error(error);
+
+      alert(
+        "فشل حذف العرض: " +
+        error.message
+      );
+
+    }
+
+
+    finally{
+
+      offerDeleteButton.disabled =
+        false;
+
+    }
+
   }
-});
+);
+
+
+/* =====================================================
+   حفظ الشريط المتحرك
+===================================================== */
+
+tickerSaveButton.addEventListener(
+  "click",
+  async function(){
+
+    const text =
+      tickerInput.value.trim();
+
+
+    if(!text){
+
+      alert(
+        "يرجى كتابة نص الشريط المتحرك"
+      );
+
+      return;
+
+    }
+
+
+    tickerSaveButton.disabled =
+      true;
+
+
+    tickerSaveButton.textContent =
+      "جاري الحفظ...";
+
+
+    try{
+
+      const {
+        data:row,
+        error:readError
+      } = await db
+
+        .from("products")
+
+        .select(
+          "id,data"
+        )
+
+        .eq("id",1)
+
+        .single();
+
+
+      if(readError){
+
+        throw readError;
+
+      }
+
+
+      const oldData =
+        row.data || {};
+
+
+      const {
+        error:updateError
+      } = await db
+
+        .from("products")
+
+        .update({
+
+          data:{
+
+            ...oldData,
+
+            ticker:text
+
+          }
+
+        })
+
+        .eq("id",1);
+
+
+      if(updateError){
+
+        throw updateError;
+
+      }
+
+
+      alert(
+        "تم حفظ الشريط بنجاح ✅"
+      );
+
+
+    }catch(error){
+
+      console.error(error);
+
+      alert(
+        "فشل حفظ الشريط: " +
+        error.message
+      );
+
+    }
+
+
+    finally{
+
+      tickerSaveButton.disabled =
+        false;
+
+      tickerSaveButton.textContent =
+        "حفظ النص";
+
+    }
+
+  }
+);
+
 
 /* =====================================================
    إدارة مناطق التوصيل
@@ -1863,26 +3678,50 @@ tickerSaveButton.addEventListener("click", async function(){
 
 let deliveryGroupsAdmin = [];
 
+
 async function loadDeliveryGroups(){
 
   try{
 
-    const {data:row,error} = await db
+    const {
+      data:row,
+      error
+    } = await db
+
       .from("products")
-      .select("id,data")
+
+      .select(
+        "id,data"
+      )
+
       .eq("id",1)
+
       .single();
 
-    if(error) throw error;
 
-    const saved = row?.data || {};
+    if(error){
+
+      throw error;
+
+    }
+
+
+    const saved =
+      row?.data || {};
+
 
     deliveryGroupsAdmin =
-      Array.isArray(saved.deliveryGroups)
+      Array.isArray(
+        saved.deliveryGroups
+      )
+
         ? saved.deliveryGroups
+
         : [];
 
+
     renderDeliveryGroupsAdmin();
+
 
   }catch(error){
 
@@ -1897,23 +3736,66 @@ async function loadDeliveryGroups(){
 
 }
 
-function escapeDelivery(value){
 
-  return String(value)
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
+/* =====================================================
+   حماية نصوص مناطق التوصيل
+===================================================== */
+
+function escapeDelivery(
+  value
+){
+
+  return String(
+    value
+  )
+
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
+
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+
+    .replaceAll(
+      "'",
+      "&#039;"
+    );
 
 }
 
+
+/* =====================================================
+   عرض مناطق التوصيل
+===================================================== */
+
 function renderDeliveryGroupsAdmin(){
 
-  const box = document.getElementById("deliveryGroupsList");
-  if(!box) return;
+  const box =
+    document.getElementById(
+      "deliveryGroupsList"
+    );
 
-  if(!deliveryGroupsAdmin.length){
+
+  if(!box)
+    return;
+
+
+  if(
+    !deliveryGroupsAdmin.length
+  ){
 
     box.innerHTML =
       '<div class="delivery-empty">لا توجد مناطق توصيل مضافة حالياً.</div>';
@@ -1922,230 +3804,565 @@ function renderDeliveryGroupsAdmin(){
 
   }
 
-  box.innerHTML = deliveryGroupsAdmin.map((group,gIndex) => {
 
-    const areas =
-      Array.isArray(group.areas)
-        ? group.areas
-        : [];
+  box.innerHTML =
+    deliveryGroupsAdmin
+      .map(
+        (
+          group,
+          gIndex
+        ) => {
 
-    return `
-      <div class="delivery-group">
+          const areas =
+            Array.isArray(
+              group.areas
+            )
 
-        <div class="delivery-group-head">
-          <strong>${escapeDelivery(group.name || "منطقة")}</strong>
+              ? group.areas
 
-          <div class="delivery-group-actions">
-            <button type="button" class="delete" data-delete-group="${gIndex}">
-              حذف المنطقة الرئيسية
-            </button>
-          </div>
-        </div>
+              : [];
 
-        ${
-          areas.length
-            ? areas.map((area,aIndex) => `
-              <div class="delivery-area-row">
 
-                <input
-                  type="text"
-                  value="${escapeDelivery(area.name || "")}"
-                  data-area-name="${gIndex}:${aIndex}"
-                  placeholder="اسم المنطقة"
-                >
+          return `
 
-                <input
-                  type="number"
-                  min="0"
-                  step="500"
-                  value="${Number(area.fee) || 0}"
-                  data-area-fee="${gIndex}:${aIndex}"
-                  placeholder="أجور التوصيل"
-                >
+            <div class="delivery-group">
 
-                <button type="button" class="save delivery-area-save"
-                  data-save-area="${gIndex}:${aIndex}">
-                  حفظ
-                </button>
+              <div class="delivery-group-head">
 
-                <button type="button" class="delete delivery-area-delete"
-                  data-delete-area="${gIndex}:${aIndex}">
-                  حذف
-                </button>
+                <strong>
+                  ${escapeDelivery(
+                    group.name ||
+                    "منطقة"
+                  )}
+                </strong>
+
+
+                <div class="delivery-group-actions">
+
+                  <button
+                    type="button"
+                    class="delete"
+                    data-delete-group="${gIndex}"
+                  >
+
+                    حذف المنطقة الرئيسية
+
+                  </button>
+
+                </div>
 
               </div>
-            `).join("")
-            : '<div class="delivery-empty">لا توجد مناطق داخل هذا القسم.</div>'
+
+
+              ${
+                areas.length
+
+                  ?
+
+                    areas
+                      .map(
+                        (
+                          area,
+                          aIndex
+                        ) => `
+
+                          <div class="delivery-area-row">
+
+                            <input
+                              type="text"
+                              value="${escapeDelivery(
+                                area.name ||
+                                ""
+                              )}"
+                              data-area-name="${gIndex}:${aIndex}"
+                              placeholder="اسم المنطقة"
+                            >
+
+
+                            <input
+                              type="number"
+                              min="0"
+                              step="500"
+                              value="${Number(
+                                area.fee
+                              ) || 0}"
+                              data-area-fee="${gIndex}:${aIndex}"
+                              placeholder="أجور التوصيل"
+                            >
+
+
+                            <button
+                              type="button"
+                              class="save delivery-area-save"
+                              data-save-area="${gIndex}:${aIndex}"
+                            >
+
+                              حفظ
+
+                            </button>
+
+
+                            <button
+                              type="button"
+                              class="delete delivery-area-delete"
+                              data-delete-area="${gIndex}:${aIndex}"
+                            >
+
+                              حذف
+
+                            </button>
+
+                          </div>
+
+                        `
+                      )
+                      .join("")
+
+                  :
+
+                    '<div class="delivery-empty">لا توجد مناطق داخل هذا القسم.</div>'
+              }
+
+
+              <button
+                type="button"
+                class="save delivery-add-area"
+                data-add-area="${gIndex}"
+              >
+
+                + إضافة منطقة داخل
+                ${escapeDelivery(
+                  group.name || ""
+                )}
+
+              </button>
+
+            </div>
+
+          `;
+
         }
+      )
+      .join("");
 
-        <button type="button" class="save delivery-add-area"
-          data-add-area="${gIndex}">
-          + إضافة منطقة داخل ${escapeDelivery(group.name || "")}
-        </button>
-
-      </div>
-    `;
-
-  }).join("");
 
   bindDeliveryButtons();
 
 }
 
+
+/* =====================================================
+   ربط أزرار مناطق التوصيل
+===================================================== */
+
 function bindDeliveryButtons(){
 
-  document.querySelectorAll("[data-delete-group]").forEach(button => {
+  document
+    .querySelectorAll(
+      "[data-delete-group]"
+    )
+    .forEach(
+      button => {
 
-    button.onclick = async () => {
+        button.onclick =
+        async () => {
 
-      const index = Number(button.dataset.deleteGroup);
-      const group = deliveryGroupsAdmin[index];
+          const index =
+            Number(
+              button.dataset.deleteGroup
+            );
 
-      if(!group) return;
 
-      if(!confirm(
-        `هل أنت متأكد من حذف ${group.name} وجميع مناطقها؟`
-      )) return;
+          const group =
+            deliveryGroupsAdmin[
+              index
+            ];
 
-      deliveryGroupsAdmin.splice(index,1);
-      await saveDeliveryGroups();
 
-    };
+          if(!group)
+            return;
 
-  });
 
-  document.querySelectorAll("[data-add-area]").forEach(button => {
+          if(
+            !confirm(
+              `هل أنت متأكد من حذف ${group.name} وجميع مناطقها؟`
+            )
+          ){
 
-    button.onclick = async () => {
+            return;
 
-      const index = Number(button.dataset.addArea);
+          }
 
-      if(!deliveryGroupsAdmin[index]) return;
 
-      if(!Array.isArray(deliveryGroupsAdmin[index].areas)){
-        deliveryGroupsAdmin[index].areas = [];
+          deliveryGroupsAdmin.splice(
+            index,
+            1
+          );
+
+
+          await saveDeliveryGroups();
+
+        };
+
       }
+    );
 
-      deliveryGroupsAdmin[index].areas.push({
-        name:"",
-        fee:0
-      });
 
-      renderDeliveryGroupsAdmin();
+  document
+    .querySelectorAll(
+      "[data-add-area]"
+    )
+    .forEach(
+      button => {
 
-    };
+        button.onclick =
+        async () => {
 
-  });
+          const index =
+            Number(
+              button.dataset.addArea
+            );
 
-  document.querySelectorAll("[data-delete-area]").forEach(button => {
 
-    button.onclick = async () => {
+          if(
+            !deliveryGroupsAdmin[
+              index
+            ]
+          ){
 
-      const [gIndex,aIndex] =
-        button.dataset.deleteArea.split(":").map(Number);
+            return;
 
-      const group = deliveryGroupsAdmin[gIndex];
+          }
 
-      if(!group?.areas?.[aIndex]) return;
 
-      group.areas.splice(aIndex,1);
-      await saveDeliveryGroups();
+          if(
+            !Array.isArray(
+              deliveryGroupsAdmin[
+                index
+              ].areas
+            )
+          ){
 
-    };
+            deliveryGroupsAdmin[
+              index
+            ].areas = [];
 
-  });
+          }
 
-  document.querySelectorAll("[data-save-area]").forEach(button => {
 
-    button.onclick = async () => {
+          deliveryGroupsAdmin[
+            index
+          ].areas.push({
 
-      const [gIndex,aIndex] =
-        button.dataset.saveArea.split(":").map(Number);
+            name:"",
 
-      const group = deliveryGroupsAdmin[gIndex];
+            fee:0
 
-      if(!group?.areas?.[aIndex]) return;
+          });
 
-      const nameInput =
-        document.querySelector(
-          `[data-area-name="${gIndex}:${aIndex}"]`
-        );
 
-      const feeInput =
-        document.querySelector(
-          `[data-area-fee="${gIndex}:${aIndex}"]`
-        );
+          renderDeliveryGroupsAdmin();
 
-      const name = nameInput?.value.trim() || "";
-      const fee = Number(feeInput?.value) || 0;
+        };
 
-      if(!name){
-        alert("اكتب اسم المنطقة.");
-        return;
       }
+    );
 
-      if(fee < 0){
-        alert("مبلغ التوصيل غير صحيح.");
-        return;
+
+  document
+    .querySelectorAll(
+      "[data-delete-area]"
+    )
+    .forEach(
+      button => {
+
+        button.onclick =
+        async () => {
+
+          const [
+            gIndex,
+            aIndex
+          ] =
+            button
+              .dataset
+              .deleteArea
+              .split(":")
+              .map(Number);
+
+
+          const group =
+            deliveryGroupsAdmin[
+              gIndex
+            ];
+
+
+          if(
+            !group?.areas?.[
+              aIndex
+            ]
+          ){
+
+            return;
+
+          }
+
+
+          group.areas.splice(
+            aIndex,
+            1
+          );
+
+
+          await saveDeliveryGroups();
+
+        };
+
       }
+    );
 
-      group.areas[aIndex] = {name,fee};
 
-      await saveDeliveryGroups();
+  document
+    .querySelectorAll(
+      "[data-save-area]"
+    )
+    .forEach(
+      button => {
 
-    };
+        button.onclick =
+        async () => {
 
-  });
+          const [
+            gIndex,
+            aIndex
+          ] =
+            button
+              .dataset
+              .saveArea
+              .split(":")
+              .map(Number);
+
+
+          const group =
+            deliveryGroupsAdmin[
+              gIndex
+            ];
+
+
+          if(
+            !group?.areas?.[
+              aIndex
+            ]
+          ){
+
+            return;
+
+          }
+
+
+          const nameInput =
+            document.querySelector(
+              `[data-area-name="${gIndex}:${aIndex}"]`
+            );
+
+
+          const feeInput =
+            document.querySelector(
+              `[data-area-fee="${gIndex}:${aIndex}"]`
+            );
+
+
+          const name =
+            nameInput?.value.trim() ||
+            "";
+
+
+          const fee =
+            Number(
+              feeInput?.value
+            ) || 0;
+
+
+          if(!name){
+
+            alert(
+              "اكتب اسم المنطقة."
+            );
+
+            return;
+
+          }
+
+
+          if(fee < 0){
+
+            alert(
+              "مبلغ التوصيل غير صحيح."
+            );
+
+            return;
+
+          }
+
+
+          group.areas[
+            aIndex
+          ] = {
+
+            name,
+
+            fee
+
+          };
+
+
+          await saveDeliveryGroups();
+
+        };
+
+      }
+    );
 
 }
 
-async function saveDeliveryGroups(showAlert=true){
+
+/* =====================================================
+   حفظ مناطق التوصيل
+===================================================== */
+
+async function saveDeliveryGroups(
+  showAlert = true
+){
 
   try{
 
-    const {data:row,error:readError} = await db
+    const {
+      data:row,
+      error:readError
+    } = await db
+
       .from("products")
-      .select("id,data")
+
+      .select(
+        "id,data"
+      )
+
       .eq("id",1)
+
       .single();
 
-    if(readError) throw readError;
 
-    const oldData = row?.data || {};
+    if(readError){
+
+      throw readError;
+
+    }
+
+
+    const oldData =
+      row?.data || {};
+
 
     const cleanGroups =
-      deliveryGroupsAdmin
-        .map(group => ({
-          name:String(group.name || "").trim(),
-          areas:Array.isArray(group.areas)
-            ? group.areas
-                .map(area => ({
-                  name:String(area?.name || "").trim(),
-                  fee:Number(area?.fee) || 0
-                }))
-                .filter(area => area.name)
-            : []
-        }))
-        .filter(group => group.name);
 
-    const {error:updateError} = await db
+      deliveryGroupsAdmin
+
+        .map(
+          group => ({
+
+            name:
+              String(
+                group.name ||
+                ""
+              ).trim(),
+
+            areas:
+              Array.isArray(
+                group.areas
+              )
+
+                ?
+
+                  group.areas
+
+                    .map(
+                      area => ({
+
+                        name:
+                          String(
+                            area?.name ||
+                            ""
+                          ).trim(),
+
+                        fee:
+                          Number(
+                            area?.fee
+                          ) || 0
+
+                      })
+                    )
+
+                    .filter(
+                      area =>
+                        area.name
+                    )
+
+                :
+
+                  []
+
+          })
+        )
+
+        .filter(
+          group =>
+            group.name
+        );
+
+
+    const {
+      error:updateError
+    } = await db
+
       .from("products")
+
       .update({
+
         data:{
+
           ...oldData,
-          deliveryGroups:cleanGroups
+
+          deliveryGroups:
+            cleanGroups
+
         }
+
       })
+
       .eq("id",1);
 
-    if(updateError) throw updateError;
 
-    deliveryGroupsAdmin = cleanGroups;
+    if(updateError){
+
+      throw updateError;
+
+    }
+
+
+    deliveryGroupsAdmin =
+      cleanGroups;
+
+
     renderDeliveryGroupsAdmin();
 
+
     if(showAlert){
-      alert("تم حفظ مناطق التوصيل بنجاح ✅");
+
+      alert(
+        "تم حفظ مناطق التوصيل بنجاح ✅"
+      );
+
     }
+
 
   }catch(error){
 
@@ -2160,40 +4377,83 @@ async function saveDeliveryGroups(showAlert=true){
 
 }
 
+
+/* =====================================================
+   إضافة منطقة رئيسية
+===================================================== */
+
 const addDeliveryGroupButton =
-  document.getElementById("addDeliveryGroupButton");
+  document.getElementById(
+    "addDeliveryGroupButton"
+  );
 
-if(addDeliveryGroupButton){
 
-  addDeliveryGroupButton.onclick = async () => {
+if(
+  addDeliveryGroupButton
+){
+
+  addDeliveryGroupButton.onclick =
+  async () => {
 
     const input =
-      document.getElementById("deliveryGroupName");
+      document.getElementById(
+        "deliveryGroupName"
+      );
+
 
     const name =
-      input?.value.trim() || "";
+      input?.value.trim() ||
+      "";
+
 
     if(!name){
-      alert("اكتب اسم المنطقة الرئيسية.");
+
+      alert(
+        "اكتب اسم المنطقة الرئيسية."
+      );
+
       return;
+
     }
+
 
     const exists =
       deliveryGroupsAdmin.some(
-        group => String(group.name).trim() === name
+        group =>
+          String(
+            group.name
+          ).trim() ===
+          name
       );
 
+
     if(exists){
-      alert("هذه المنطقة الرئيسية موجودة مسبقاً.");
+
+      alert(
+        "هذه المنطقة الرئيسية موجودة مسبقاً."
+      );
+
       return;
+
     }
 
+
     deliveryGroupsAdmin.push({
+
       name,
+
       areas:[]
+
     });
 
-    if(input) input.value = "";
+
+    if(input){
+
+      input.value =
+        "";
+
+    }
+
 
     await saveDeliveryGroups();
 
@@ -2201,11 +4461,16 @@ if(addDeliveryGroupButton){
 
 }
 
+
+/* =====================================================
+   تشغيل مناطق التوصيل
+===================================================== */
+
 loadDeliveryGroups();
 
 
 /* =====================================================
-   بدء تشغيل لوحة المواد
+   تشغيل لوحة المواد
 ===================================================== */
 
 loadProducts();
@@ -2213,4 +4478,5 @@ loadProducts();
 </script>
 
 </body>
+
 </html>
