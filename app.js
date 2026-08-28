@@ -972,27 +972,55 @@ function renderOffers(){
                           item?.title ||
                           "";
 
-                        const price =
-                          item?.offerPrice ??
-                          item?.price ??
-                          "";
+                     const oldPrice =
+  item?.price ??
+  item?.originalPrice ??
+  item?.oldPrice ??
+  "";
 
-                        return `
+const newPrice =
+  item?.offerPrice ??
+  item?.salePrice ??
+  item?.discountPrice ??
+  "";
 
-                          <div class="offer-item">
+return `
 
-                            <span>
-                              ${name}
-                            </span>
+  <div class="offer-item">
 
-                            <span class="offer-price">
-                              ${
-                                typeof price ===
-                                "number"
-                                  ? money(price)
-                                  : price
-                              }
-                            </span>
+    <span>
+      ${name}
+    </span>
+
+    <span class="offer-price">
+
+      ${
+        oldPrice !== "" &&
+        newPrice !== "" &&
+        Number(oldPrice) !== Number(newPrice)
+
+        ? `
+          <del>
+            ${money(oldPrice)}
+          </del>
+
+          <strong>
+            ${money(newPrice)}
+          </strong>
+        `
+
+        : money(
+            newPrice !== ""
+              ? newPrice
+              : oldPrice
+          )
+      }
+
+    </span>
+
+  </div>
+
+`;
 
                           </div>
 
