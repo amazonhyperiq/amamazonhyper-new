@@ -3,16 +3,13 @@
 ===================================================== */
 
 const SUPABASE_URL =
-"https://vvexorzjkpwduykinwsw.supabase.co";
+  "https://vvexorzjkpwduykinwsw.supabase.co";
 
 const SUPABASE_KEY =
-"sb_publishable_RoMHq19grLJWNu95uPSwug_XwiKt2bB";
+  "sb_publishable_RoMHq19grLJWNu95uPSwug_XwiKt2bB";
 
 const supabaseClient =
-supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
+  supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 
 /* =====================================================
@@ -20,14 +17,14 @@ supabase.createClient(
 ===================================================== */
 
 const categories = [
-  {id:"food",name:"مواد غذائية",icon:"🛒"},
-  {id:"cleaning",name:"منظفات",icon:"🧴"},
-  {id:"cosmetic",name:"كوزمتك",icon:"💄"},
-  {id:"meat",name:"لحوم",icon:"🥩"},
-  {id:"chicken",name:"دجاج",icon:"🍗"},
-  {id:"vegetables",name:"خضار وفواكه",icon:"🥬"},
-  {id:"dairy",name:"ألبان وأجبان",icon:"🥛"},
-  {id:"drinks",name:"مشروبات",icon:"🥤"}
+  { id:"food",        name:"مواد غذائية",  icon:"🛒" },
+  { id:"cleaning",    name:"منظفات",       icon:"🧴" },
+  { id:"cosmetic",    name:"كوزمتك",       icon:"💄" },
+  { id:"meat",        name:"لحوم",         icon:"🥩" },
+  { id:"chicken",     name:"دجاج",         icon:"🍗" },
+  { id:"vegetables",  name:"خضار وفواكه",  icon:"🥬" },
+  { id:"dairy",       name:"ألبان وأجبان", icon:"🥛" },
+  { id:"drinks",      name:"مشروبات",      icon:"🥤" }
 ];
 
 
@@ -36,17 +33,13 @@ const categories = [
 ===================================================== */
 
 let products = [];
-
 let offers = [];
-
 let deliveryGroups = [];
 
 let selectedCategory = "food";
 
 let selectedDeliveryGroup = "";
-
 let selectedDeliveryArea = "";
-
 let deliveryFee = 0;
 
 const cart = new Map();
@@ -56,24 +49,22 @@ const cart = new Map();
    أدوات
 ===================================================== */
 
-function money(value){
-
+function money(value) {
   return (
-    new Intl.NumberFormat("ar-IQ")
-      .format(Number(value) || 0)
-    + " د.ع"
+    new Intl.NumberFormat("ar-IQ").format(
+      Number(value) || 0
+    ) + " د.ع"
   );
-
 }
 
 
 /* =====================================================
-   مناطق التوصيل
+   أدوات مناطق التوصيل
 ===================================================== */
 
-function getDeliveryGroupName(group){
+function getDeliveryGroupName(group) {
 
-  if(typeof group === "string"){
+  if (typeof group === "string") {
     return group.trim();
   }
 
@@ -83,36 +74,34 @@ function getDeliveryGroupName(group){
     group?.groupName ??
     ""
   ).trim();
-
 }
 
 
-function getDeliveryAreas(group){
+function getDeliveryAreas(group) {
 
-  if(!group){
+  if (!group) {
     return [];
   }
 
-  if(Array.isArray(group.areas)){
+  if (Array.isArray(group.areas)) {
     return group.areas;
   }
 
-  if(Array.isArray(group.regions)){
+  if (Array.isArray(group.regions)) {
     return group.regions;
   }
 
-  if(Array.isArray(group.items)){
+  if (Array.isArray(group.items)) {
     return group.items;
   }
 
   return [];
-
 }
 
 
-function getDeliveryAreaName(area){
+function getDeliveryAreaName(area) {
 
-  if(typeof area === "string"){
+  if (typeof area === "string") {
     return area.trim();
   }
 
@@ -123,13 +112,12 @@ function getDeliveryAreaName(area){
     area?.region ??
     ""
   ).trim();
-
 }
 
 
-function getDeliveryAreaFee(area){
+function getDeliveryAreaFee(area) {
 
-  if(typeof area === "number"){
+  if (typeof area === "number") {
     return Number(area) || 0;
   }
 
@@ -140,26 +128,25 @@ function getDeliveryAreaFee(area){
     area?.deliveryPrice ??
     0
   ) || 0;
-
 }
 
 
 /* =====================================================
-   تحميل البيانات
+   تحميل البيانات من Supabase
 ===================================================== */
 
-async function loadPageData(){
+async function loadPageData() {
 
-  try{
+  try {
 
     const result =
       await supabaseClient
         .from("products")
         .select("data")
-        .eq("id",1)
+        .eq("id", 1)
         .single();
 
-    if(result.error){
+    if (result.error) {
       throw result.error;
     }
 
@@ -169,32 +156,30 @@ async function loadPageData(){
 
     /* المنتجات */
 
-    if(Array.isArray(saved.products)){
-
-      products =
-        saved.products
-          .filter(
-            p =>
-              p &&
-              p.active !== false
-          )
-          .map(
-            p => ({
-              id:Number(p.id),
-              cat:p.cat || "food",
-              name:p.name || "",
-              price:Number(p.price) || 0,
-              unit:p.unit || "قطعة",
-              icon:p.icon || "🛒"
-            })
-          )
-          .filter(
-            p =>
-              p.id &&
-              p.name
-          );
-
-    }
+    products =
+      Array.isArray(saved.products)
+        ? saved.products
+            .filter(
+              p =>
+                p &&
+                p.active !== false
+            )
+            .map(
+              p => ({
+                id: Number(p.id),
+                cat: p.cat || "food",
+                name: p.name || "",
+                price: Number(p.price) || 0,
+                unit: p.unit || "قطعة",
+                icon: p.icon || "🛒"
+              })
+            )
+            .filter(
+              p =>
+                p.id &&
+                p.name
+            )
+        : [];
 
 
     /* العروض */
@@ -221,11 +206,9 @@ async function loadPageData(){
         : "";
 
     const tickerEl =
-      document.getElementById(
-        "tickerText"
-      );
+      document.getElementById("tickerText");
 
-    if(tickerEl){
+    if (tickerEl) {
 
       tickerEl.textContent =
         ticker ||
@@ -235,16 +218,14 @@ async function loadPageData(){
 
 
     renderCategories();
-
     renderProducts();
-
     renderOffers();
-
     renderDeliveryGroups();
-
     updateCart();
 
-  }catch(error){
+  }
+
+  catch (error) {
 
     console.error(
       "خطأ تحميل البيانات:",
@@ -252,17 +233,12 @@ async function loadPageData(){
     );
 
     renderCategories();
-
     renderProducts();
-
     renderOffers();
-
     renderDeliveryGroups();
-
     updateCart();
 
   }
-
 }
 
 
@@ -270,14 +246,12 @@ async function loadPageData(){
    الأقسام
 ===================================================== */
 
-function renderCategories(){
+function renderCategories() {
 
   const box =
-    document.getElementById(
-      "categories"
-    );
+    document.getElementById("categories");
 
-  if(!box){
+  if (!box) {
     return;
   }
 
@@ -312,23 +286,16 @@ function renderCategories(){
 
 
   box
-    .querySelectorAll(
-      ".category"
-    )
+    .querySelectorAll(".category")
     .forEach(
       button => {
 
         button.addEventListener(
           "click",
-          function(){
+          function () {
 
             selectedCategory =
               this.dataset.cat;
-
-            const title =
-              document.getElementById(
-                "productsTitle"
-              );
 
             const category =
               categories.find(
@@ -337,7 +304,12 @@ function renderCategories(){
                   selectedCategory
               );
 
-            if(title){
+            const title =
+              document.getElementById(
+                "productsTitle"
+              );
+
+            if (title) {
 
               title.textContent =
                 category?.name ||
@@ -346,7 +318,6 @@ function renderCategories(){
             }
 
             renderCategories();
-
             renderProducts();
 
           }
@@ -354,7 +325,6 @@ function renderCategories(){
 
       }
     );
-
 }
 
 
@@ -362,14 +332,14 @@ function renderCategories(){
    المنتجات
 ===================================================== */
 
-function renderProducts(){
+function renderProducts() {
 
   const box =
     document.getElementById(
       "productsGrid"
     );
 
-  if(!box){
+  if (!box) {
     return;
   }
 
@@ -381,7 +351,7 @@ function renderProducts(){
     );
 
 
-  if(!list.length){
+  if (!list.length) {
 
     box.innerHTML = `
       <div
@@ -396,7 +366,6 @@ function renderProducts(){
     `;
 
     return;
-
   }
 
 
@@ -406,9 +375,7 @@ function renderProducts(){
         product => {
 
           const quantity =
-            cart.get(
-              product.id
-            ) || 0;
+            cart.get(product.id) || 0;
 
           return `
 
@@ -436,13 +403,11 @@ function renderProducts(){
 
 
               <div class="product-price">
-
                 ${money(product.price)}
 
                 <small>
                   / ${product.unit}
                 </small>
-
               </div>
 
 
@@ -475,7 +440,6 @@ function renderProducts(){
         }
       )
       .join("");
-
 }
 
 
@@ -483,10 +447,7 @@ function renderProducts(){
    السلة
 ===================================================== */
 
-function changeQty(
-  id,
-  change
-){
+function changeQty(id, change) {
 
   const oldQuantity =
     Number(
@@ -500,14 +461,14 @@ function changeQty(
     );
 
 
-  if(newQuantity > 0){
+  if (newQuantity > 0) {
 
     cart.set(
       id,
       newQuantity
     );
 
-  }else{
+  } else {
 
     cart.delete(id);
 
@@ -515,25 +476,21 @@ function changeQty(
 
 
   renderProducts();
-
   updateCart();
-
 }
 
 
-window.changeQty =
-  changeQty;
+window.changeQty = changeQty;
 
 
-function getProductsTotal(){
+function getProductsTotal() {
 
   let total = 0;
 
-
-  for(
-    const [id,quantity]
+  for (
+    const [id, quantity]
     of cart
-  ){
+  ) {
 
     const product =
       products.find(
@@ -542,43 +499,35 @@ function getProductsTotal(){
           Number(id)
       );
 
-
-    if(product){
+    if (product) {
 
       total +=
         Number(product.price) *
         Number(quantity);
 
     }
-
   }
 
-
   return total;
-
 }
 
 
-function updateCart(){
+function updateCart() {
 
   const productsTotal =
     getProductsTotal();
 
-
   const finalTotal =
     productsTotal +
-    Number(
-      deliveryFee || 0
-    );
+    Number(deliveryFee || 0);
 
 
   let count = 0;
 
-
-  for(
-    const [,quantity]
+  for (
+    const [, quantity]
     of cart
-  ){
+  ) {
 
     count +=
       Number(quantity);
@@ -611,46 +560,59 @@ function updateCart(){
       "grandTotal"
     );
 
+  const deliveryText =
+    document.getElementById(
+      "deliveryAreaText"
+    );
 
-  if(total){
+  const deliverySummary =
+    document.getElementById(
+      "deliverySummary"
+    );
 
+
+  if (total) {
     total.textContent =
       money(finalTotal);
-
   }
 
-
-  if(countEl){
-
+  if (countEl) {
     countEl.textContent =
       count;
-
   }
 
-
-  if(topCount){
-
+  if (topCount) {
     topCount.textContent =
       count;
-
   }
 
-
-  if(delivery){
-
+  if (delivery) {
     delivery.textContent =
       money(deliveryFee);
-
   }
 
-
-  if(grand){
-
+  if (grand) {
     grand.textContent =
       money(finalTotal);
+  }
+
+  if (deliveryText) {
+
+    deliveryText.textContent =
+      selectedDeliveryArea
+        ? `${selectedDeliveryGroup} / ${selectedDeliveryArea}`
+        : "";
 
   }
 
+  if (deliverySummary) {
+
+    deliverySummary.style.display =
+      selectedDeliveryArea
+        ? "flex"
+        : "none";
+
+  }
 }
 
 
@@ -658,7 +620,7 @@ function updateCart(){
    مناطق التوصيل
 ===================================================== */
 
-function setupDelivery(){
+function setupDelivery() {
 
   const groupSelect =
     document.getElementById(
@@ -671,18 +633,16 @@ function setupDelivery(){
     );
 
 
-  if(
+  if (
     !groupSelect ||
     !areaSelect
-  ){
-
+  ) {
     return;
-
   }
 
 
   groupSelect.onchange =
-    function(){
+    function () {
 
       selectedDeliveryGroup =
         this.value;
@@ -694,18 +654,16 @@ function setupDelivery(){
         0;
 
       renderDeliveryAreas();
-
       updateCart();
 
     };
 
 
   areaSelect.onchange =
-    function(){
+    function () {
 
       selectedDeliveryArea =
         this.value;
-
 
       const group =
         deliveryGroups.find(
@@ -714,118 +672,104 @@ function setupDelivery(){
             selectedDeliveryGroup
         );
 
+      const areas =
+        getDeliveryAreas(group);
 
       const area =
-        getDeliveryAreas(group)
-          .find(
-            item =>
-              getDeliveryAreaName(item) ===
-              selectedDeliveryArea
-          );
+        areas.find(
+          item =>
+            getDeliveryAreaName(item) ===
+            selectedDeliveryArea
+        );
 
+      if (!area) {
+
+        deliveryFee = 0;
+
+        updateCart();
+
+        return;
+      }
 
       deliveryFee =
-        area
-          ? getDeliveryAreaFee(area)
-          : 0;
-
+        getDeliveryAreaFee(area);
 
       updateCart();
 
     };
-
 }
 
 
-function renderDeliveryGroups(){
+function renderDeliveryGroups() {
 
   const select =
     document.getElementById(
       "deliveryGroup"
     );
 
-  if(!select){
+  if (!select) {
     return;
   }
 
 
-  select.innerHTML =
-    `
-      <option value="">
-        اختر المنطقة الرئيسية
-      </option>
-    `;
+  select.innerHTML = `
+    <option value="">
+      اختر المنطقة الرئيسية
+    </option>
+  `;
 
 
   deliveryGroups.forEach(
     group => {
 
       const name =
-        getDeliveryGroupName(
-          group
-        );
+        getDeliveryGroupName(group);
 
-      if(!name){
+      if (!name) {
         return;
       }
-
 
       const option =
         document.createElement(
           "option"
         );
 
-      option.value =
-        name;
+      option.value = name;
+      option.textContent = name;
 
-      option.textContent =
-        name;
-
-      select.appendChild(
-        option
-      );
+      select.appendChild(option);
 
     }
   );
 
 
-  selectedDeliveryGroup =
-    "";
-
-  selectedDeliveryArea =
-    "";
-
-  deliveryFee =
-    0;
-
+  selectedDeliveryGroup = "";
+  selectedDeliveryArea = "";
+  deliveryFee = 0;
 
   renderDeliveryAreas();
-
   setupDelivery();
-
   updateCart();
-
 }
 
 
-function renderDeliveryAreas(){
+function renderDeliveryAreas() {
 
   const select =
     document.getElementById(
       "deliveryArea"
     );
 
-  if(!select){
+  if (!select) {
     return;
   }
 
 
-  select.innerHTML =
-    `
-      <option value="">
-        اختر المنطقة
-      </option>
-    `;
+  select.innerHTML = `
+    <option value="">
+      اختر المنطقة
+    </option>
+  `;
 
 
   const group =
@@ -837,9 +781,7 @@ function renderDeliveryAreas(){
 
 
   const areas =
-    getDeliveryAreas(
-      group
-    );
+    getDeliveryAreas(group);
 
 
   select.disabled =
@@ -851,40 +793,29 @@ function renderDeliveryAreas(){
     area => {
 
       const name =
-        getDeliveryAreaName(
-          area
-        );
+        getDeliveryAreaName(area);
 
-      if(!name){
+      if (!name) {
         return;
       }
 
-
       const fee =
-        getDeliveryAreaFee(
-          area
-        );
-
+        getDeliveryAreaFee(area);
 
       const option =
         document.createElement(
           "option"
         );
 
-      option.value =
-        name;
+      option.value = name;
 
       option.textContent =
         `${name} — ${money(fee)}`;
 
-
-      select.appendChild(
-        option
-      );
+      select.appendChild(option);
 
     }
   );
-
 }
 
 
@@ -892,23 +823,21 @@ function renderDeliveryAreas(){
    العروض
 ===================================================== */
 
-function renderOffers(){
+function renderOffers() {
 
   const box =
     document.getElementById(
       "offerCards"
     );
 
-  if(!box){
+  if (!box) {
     return;
   }
 
 
-  if(!Array.isArray(offers)){
+  if (!Array.isArray(offers)) {
 
-    box.innerHTML =
-      "";
-
+    box.innerHTML = "";
     return;
 
   }
@@ -920,9 +849,7 @@ function renderOffers(){
         offer => {
 
           const items =
-            Array.isArray(
-              offer.items
-            )
+            Array.isArray(offer.items)
               ? offer.items
               : [];
 
@@ -972,55 +899,52 @@ function renderOffers(){
                           item?.title ||
                           "";
 
-                     const oldPrice =
-  item?.price ??
-  item?.originalPrice ??
-  item?.oldPrice ??
-  "";
+                        const oldPrice =
+                          item?.price ??
+                          item?.originalPrice ??
+                          item?.oldPrice ??
+                          "";
 
-const newPrice =
-  item?.offerPrice ??
-  item?.salePrice ??
-  item?.discountPrice ??
-  "";
+                        const newPrice =
+                          item?.offerPrice ??
+                          item?.salePrice ??
+                          item?.discountPrice ??
+                          "";
 
-return `
 
-  <div class="offer-item">
+                        return `
 
-    <span>
-      ${name}
-    </span>
+                          <div class="offer-item">
 
-    <span class="offer-price">
+                            <span>
+                              ${name}
+                            </span>
 
-      ${
-        oldPrice !== "" &&
-        newPrice !== "" &&
-        Number(oldPrice) !== Number(newPrice)
+                            <span class="offer-price">
 
-        ? `
-          <del>
-            ${money(oldPrice)}
-          </del>
+                              ${
+                                oldPrice !== "" &&
+                                newPrice !== "" &&
+                                Number(oldPrice) !== Number(newPrice)
 
-          <strong>
-            ${money(newPrice)}
-          </strong>
-        `
+                                  ? `
+                                    <del>
+                                      ${money(oldPrice)}
+                                    </del>
 
-        : money(
-            newPrice !== ""
-              ? newPrice
-              : oldPrice
-          )
-      }
+                                    <strong>
+                                      ${money(newPrice)}
+                                    </strong>
+                                  `
 
-    </span>
+                                  : money(
+                                      newPrice !== ""
+                                        ? newPrice
+                                        : oldPrice
+                                    )
+                              }
 
-  </div>
-
-`;
+                            </span>
 
                           </div>
 
@@ -1040,7 +964,6 @@ return `
         }
       )
       .join("");
-
 }
 
 
@@ -1048,29 +971,28 @@ return `
    واتساب
 ===================================================== */
 
-function setupWhatsApp(){
+function setupWhatsApp() {
 
   const button =
     document.getElementById(
       "whatsappBtn"
     );
 
-  if(!button){
+  if (!button) {
     return;
   }
 
 
   button.onclick =
-    function(){
+    function () {
 
-      if(!cart.size){
+      if (!cart.size) {
 
         alert(
           "السلة فارغة. أضف مادة واحدة على الأقل."
         );
 
         return;
-
       }
 
 
@@ -1098,50 +1020,46 @@ function setupWhatsApp(){
         )?.value.trim() || "";
 
 
-      if(
+      if (
         !name ||
         !phone ||
         !address
-      ){
+      ) {
 
         alert(
           "يرجى إدخال الاسم ورقم الهاتف والعنوان."
         );
 
         return;
-
       }
 
 
-      if(
+      if (
         deliveryGroups.length &&
         (
           !selectedDeliveryGroup ||
           !selectedDeliveryArea
         )
-      ){
+      ) {
 
         alert(
           "يرجى اختيار منطقة التوصيل."
         );
 
         return;
-
       }
 
 
       const productsTotal =
         getProductsTotal();
 
-
       const finalTotal =
         productsTotal +
-        Number(
-          deliveryFee || 0
-        );
+        Number(deliveryFee || 0);
 
 
       const lines = [];
+
 
       lines.push(
         "طلب جديد — أمازون هايبر ماركت",
@@ -1149,10 +1067,10 @@ function setupWhatsApp(){
       );
 
 
-      for(
-        const [id,quantity]
+      for (
+        const [id, quantity]
         of cart
-      ){
+      ) {
 
         const product =
           products.find(
@@ -1161,15 +1079,13 @@ function setupWhatsApp(){
               Number(id)
           );
 
-
-        if(product){
+        if (product) {
 
           lines.push(
             `- ${product.name}: ${quantity} ${product.unit}`
           );
 
         }
-
       }
 
 
@@ -1207,7 +1123,6 @@ function setupWhatsApp(){
         url;
 
     };
-
 }
 
 
@@ -1216,15 +1131,9 @@ function setupWhatsApp(){
 ===================================================== */
 
 renderCategories();
-
 renderProducts();
-
 renderOffers();
-
 setupDelivery();
-
 setupWhatsApp();
-
 updateCart();
-
 loadPageData();
