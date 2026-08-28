@@ -189,6 +189,22 @@ body{
     grid-template-columns:1fr 1fr
   }
 }
+
+/* إدارة مناطق التوصيل */
+.delivery-admin-box{width:100%}
+.delivery-group{border:1px solid #dce6df;border-radius:14px;margin-top:14px;overflow:hidden;background:#fbfdfb}
+.delivery-group-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;background:#eaf7ee;color:#075d2d}
+.delivery-group-actions{display:flex;gap:7px;flex-wrap:wrap}
+.delivery-area-row{display:grid;grid-template-columns:1fr 180px auto auto;gap:8px;align-items:end;padding:10px 12px;border-top:1px solid #e4ebe6}
+.delivery-area-row input{margin-top:0}
+.delivery-empty{padding:14px;color:#6b756e;font-size:13px}
+.delivery-add-area{margin:10px 12px 12px}
+.delivery-actions{display:flex;align-items:end}
+@media(max-width:700px){
+  .delivery-area-row{grid-template-columns:1fr 1fr}
+  .delivery-area-row .delivery-area-save,.delivery-area-row .delivery-area-delete{width:100%}
+  .delivery-group-head{align-items:flex-start;flex-direction:column}
+}
 </style>
 
 </head>
@@ -231,6 +247,7 @@ style="background:#dc2626;color:#fff;border:0;padding:9px 15px;border-radius:9px
 <a href="#sections">الأقسام</a>
 <a href="#products">المواد والمنتجات</a>
 <a href="#offers">العروض الخاصة</a>
+<a href="#delivery">مناطق التوصيل</a>
 <a href="#ticker">الشريط المتحرك</a>
 <a href="#">الطلبات</a>
 <a href="#">الإعدادات</a>
@@ -606,6 +623,39 @@ id="addOfferRow"
 </div>
 
 
+
+<!-- =========================
+     مناطق التوصيل
+========================= -->
+
+<div class="panel" id="delivery">
+
+  <h2>إدارة مناطق التوصيل</h2>
+
+  <p class="hint">
+    أضف منطقة رئيسية مثل الكرخ أو الرصافة، ثم أضف المناطق التابعة لها وحدد أجور التوصيل.
+  </p>
+
+  <div class="delivery-admin-box">
+
+    <div class="admin-grid">
+      <label>
+        اسم المنطقة الرئيسية
+        <input id="deliveryGroupName" placeholder="مثال: الكرخ">
+      </label>
+
+      <div class="delivery-actions">
+        <button type="button" class="save" id="addDeliveryGroupButton">
+          + إضافة منطقة رئيسية
+        </button>
+      </div>
+    </div>
+
+    <div id="deliveryGroupsList"></div>
+
+  </div>
+
+</div>
 
 <!-- =========================
      الشريط المتحرك
@@ -1669,6 +1719,353 @@ tickerSaveButton.addEventListener("click", async function(){
     tickerSaveButton.disabled=false; tickerSaveButton.textContent="حفظ النص";
   }
 });
+
+/* =====================================================
+   إدارة مناطق التوصيل
+===================================================== */
+
+let deliveryGroupsAdmin = [];
+
+async function loadDeliveryGroups(){
+
+  try{
+
+    const {data:row,error} = await db
+      .from("products")
+      .select("id,data")
+      .eq("id",1)
+      .single();
+
+    if(error) throw error;
+
+    const saved = row?.data || {};
+
+    deliveryGroupsAdmin =
+      Array.isArray(saved.deliveryGroups)
+        ? saved.deliveryGroups
+        : [];
+
+    renderDeliveryGroupsAdmin();
+
+  }catch(error){
+
+    console.error(error);
+
+    alert(
+      "تعذر تحميل مناطق التوصيل: " +
+      error.message
+    );
+
+  }
+
+}
+
+function escapeDelivery(value){
+
+  return String(value)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+
+}
+
+function renderDeliveryGroupsAdmin(){
+
+  const box = document.getElementById("deliveryGroupsList");
+  if(!box) return;
+
+  if(!deliveryGroupsAdmin.length){
+
+    box.innerHTML =
+      '<div class="delivery-empty">لا توجد مناطق توصيل مضافة حالياً.</div>';
+
+    return;
+
+  }
+
+  box.innerHTML = deliveryGroupsAdmin.map((group,gIndex) => {
+
+    const areas =
+      Array.isArray(group.areas)
+        ? group.areas
+        : [];
+
+    return `
+      <div class="delivery-group">
+
+        <div class="delivery-group-head">
+          <strong>${escapeDelivery(group.name || "منطقة")}</strong>
+
+          <div class="delivery-group-actions">
+            <button type="button" class="delete" data-delete-group="${gIndex}">
+              حذف المنطقة الرئيسية
+            </button>
+          </div>
+        </div>
+
+        ${
+          areas.length
+            ? areas.map((area,aIndex) => `
+              <div class="delivery-area-row">
+
+                <input
+                  type="text"
+                  value="${escapeDelivery(area.name || "")}"
+                  data-area-name="${gIndex}:${aIndex}"
+                  placeholder="اسم المنطقة"
+                >
+
+                <input
+                  type="number"
+                  min="0"
+                  step="500"
+                  value="${Number(area.fee) || 0}"
+                  data-area-fee="${gIndex}:${aIndex}"
+                  placeholder="أجور التوصيل"
+                >
+
+                <button type="button" class="save delivery-area-save"
+                  data-save-area="${gIndex}:${aIndex}">
+                  حفظ
+                </button>
+
+                <button type="button" class="delete delivery-area-delete"
+                  data-delete-area="${gIndex}:${aIndex}">
+                  حذف
+                </button>
+
+              </div>
+            `).join("")
+            : '<div class="delivery-empty">لا توجد مناطق داخل هذا القسم.</div>'
+        }
+
+        <button type="button" class="save delivery-add-area"
+          data-add-area="${gIndex}">
+          + إضافة منطقة داخل ${escapeDelivery(group.name || "")}
+        </button>
+
+      </div>
+    `;
+
+  }).join("");
+
+  bindDeliveryButtons();
+
+}
+
+function bindDeliveryButtons(){
+
+  document.querySelectorAll("[data-delete-group]").forEach(button => {
+
+    button.onclick = async () => {
+
+      const index = Number(button.dataset.deleteGroup);
+      const group = deliveryGroupsAdmin[index];
+
+      if(!group) return;
+
+      if(!confirm(
+        `هل أنت متأكد من حذف ${group.name} وجميع مناطقها؟`
+      )) return;
+
+      deliveryGroupsAdmin.splice(index,1);
+      await saveDeliveryGroups();
+
+    };
+
+  });
+
+  document.querySelectorAll("[data-add-area]").forEach(button => {
+
+    button.onclick = async () => {
+
+      const index = Number(button.dataset.addArea);
+
+      if(!deliveryGroupsAdmin[index]) return;
+
+      if(!Array.isArray(deliveryGroupsAdmin[index].areas)){
+        deliveryGroupsAdmin[index].areas = [];
+      }
+
+      deliveryGroupsAdmin[index].areas.push({
+        name:"",
+        fee:0
+      });
+
+      renderDeliveryGroupsAdmin();
+
+    };
+
+  });
+
+  document.querySelectorAll("[data-delete-area]").forEach(button => {
+
+    button.onclick = async () => {
+
+      const [gIndex,aIndex] =
+        button.dataset.deleteArea.split(":").map(Number);
+
+      const group = deliveryGroupsAdmin[gIndex];
+
+      if(!group?.areas?.[aIndex]) return;
+
+      group.areas.splice(aIndex,1);
+      await saveDeliveryGroups();
+
+    };
+
+  });
+
+  document.querySelectorAll("[data-save-area]").forEach(button => {
+
+    button.onclick = async () => {
+
+      const [gIndex,aIndex] =
+        button.dataset.saveArea.split(":").map(Number);
+
+      const group = deliveryGroupsAdmin[gIndex];
+
+      if(!group?.areas?.[aIndex]) return;
+
+      const nameInput =
+        document.querySelector(
+          `[data-area-name="${gIndex}:${aIndex}"]`
+        );
+
+      const feeInput =
+        document.querySelector(
+          `[data-area-fee="${gIndex}:${aIndex}"]`
+        );
+
+      const name = nameInput?.value.trim() || "";
+      const fee = Number(feeInput?.value) || 0;
+
+      if(!name){
+        alert("اكتب اسم المنطقة.");
+        return;
+      }
+
+      if(fee < 0){
+        alert("مبلغ التوصيل غير صحيح.");
+        return;
+      }
+
+      group.areas[aIndex] = {name,fee};
+
+      await saveDeliveryGroups();
+
+    };
+
+  });
+
+}
+
+async function saveDeliveryGroups(showAlert=true){
+
+  try{
+
+    const {data:row,error:readError} = await db
+      .from("products")
+      .select("id,data")
+      .eq("id",1)
+      .single();
+
+    if(readError) throw readError;
+
+    const oldData = row?.data || {};
+
+    const cleanGroups =
+      deliveryGroupsAdmin
+        .map(group => ({
+          name:String(group.name || "").trim(),
+          areas:Array.isArray(group.areas)
+            ? group.areas
+                .map(area => ({
+                  name:String(area?.name || "").trim(),
+                  fee:Number(area?.fee) || 0
+                }))
+                .filter(area => area.name)
+            : []
+        }))
+        .filter(group => group.name);
+
+    const {error:updateError} = await db
+      .from("products")
+      .update({
+        data:{
+          ...oldData,
+          deliveryGroups:cleanGroups
+        }
+      })
+      .eq("id",1);
+
+    if(updateError) throw updateError;
+
+    deliveryGroupsAdmin = cleanGroups;
+    renderDeliveryGroupsAdmin();
+
+    if(showAlert){
+      alert("تم حفظ مناطق التوصيل بنجاح ✅");
+    }
+
+  }catch(error){
+
+    console.error(error);
+
+    alert(
+      "فشل حفظ مناطق التوصيل: " +
+      error.message
+    );
+
+  }
+
+}
+
+const addDeliveryGroupButton =
+  document.getElementById("addDeliveryGroupButton");
+
+if(addDeliveryGroupButton){
+
+  addDeliveryGroupButton.onclick = async () => {
+
+    const input =
+      document.getElementById("deliveryGroupName");
+
+    const name =
+      input?.value.trim() || "";
+
+    if(!name){
+      alert("اكتب اسم المنطقة الرئيسية.");
+      return;
+    }
+
+    const exists =
+      deliveryGroupsAdmin.some(
+        group => String(group.name).trim() === name
+      );
+
+    if(exists){
+      alert("هذه المنطقة الرئيسية موجودة مسبقاً.");
+      return;
+    }
+
+    deliveryGroupsAdmin.push({
+      name,
+      areas:[]
+    });
+
+    if(input) input.value = "";
+
+    await saveDeliveryGroups();
+
+  };
+
+}
+
+loadDeliveryGroups();
+
 
 /* =====================================================
    بدء تشغيل لوحة المواد
