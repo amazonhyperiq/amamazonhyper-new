@@ -538,7 +538,7 @@ if(whatsappBtn){
     );
 
     const whatsappNumber =
-      "9647700000000";
+      "9647842000516";
 
     const url =
       `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(lines.join("\n"))}`;
