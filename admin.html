@@ -568,17 +568,17 @@ id="productDeleteButton"
 
 <label>
 عنوان العرض
-<input placeholder="مثال: عرض خاص 20%">
+<input id="offerTitle" placeholder="مثال: عرض خاص 20%">
 </label>
 
 <label>
 من تاريخ
-<input type="date">
+<input id="offerFrom" type="date">
 </label>
 
 <label>
 إلى تاريخ
-<input type="date">
+<input id="offerTo" type="date">
 </label>
 
 </div>
@@ -599,7 +599,7 @@ id="addOfferRow"
   حفظ العرض
 </button>
 
-<button class="delete">
+<button type="button" class="delete" id="offerDeleteButton">
 حذف العرض
 </button>
 
@@ -615,7 +615,6 @@ id="addOfferRow"
 
 <h2>إدارة الشريط المتحرك</h2>
 
-<textarea
 <textarea
 id="tickerInput"
 rows="3"
@@ -1575,76 +1574,101 @@ function(id){
 
 
 /* =====================================================
-   العروض
+   إدارة العروض والشريط
 ===================================================== */
 
-const box =
-document.getElementById("offerRows");
-
+const box = document.getElementById("offerRows");
+const offerTitle = document.getElementById("offerTitle");
+const offerFrom = document.getElementById("offerFrom");
+const offerTo = document.getElementById("offerTo");
+const offerSaveButton = document.getElementById("offerSaveButton");
+const offerDeleteButton = document.getElementById("offerDeleteButton");
+const tickerInput = document.getElementById("tickerInput");
+const tickerSaveButton = document.getElementById("tickerSaveButton");
 
 function addRow(){
-
-  if(box.children.length >= 8){
-
-    return;
-
-  }
-
-
-  const d =
-    document.createElement("div");
-
-
-  d.className =
-    "offer-row";
-
-
-  d.innerHTML =
-
-    '<input placeholder="اسم المادة">' +
-
+  if(box.children.length >= 8){ alert("الحد الأقصى 8 مواد"); return; }
+  const d = document.createElement("div");
+  d.className = "offer-row";
+  d.innerHTML = '<input placeholder="اسم المادة">' +
     '<input type="number" placeholder="السعر الأصلي">' +
-
     '<input type="number" placeholder="سعر العرض">' +
-
     '<input type="file" accept="image/*">' +
-
     '<button type="button" class="delete">حذف</button>';
-
-
-  d.querySelector("button").onclick =
-    () => {
-
-      if(box.children.length > 5){
-
-        d.remove();
-
-      }
-
-    };
-
-
+  d.querySelector("button").onclick = function(){
+    if(box.children.length > 5) d.remove();
+    else alert("يجب أن يبقى في العرض 5 مواد على الأقل");
+  };
   box.appendChild(d);
-
 }
 
+for(let i=0;i<5;i++) addRow();
+document.getElementById("addOfferRow").onclick = addRow;
 
-for(
-  let i=0;
-  i<5;
-  i++
-){
+offerSaveButton.addEventListener("click", async function(){
+  const title=offerTitle.value.trim(), from=offerFrom.value, to=offerTo.value;
+  if(!title){ alert("يرجى كتابة عنوان العرض"); return; }
+  if(!from || !to){ alert("يرجى تحديد تاريخ بداية ونهاية العرض"); return; }
+  const rows=box.querySelectorAll(".offer-row");
+  if(rows.length<5){ alert("يجب أن يحتوي العرض على 5 مواد على الأقل"); return; }
+  const items=[];
+  rows.forEach(row=>{
+    const inputs=row.querySelectorAll("input");
+    const name=inputs[0].value.trim();
+    const originalPrice=Number(inputs[1].value)||0;
+    const offerPrice=Number(inputs[2].value)||0;
+    if(name) items.push({name,originalPrice,offerPrice});
+  });
+  if(items.length<5){ alert("يرجى إدخال أسماء 5 مواد على الأقل"); return; }
+  offerSaveButton.disabled=true; offerSaveButton.textContent="جاري الحفظ...";
+  try{
+    const {data:row,error:readError}=await db.from("products").select("id,data").eq("id",1).single();
+    if(readError) throw readError;
+    const oldData=row.data||{};
+    const offer={title,from,to,items};
+    const {error:updateError}=await db.from("products").update({data:{...oldData,offers:[offer]}}).eq("id",1);
+    if(updateError) throw updateError;
+    alert("تم حفظ العرض بنجاح ✅");
+  }catch(error){
+    console.error(error); alert("فشل حفظ العرض: " + error.message);
+  }finally{
+    offerSaveButton.disabled=false; offerSaveButton.textContent="حفظ العرض";
+  }
+});
 
-  addRow();
+offerDeleteButton.addEventListener("click", async function(){
+  if(!confirm("هل أنت متأكد من حذف العرض الحالي؟")) return;
+  offerDeleteButton.disabled=true;
+  try{
+    const {data:row,error:readError}=await db.from("products").select("id,data").eq("id",1).single();
+    if(readError) throw readError;
+    const oldData=row.data||{};
+    const {error:updateError}=await db.from("products").update({data:{...oldData,offers:[]}}).eq("id",1);
+    if(updateError) throw updateError;
+    offerTitle.value=""; offerFrom.value=""; offerTo.value="";
+    alert("تم حذف العرض بنجاح ✅");
+  }catch(error){
+    console.error(error); alert("فشل حذف العرض: " + error.message);
+  }finally{ offerDeleteButton.disabled=false; }
+});
 
-}
-
-
-document.getElementById(
-  "addOfferRow"
-).onclick =
-  addRow;
-
+tickerSaveButton.addEventListener("click", async function(){
+  const text=tickerInput.value.trim();
+  if(!text){ alert("يرجى كتابة نص الشريط المتحرك"); return; }
+  tickerSaveButton.disabled=true; tickerSaveButton.textContent="جاري الحفظ...";
+  try{
+    const {data:row,error:readError}=await db.from("products").select("id,data").eq("id",1).single();
+    if(readError) throw readError;
+    const oldData=row.data||{};
+    const {error:updateError}=await db.from("products").update({data:{...oldData,ticker:text}}).eq("id",1);
+    if(updateError) throw updateError;
+    alert("تم حفظ الشريط بنجاح ✅");
+  }catch(error){
+    console.error(error); alert("فشل حفظ الشريط: " + error.message);
+  }finally{
+    tickerSaveButton.disabled=false; tickerSaveButton.textContent="حفظ النص";
+  }
+});
 
 /* =====================================================
    بدء تشغيل لوحة المواد
