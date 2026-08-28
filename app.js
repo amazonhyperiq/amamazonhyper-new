@@ -1,4 +1,4 @@
-const SUPABASE_URL = "https://vexorzjkpwduykinwsw.supabase.co";
+const SUPABASE_URL = "https://vvexorzjkpwduykinwsw.supabase.co";
 const SUPABASE_KEY = "sb_publishable_RoMHq19grLJWNu95uPSwug_XwiKt2bB";
 
 const supabaseClient = supabase.createClient(
@@ -156,7 +156,7 @@ async function loadProductsFromSupabase(){
       await supabaseClient
         .from("products")
         .select("data")
-        .limit(1)
+        .eq("id",1)
         .single();
 
 
@@ -423,6 +423,8 @@ async function loadProductsFromSupabase(){
   }
 
 }
+
+
 /* =====================================================
    العروض
 ===================================================== */
@@ -1618,7 +1620,7 @@ async function loadTicker(){
 
         .select("data")
 
-        .limit(1)
+        .eq("id",1)
 
         .single();
 
