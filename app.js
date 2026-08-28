@@ -145,7 +145,7 @@ let products = [
 
 
 /* =====================================================
-   تحميل الأقسام والمنتجات من Supabase
+   تحميل الأقسام والمنتجات والعروض ومناطق التوصيل
 ===================================================== */
 
 async function loadProductsFromSupabase(){
@@ -183,6 +183,42 @@ async function loadProductsFromSupabase(){
 
     const saved =
       data.data;
+
+
+    /* ==============================================
+       تحميل العروض
+    ============================================== */
+
+    if(
+      Array.isArray(saved.offers)
+    ){
+
+      offers =
+        saved.offers;
+
+    }else{
+
+      offers = [];
+
+    }
+
+
+    /* ==============================================
+       تحميل مناطق التوصيل
+    ============================================== */
+
+    if(
+      Array.isArray(saved.deliveryGroups)
+    ){
+
+      deliveryGroups =
+        saved.deliveryGroups;
+
+    }else{
+
+      deliveryGroups = [];
+
+    }
 
 
     /* ==============================================
@@ -359,15 +395,21 @@ async function loadProductsFromSupabase(){
 
     renderCategories();
 
+    renderOffers();
+
+    renderDeliveryGroups();
+
     renderProducts();
 
     updateCart();
 
 
     console.log(
-      "تم تحميل الأقسام والمنتجات من Supabase:",
+      "تم تحميل الأقسام والمنتجات والعروض ومناطق التوصيل:",
       categories.length,
-      products.length
+      products.length,
+      offers.length,
+      deliveryGroups.length
     );
 
 
@@ -381,8 +423,6 @@ async function loadProductsFromSupabase(){
   }
 
 }
-
-
 /* =====================================================
    العروض
 ===================================================== */
@@ -397,52 +437,6 @@ let offers = [];
 let deliveryGroups = [];
 
 
-/* =====================================================
-   تحميل العروض ومناطق التوصيل
-===================================================== */
-
-function loadStoreSettings(saved){
-
-  /* =========================
-     العروض
-  ========================= */
-
-  if(
-    Array.isArray(saved.offers)
-  ){
-
-    offers = saved.offers;
-
-  }else{
-
-    offers = [];
-
-  }
-
-
-  /* =========================
-     مناطق التوصيل
-  ========================= */
-
-  if(
-    Array.isArray(saved.deliveryGroups)
-  ){
-
-    deliveryGroups =
-      saved.deliveryGroups;
-
-  }else{
-
-    deliveryGroups = [];
-
-  }
-
-
-  renderOffers();
-
-  renderDeliveryGroups();
-
-}
 /* =====================================================
    السلة والقسم المحدد
 ===================================================== */
@@ -572,6 +566,37 @@ function renderOffers(){
   }
 
 
+  if(!Array.isArray(offers)){
+
+    offers = [];
+
+  }
+
+
+  if(offers.length === 0){
+
+    el.innerHTML = `
+
+      <div
+        style="
+          grid-column:1/-1;
+          text-align:center;
+          padding:30px;
+          color:#6b756f
+        "
+      >
+
+        لا توجد عروض خاصة حالياً.
+
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
   el.innerHTML =
     offers
       .map(o => `
@@ -585,13 +610,22 @@ function renderOffers(){
             </span>
 
             <h3>
-              ${o.title}
+              ${o.title || "عرض خاص"}
             </h3>
 
             <div class="offer-date">
 
-              من ${o.from}
-              إلى ${o.to}
+              ${
+                o.from
+                  ? `من ${formatOfferDate(o.from)}`
+                  : ""
+              }
+
+              ${
+                o.to
+                  ? ` إلى ${formatOfferDate(o.to)}`
+                  : ""
+              }
 
             </div>
 
@@ -601,25 +635,65 @@ function renderOffers(){
           <div class="offer-body">
 
             ${
-              o.items
-                .map(
-                  i => `
+              Array.isArray(o.items)
 
-                    <div class="offer-item">
+                ? o.items
+                    .map(i => {
 
-                      <span>
-                        ${i[0]}
-                      </span>
+                      if(
+                        Array.isArray(i)
+                      ){
 
-                      <span class="offer-price">
-                        ${i[1]}
-                      </span>
+                        return `
 
-                    </div>
+                          <div class="offer-item">
 
-                  `
-                )
-                .join("")
+                            <span>
+                              ${i[0] || ""}
+                            </span>
+
+                            <span class="offer-price">
+                              ${i[1] || ""}
+                            </span>
+
+                          </div>
+
+                        `;
+
+                      }
+
+
+                      return `
+
+                        <div class="offer-item">
+
+                          <span>
+                            ${i.name || ""}
+                          </span>
+
+                          <span class="offer-price">
+
+                            ${
+                              i.offerPrice
+                                ? money(
+                                    Number(
+                                      i.offerPrice
+                                    )
+                                  )
+                                : ""
+                            }
+
+                          </span>
+
+                        </div>
+
+                      `;
+
+                    })
+                    .join("")
+
+                : ""
+
             }
 
           </div>
@@ -628,6 +702,380 @@ function renderOffers(){
 
       `)
       .join("");
+
+}
+
+
+/* =====================================================
+   تنسيق تاريخ العرض
+===================================================== */
+
+function formatOfferDate(
+  date
+){
+
+  if(!date){
+
+    return "";
+
+  }
+
+
+  const parts =
+    String(date).split("-");
+
+
+  if(parts.length === 3){
+
+    return `${parts[2]}/${parts[1]}`;
+
+  }
+
+
+  return date;
+
+}
+
+
+/* =====================================================
+   عرض مناطق التوصيل
+===================================================== */
+
+function renderDeliveryGroups(){
+
+  const groupSelect =
+    document.getElementById(
+      "deliveryGroup"
+    );
+
+
+  const areaSelect =
+    document.getElementById(
+      "deliveryArea"
+    );
+
+
+  if(
+    !groupSelect ||
+    !areaSelect
+  ){
+
+    return;
+
+  }
+
+
+  groupSelect.innerHTML =
+    `
+      <option value="">
+        اختر المنطقة الرئيسية
+      </option>
+    `;
+
+
+  areaSelect.innerHTML =
+    `
+      <option value="">
+        اختر المنطقة
+      </option>
+    `;
+
+
+  areaSelect.disabled =
+    true;
+
+
+  if(
+    !Array.isArray(
+      deliveryGroups
+    )
+  ){
+
+    deliveryGroups = [];
+
+  }
+
+
+  deliveryGroups.forEach(
+    (
+      group,
+      index
+    ) => {
+
+      if(
+        !group ||
+        !group.name
+      ){
+
+        return;
+
+      }
+
+
+      const option =
+        document.createElement(
+          "option"
+        );
+
+
+      option.value =
+        String(index);
+
+
+      option.textContent =
+        group.name;
+
+
+      groupSelect.appendChild(
+        option
+      );
+
+    }
+  );
+
+
+  groupSelect.onchange =
+  function(){
+
+    const index =
+      Number(
+        this.value
+      );
+
+
+    areaSelect.innerHTML =
+      `
+        <option value="">
+          اختر المنطقة
+        </option>
+      `;
+
+
+    areaSelect.disabled =
+      true;
+
+
+    hideDeliverySummary();
+
+
+    if(
+      Number.isNaN(index) ||
+      !deliveryGroups[index]
+    ){
+
+      return;
+
+    }
+
+
+    const group =
+      deliveryGroups[index];
+
+
+    if(
+      !Array.isArray(
+        group.areas
+      ) ||
+      group.areas.length === 0
+    ){
+
+      return;
+
+    }
+
+
+    group.areas.forEach(
+      (
+        area,
+        areaIndex
+      ) => {
+
+        if(
+          !area ||
+          !area.name
+        ){
+
+          return;
+
+        }
+
+
+        const option =
+          document.createElement(
+            "option"
+          );
+
+
+        option.value =
+          String(areaIndex);
+
+
+        option.textContent =
+          `${area.name} — ${money(
+            Number(area.fee) || 0
+          )}`;
+
+
+        areaSelect.appendChild(
+          option
+        );
+
+      }
+    );
+
+
+    areaSelect.disabled =
+      false;
+
+  };
+
+
+  areaSelect.onchange =
+  function(){
+
+    const groupIndex =
+      Number(
+        groupSelect.value
+      );
+
+
+    const areaIndex =
+      Number(
+        this.value
+      );
+
+
+    if(
+      Number.isNaN(
+        groupIndex
+      ) ||
+      Number.isNaN(
+        areaIndex
+      ) ||
+      !deliveryGroups[
+        groupIndex
+      ] ||
+      !deliveryGroups[
+        groupIndex
+      ].areas ||
+      !deliveryGroups[
+        groupIndex
+      ].areas[
+        areaIndex
+      ]
+    ){
+
+      hideDeliverySummary();
+
+      return;
+
+    }
+
+
+    const group =
+      deliveryGroups[
+        groupIndex
+      ];
+
+
+    const area =
+      group.areas[
+        areaIndex
+      ];
+
+
+    const fee =
+      Number(
+        area.fee
+      ) || 0;
+
+
+    showDeliverySummary(
+      group.name,
+      area.name,
+      fee
+    );
+
+  };
+
+}
+
+
+/* =====================================================
+   إظهار أجور التوصيل
+===================================================== */
+
+function showDeliverySummary(
+  groupName,
+  areaName,
+  fee
+){
+
+  const summary =
+    document.getElementById(
+      "deliverySummary"
+    );
+
+
+  const feeElement =
+    document.getElementById(
+      "deliveryFee"
+    );
+
+
+  const areaText =
+    document.getElementById(
+      "deliveryAreaText"
+    );
+
+
+  if(!summary){
+
+    return;
+
+  }
+
+
+  if(feeElement){
+
+    feeElement.textContent =
+      money(fee);
+
+  }
+
+
+  if(areaText){
+
+    areaText.textContent =
+      `${groupName} — ${areaName}`;
+
+  }
+
+
+  summary.style.display =
+    "flex";
+
+}
+
+
+/* =====================================================
+   إخفاء أجور التوصيل
+===================================================== */
+
+function hideDeliverySummary(){
+
+  const summary =
+    document.getElementById(
+      "deliverySummary"
+    );
+
+
+  if(summary){
+
+    summary.style.display =
+      "none";
+
+  }
 
 }
 
@@ -897,7 +1345,6 @@ if(whatsappBtn){
     "click",
     () => {
 
-
       if(
         cart.size === 0
       ){
@@ -947,6 +1394,18 @@ if(whatsappBtn){
           .trim();
 
 
+      const groupSelect =
+        document.getElementById(
+          "deliveryGroup"
+        );
+
+
+      const areaSelect =
+        document.getElementById(
+          "deliveryArea"
+        );
+
+
       if(
         !name ||
         !phone ||
@@ -958,6 +1417,78 @@ if(whatsappBtn){
         );
 
         return;
+
+      }
+
+
+      let deliveryGroupName =
+        "";
+
+
+      let deliveryAreaName =
+        "";
+
+
+      let deliveryFee =
+        0;
+
+
+      if(
+        groupSelect &&
+        groupSelect.value !== ""
+      ){
+
+        const groupIndex =
+          Number(
+            groupSelect.value
+          );
+
+
+        const group =
+          deliveryGroups[
+            groupIndex
+          ];
+
+
+        if(group){
+
+          deliveryGroupName =
+            group.name || "";
+
+
+          if(
+            areaSelect &&
+            areaSelect.value !== ""
+          ){
+
+            const areaIndex =
+              Number(
+                areaSelect.value
+              );
+
+
+            const area =
+              group.areas?.[
+                areaIndex
+              ];
+
+
+            if(area){
+
+              deliveryAreaName =
+                area.name || "";
+
+
+              deliveryFee =
+                Number(
+                  area.fee
+                ) || 0;
+
+            }
+
+          }
+
+        }
 
       }
 
@@ -1001,6 +1532,20 @@ if(whatsappBtn){
         `الاسم: ${name}`,
 
         `الهاتف: ${phone}`,
+
+        `منطقة التوصيل الرئيسية: ${
+          deliveryGroupName ||
+          "لم يتم الاختيار"
+        }`,
+
+        `منطقة التوصيل: ${
+          deliveryAreaName ||
+          "لم يتم الاختيار"
+        }`,
+
+        `أجور التوصيل: ${
+          money(deliveryFee)
+        }`,
 
         `العنوان: ${address}`,
 
@@ -1056,6 +1601,68 @@ if(tickerText){
 
 
 /* =====================================================
+   تحميل الشريط من Supabase
+===================================================== */
+
+async function loadTicker(){
+
+  try{
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+
+        .from("products")
+
+        .select("data")
+
+        .limit(1)
+
+        .single();
+
+
+    if(error){
+
+      console.error(
+        "Ticker error:",
+        error
+      );
+
+      return;
+
+    }
+
+
+    const saved =
+      data?.data || {};
+
+
+    if(
+      saved.ticker &&
+      tickerText
+    ){
+
+      tickerText.textContent =
+        saved.ticker;
+
+    }
+
+
+  }catch(error){
+
+    console.error(
+      "Ticker loading error:",
+      error
+    );
+
+  }
+
+}
+
+
+/* =====================================================
    تشغيل الموقع
 ===================================================== */
 
@@ -1063,8 +1670,12 @@ renderCategories();
 
 renderOffers();
 
+renderDeliveryGroups();
+
 renderProducts();
 
 updateCart();
+
+loadTicker();
 
 loadProductsFromSupabase();
