@@ -1681,3 +1681,496 @@ updateCart();
 loadTicker();
 
 loadProductsFromSupabase();
+
+/* =====================================================
+   حساب الزبون
+===================================================== */
+
+let currentCustomer = null;
+
+const CUSTOMER_STORAGE_KEY = "amazon_customer_id";
+
+
+/* =====================================================
+   فتح نافذة تسجيل الزبون
+===================================================== */
+
+document.getElementById("customerAccountBtn")?.addEventListener("click", () => {
+
+  const modal = document.getElementById("customerModal");
+
+  if(modal){
+    modal.classList.add("show");
+  }
+
+});
+
+
+/* =====================================================
+   إغلاق نافذة تسجيل الزبون
+===================================================== */
+
+document.getElementById("customerCloseBtn")?.addEventListener("click", () => {
+
+  const modal = document.getElementById("customerModal");
+
+  if(modal){
+    modal.classList.remove("show");
+  }
+
+});
+
+
+/* =====================================================
+   التحقق من الاسم
+===================================================== */
+
+function validCustomerName(name){
+
+  const words = name
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  return words.length >= 2 && words.length <= 3;
+
+}
+
+
+/* =====================================================
+   تنظيف رقم الهاتف
+===================================================== */
+
+function cleanCustomerPhone(phone){
+
+  phone = String(phone || "")
+    .trim()
+    .replace(/\s+/g,"")
+    .replace(/-/g,"");
+
+  if(phone.startsWith("+964")){
+    phone = "0" + phone.substring(4);
+  }
+
+  if(phone.startsWith("964")){
+    phone = "0" + phone.substring(3);
+  }
+
+  return phone;
+
+}
+
+
+/* =====================================================
+   حفظ بيانات الزبون
+===================================================== */
+
+document.getElementById("customerSaveBtn")?.addEventListener("click", async () => {
+
+  const status =
+    document.getElementById("customerStatus");
+
+  const saveBtn =
+    document.getElementById("customerSaveBtn");
+
+  const name =
+    document.getElementById("registerName")
+      .value
+      .trim();
+
+  const phone =
+    cleanCustomerPhone(
+      document.getElementById("registerPhone").value
+    );
+
+  const city =
+    document.getElementById("registerCity")
+      .value
+      .trim();
+
+  const region =
+    document.getElementById("registerRegion")
+      .value
+      .trim();
+
+  const address =
+    document.getElementById("registerAddress")
+      .value
+      .trim();
+
+
+  /* الاسم */
+
+  if(!validCustomerName(name)){
+
+    status.textContent =
+      "اكتب الاسم الثنائي أو الثلاثي.";
+
+    status.style.display = "block";
+
+    return;
+
+  }
+
+
+  /* الهاتف */
+
+  if(!/^07\d{9}$/.test(phone)){
+
+    status.textContent =
+      "رقم الهاتف يجب أن يبدأ بـ 07 ويتكون من 11 رقمًا.";
+
+    status.style.display = "block";
+
+    return;
+
+  }
+
+
+  /* العنوان */
+
+  if(!city || !region || !address){
+
+    status.textContent =
+      "يرجى إكمال المدينة والمنطقة والعنوان.";
+
+    status.style.display = "block";
+
+    return;
+
+  }
+
+
+  saveBtn.disabled = true;
+
+  saveBtn.textContent =
+    "جاري الحفظ...";
+
+
+  try{
+
+    /* البحث عن الزبون بواسطة الهاتف */
+
+    const {
+      data: existingCustomer,
+      error: searchError
+    } =
+      await supabaseClient
+        .from("customers")
+        .select("*")
+        .eq("phone", phone)
+        .maybeSingle();
+
+
+    if(searchError){
+
+      console.error(
+        "Customer search error:",
+        searchError
+      );
+
+      throw searchError;
+
+    }
+
+
+    let customer;
+
+
+    /* =================================================
+       الزبون موجود مسبقًا
+    ================================================= */
+
+    if(existingCustomer){
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient
+          .from("customers")
+          .update({
+
+            name: name,
+
+            phone: phone,
+
+            delivery_group: city,
+
+            delivery_area: region,
+
+            address: address
+
+          })
+          .eq(
+            "id",
+            existingCustomer.id
+          )
+          .select("*")
+          .single();
+
+
+      if(error)
+        throw error;
+
+
+      customer = data;
+
+
+    }else{
+
+      /* =================================================
+         زبون جديد
+      ================================================= */
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient
+          .from("customers")
+          .insert({
+
+            name: name,
+
+            phone: phone,
+
+            delivery_group: city,
+
+            delivery_area: region,
+
+            address: address
+
+          })
+          .select("*")
+          .single();
+
+
+      if(error)
+        throw error;
+
+
+      customer = data;
+
+    }
+
+
+    /* =================================================
+       حفظ الحساب الحالي
+    ================================================= */
+
+    currentCustomer = customer;
+
+
+    localStorage.setItem(
+      CUSTOMER_STORAGE_KEY,
+      customer.id
+    );
+
+
+    /* =================================================
+       تعبئة بيانات الطلب
+    ================================================= */
+
+    document.getElementById("customerName").value =
+      customer.name || "";
+
+    document.getElementById("customerPhone").value =
+      customer.phone || "";
+
+    document.getElementById("customerAddress").value =
+      customer.address || "";
+
+
+    /* =================================================
+       تغيير زر الحساب
+    ================================================= */
+
+    const accountBtn =
+      document.getElementById(
+        "customerAccountBtn"
+      );
+
+    const nameDisplay =
+      document.getElementById(
+        "customerNameDisplay"
+      );
+
+
+    if(accountBtn){
+
+      accountBtn.textContent =
+        "👤 حسابي";
+
+    }
+
+
+    if(nameDisplay){
+
+      nameDisplay.textContent =
+        customer.name || "";
+
+      nameDisplay.style.display =
+        "inline";
+
+    }
+
+
+    status.textContent =
+      "تم حفظ بياناتك بنجاح.";
+
+    status.style.display =
+      "block";
+
+
+    setTimeout(() => {
+
+      const modal =
+        document.getElementById(
+          "customerModal"
+        );
+
+      if(modal){
+
+        modal.classList.remove(
+          "show"
+        );
+
+      }
+
+    },700);
+
+
+  }catch(error){
+
+    console.error(
+      "Customer save error:",
+      error
+    );
+
+
+    status.textContent =
+      "تعذر حفظ بياناتك. تأكد من الاتصال وحاول مرة أخرى.";
+
+    status.style.display =
+      "block";
+
+
+  }finally{
+
+    saveBtn.disabled =
+      false;
+
+    saveBtn.textContent =
+      "حفظ بياناتي";
+
+  }
+
+});
+
+
+/* =====================================================
+   تحميل حساب الزبون عند فتح الموقع
+===================================================== */
+
+async function loadSavedCustomer(){
+
+  const customerId =
+    localStorage.getItem(
+      CUSTOMER_STORAGE_KEY
+    );
+
+
+  if(!customerId)
+    return;
+
+
+  try{
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .from("customers")
+        .select("*")
+        .eq("id", customerId)
+        .maybeSingle();
+
+
+    if(error)
+      throw error;
+
+
+    if(!data){
+
+      localStorage.removeItem(
+        CUSTOMER_STORAGE_KEY
+      );
+
+      return;
+
+    }
+
+
+    currentCustomer =
+      data;
+
+
+    /* تعبئة بيانات الطلب */
+
+    document.getElementById("customerName").value =
+      data.name || "";
+
+    document.getElementById("customerPhone").value =
+      data.phone || "";
+
+    document.getElementById("customerAddress").value =
+      data.address || "";
+
+
+    /* تحديث زر الحساب */
+
+    const accountBtn =
+      document.getElementById(
+        "customerAccountBtn"
+      );
+
+    const nameDisplay =
+      document.getElementById(
+        "customerNameDisplay"
+      );
+
+
+    if(accountBtn){
+
+      accountBtn.textContent =
+        "👤 حسابي";
+
+    }
+
+
+    if(nameDisplay){
+
+      nameDisplay.textContent =
+        data.name || "";
+
+      nameDisplay.style.display =
+        "inline";
+
+    }
+
+
+  }catch(error){
+
+    console.error(
+      "Load customer error:",
+      error
+    );
+
+  }
+
+}
+
+
+loadSavedCustomer();
