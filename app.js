@@ -1935,6 +1935,23 @@ async function loadSavedCustomer(){
 
   updateCustomerAccountUI();
 }
+function logoutCustomer(){
+
+  localStorage.removeItem(
+    CUSTOMER_STORAGE_KEY
+  );
+
+  currentCustomer = null;
+
+  updateCustomerAccountUI();
+
+  closeCustomerModal();
+
+  alert(
+    "تم تسجيل الخروج من حساب الزبون."
+  );
+
+}
 function setupCustomerAccount(){
 
   const accountBtn =
