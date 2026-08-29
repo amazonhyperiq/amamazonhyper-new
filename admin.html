@@ -2142,9 +2142,40 @@ async function loadProducts(){
       );
 
 
-    renderCategoryOptions();
+   const productFilterCategory =
+  document.getElementById(
+    "productFilterCategory"
+  );
 
+if(productFilterCategory){
 
+  productFilterCategory.innerHTML =
+    `<option value="">
+      جميع الأقسام
+    </option>`;
+
+  categories.forEach(
+    category => {
+
+      const option =
+        document.createElement(
+          "option"
+        );
+
+      option.value =
+        category.id;
+
+      option.textContent =
+        category.name;
+
+      productFilterCategory.appendChild(
+        option
+      );
+
+    }
+  );
+
+}
     const savedProducts =
 
       row.data &&
