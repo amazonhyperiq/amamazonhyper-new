@@ -5,141 +5,719 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>أمازون هايبر ماركت</title>
 <link rel="stylesheet" href="style_full_width.css">
+
+<style>
+/* =====================================================
+   تسجيل الزبون
+===================================================== */
+
+.customer-account{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.customer-account button{
+  border:0;
+  background:#ffffff;
+  color:#333;
+  border-radius:10px;
+  padding:9px 14px;
+  cursor:pointer;
+  font-weight:800;
+  box-shadow:0 2px 8px rgba(0,0,0,.08);
+}
+
+.customer-account button:hover{
+  transform:translateY(-1px);
+}
+
+.customer-name-display{
+  font-weight:800;
+  color:#333;
+  display:none;
+}
+
+
+/* =====================================================
+   نافذة تسجيل الزبون
+===================================================== */
+
+.customer-modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.55);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+  padding:15px;
+}
+
+.customer-modal.show{
+  display:flex;
+}
+
+.customer-modal-box{
+  width:min(520px,100%);
+  max-height:90vh;
+  overflow:auto;
+  background:#fff;
+  border-radius:18px;
+  padding:24px;
+  box-shadow:0 15px 50px rgba(0,0,0,.25);
+}
+
+.customer-modal-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:18px;
+}
+
+.customer-modal-header h2{
+  margin:0;
+}
+
+.customer-close{
+  border:0;
+  background:#eee;
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  cursor:pointer;
+  font-size:18px;
+}
+
+.customer-form{
+  display:grid;
+  gap:14px;
+}
+
+.customer-form label{
+  display:grid;
+  gap:6px;
+  font-weight:800;
+}
+
+.customer-form input{
+  width:100%;
+  box-sizing:border-box;
+  padding:12px;
+  border:1px solid #ddd;
+  border-radius:10px;
+  font-size:15px;
+}
+
+.customer-save{
+  border:0;
+  background:#198754;
+  color:#fff;
+  padding:13px;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:900;
+  font-size:16px;
+}
+
+.customer-save:disabled{
+  opacity:.6;
+  cursor:not-allowed;
+}
+
+.customer-status{
+  display:none;
+  padding:10px;
+  border-radius:10px;
+  background:#f1f5f3;
+  color:#333;
+  font-weight:700;
+}
+
+.customer-logout{
+  border:0;
+  background:#dc3545;
+  color:#fff;
+  padding:10px 14px;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:800;
+}
+
+@media(max-width:600px){
+
+  .customer-account{
+    gap:5px;
+  }
+
+  .customer-account button{
+    padding:8px 10px;
+    font-size:13px;
+  }
+
+  .customer-modal-box{
+    padding:18px;
+  }
+
+}
+</style>
+
 </head>
+
 <body>
+
 <header class="site-header">
+
   <div class="topbar container">
-    <a class="brand" href="index.html" aria-label="أمازون هايبر ماركت">
+
+    <a class="brand"
+       href="index.html"
+       aria-label="أمازون هايبر ماركت">
+
       <span class="brand-mark">🛒</span>
+
       <span>
         <strong>أمازون هايبر ماركت</strong>
-        <small>كل ما تحتاجه... بجودة عالية وأسعار مناسبة</small>
+
+        <small>
+          كل ما تحتاجه... بجودة عالية وأسعار مناسبة
+        </small>
       </span>
+
     </a>
+
+
     <div class="header-cart">
+
+      <!-- حساب الزبون -->
+
+      <div class="customer-account">
+
+        <button
+          id="customerAccountBtn"
+          type="button"
+        >
+          👤 تسجيل / دخول
+        </button>
+
+        <span
+          id="customerNameDisplay"
+          class="customer-name-display"
+        ></span>
+
+      </div>
+
+
       <span>السلة</span>
+
       <b id="cartCountTop">0</b>
+
       <span class="cart-mini">🛒</span>
+
     </div>
+
   </div>
+
+
   <div class="ticker-wrap">
+
     <div class="container ticker">
-      <span class="ticker-label">إعلان</span>
-      <div class="ticker-window"><span id="tickerText">عروض مميزة وأسعار خاصة لفترة محدودة</span></div>
+
+      <span class="ticker-label">
+        إعلان
+      </span>
+
+      <div class="ticker-window">
+
+        <span id="tickerText">
+          عروض مميزة وأسعار خاصة لفترة محدودة
+        </span>
+
+      </div>
+
     </div>
+
   </div>
+
 </header>
 
+
+
 <main class="container page">
+
+
+  <!-- =================================================
+       الأقسام
+  ================================================== -->
+
   <section class="section categories-section">
+
     <div class="section-heading">
+
       <div>
+
         <h2>الأقسام</h2>
-        <p>اختر القسم لعرض مواده</p>
+
+        <p>
+          اختر القسم لعرض مواده
+        </p>
+
       </div>
+
     </div>
-    <div class="category-scroller" id="categories"></div>
+
+    <div
+      class="category-scroller"
+      id="categories"
+    ></div>
+
   </section>
+
+
+
+  <!-- =================================================
+       العروض
+  ================================================== -->
 
   <section class="section offers-section">
+
     <div class="section-heading">
+
       <div>
+
         <h2>عروض خاصة</h2>
-        <p>استفد من عروضنا قبل انتهائها</p>
+
+        <p>
+          استفد من عروضنا قبل انتهائها
+        </p>
+
       </div>
-      <span class="date-hint">تظهر العروض حسب تاريخها</span>
+
+      <span class="date-hint">
+        تظهر العروض حسب تاريخها
+      </span>
+
     </div>
-    <div class="offer-grid" id="offerCards"></div>
+
+    <div
+      class="offer-grid"
+      id="offerCards"
+    ></div>
+
   </section>
+
+
+
+  <!-- =================================================
+       المنتجات
+  ================================================== -->
 
   <section class="section products-section">
+
     <div class="section-heading">
+
       <div>
-        <h2 id="productsTitle">مواد غذائية</h2>
-        <p>استخدم + و − لتحديد الكمية</p>
+
+        <h2 id="productsTitle">
+          مواد غذائية
+        </h2>
+
+        <p>
+          استخدم + و − لتحديد الكمية
+        </p>
+
       </div>
+
     </div>
-    <div class="product-grid" id="productsGrid"></div>
+
+    <div
+      class="product-grid"
+      id="productsGrid"
+    ></div>
+
   </section>
+
+
+
+  <!-- =================================================
+       بيانات الطلب
+  ================================================== -->
 
   <section class="section order-section">
+
     <div class="section-heading">
+
       <div>
-        <h2>بيانات الطلب</h2>
-        <p>أدخل بياناتك قبل الإرسال عبر واتساب</p>
+
+        <h2>
+          بيانات الطلب
+        </h2>
+
+        <p>
+          أدخل بياناتك قبل الإرسال عبر واتساب
+        </p>
+
       </div>
+
     </div>
+
 
     <div class="form-grid">
-      <label>الاسم
-        <input id="customerName" placeholder="اكتب الاسم الكامل">
-      </label>
-      <label>رقم الهاتف
-        <input id="customerPhone" inputmode="tel" placeholder="07xxxxxxxxx">
-      </label>
-     <label>منطقة التوصيل الرئيسية
-  <select id="deliveryGroup">
-    <option value="">اختر المنطقة الرئيسية</option>
-  </select>
-</label>
 
-<label>المنطقة
-  <select id="deliveryArea" disabled>
-    <option value="">اختر المنطقة</option>
-  </select>
-</label>
-      <label>العنوان التفصيلي
-        <input id="customerAddress" placeholder="الشارع، المحلة، أقرب نقطة دالة">
+      <label>
+        الاسم
+
+        <input
+          id="customerName"
+          placeholder="اكتب الاسم الكامل"
+        >
+
       </label>
-      <label class="wide">ملاحظات / إضافات
-        <textarea id="notes" rows="3" placeholder="أي ملاحظات خاصة بالطلب..."></textarea>
+
+
+      <label>
+        رقم الهاتف
+
+        <input
+          id="customerPhone"
+          inputmode="tel"
+          placeholder="07xxxxxxxxx"
+        >
+
       </label>
+
+
+      <label>
+        منطقة التوصيل الرئيسية
+
+        <select id="deliveryGroup">
+
+          <option value="">
+            اختر المنطقة الرئيسية
+          </option>
+
+        </select>
+
+      </label>
+
+
+      <label>
+        المنطقة
+
+        <select
+          id="deliveryArea"
+          disabled
+        >
+
+          <option value="">
+            اختر المنطقة
+          </option>
+
+        </select>
+
+      </label>
+
+
+      <label>
+        العنوان التفصيلي
+
+        <input
+          id="customerAddress"
+          placeholder="الشارع، المحلة، أقرب نقطة دالة"
+        >
+
+      </label>
+
+
+      <label class="wide">
+
+        ملاحظات / إضافات
+
+        <textarea
+          id="notes"
+          rows="3"
+          placeholder="أي ملاحظات خاصة بالطلب..."
+        ></textarea>
+
+      </label>
+
     </div>
 
-    <div class="delivery-summary" id="deliverySummary" style="display:none">
+
+
+    <div
+      class="delivery-summary"
+      id="deliverySummary"
+      style="display:none"
+    >
+
       <span>🚚</span>
+
       <div>
-        <strong>أجور التوصيل: <b id="deliveryFee">0 د.ع</b></strong>
+
+        <strong>
+          أجور التوصيل:
+          <b id="deliveryFee">
+            0 د.ع
+          </b>
+        </strong>
+
         <p id="deliveryAreaText"></p>
+
       </div>
+
     </div>
+
+
 
     <div class="weight-notice">
-      <span class="notice-icon">⚖️</span>
+
+      <span class="notice-icon">
+        ⚖️
+      </span>
+
       <div>
-        <strong>تنويه بخصوص المواد التي تباع بالوزن</strong>
-        <p>قد يختلف الوزن الفعلي والسعر النهائي قليلاً عند تجهيز الطلب، وسيتم تأكيد الكمية والسعر النهائي قبل التسليم.</p>
+
+        <strong>
+          تنويه بخصوص المواد التي تباع بالوزن
+        </strong>
+
+        <p>
+          قد يختلف الوزن الفعلي والسعر النهائي قليلاً
+          عند تجهيز الطلب، وسيتم تأكيد الكمية والسعر
+          النهائي قبل التسليم.
+        </p>
+
       </div>
+
     </div>
+
   </section>
+
+
+
+  <!-- =================================================
+       الدفع / الطلب
+  ================================================== -->
 
   <section class="checkout-card">
+
     <div class="checkout-summary">
-      <div class="basket-icon">🛒<b id="cartCount">0</b></div>
-      <div>
-        <span>المبلغ الإجمالي التقديري</span>
-        <strong id="cartTotal">0 د.ع</strong>
+
+      <div class="basket-icon">
+
+        🛒
+
+        <b id="cartCount">
+          0
+        </b>
+
       </div>
+
+      <div>
+
+        <span>
+          المبلغ الإجمالي التقديري
+        </span>
+
+        <strong id="cartTotal">
+          0 د.ع
+        </strong>
+
+      </div>
+
     </div>
-    <button id="whatsappBtn" class="whatsapp">
-      <span>واتساب</span>
-      <strong>إرسال الطلب</strong>
+
+
+    <button
+      id="whatsappBtn"
+      class="whatsapp"
+    >
+
+      <span>
+        واتساب
+      </span>
+
+      <strong>
+        إرسال الطلب
+      </strong>
+
     </button>
+
   </section>
 
+
+
   <div class="admin-entry">
-    <a href="login.html">🔐 دخول الإدارة</a>
+
+    <a href="login.html">
+      🔐 دخول الإدارة
+    </a>
+
   </div>
+
 </main>
 
-<footer class="site-footer">
-  <div class="container footer-inner">
-    <strong>أمازون هايبر ماركت</strong>
-    <span>جودة عالية وأسعار مناسبة</span>
-    <span>بغداد، العراق</span>
+
+
+<!-- =====================================================
+     نافذة تسجيل الزبون
+===================================================== -->
+
+<div
+  id="customerModal"
+  class="customer-modal"
+>
+
+  <div class="customer-modal-box">
+
+    <div class="customer-modal-header">
+
+      <h2>
+        👤 حساب الزبون
+      </h2>
+
+      <button
+        id="customerCloseBtn"
+        class="customer-close"
+        type="button"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <div class="customer-form">
+
+
+      <label>
+
+        الاسم الكامل
+
+        <input
+          id="registerName"
+          type="text"
+          placeholder="الاسم الثنائي أو الثلاثي"
+          autocomplete="name"
+        >
+
+      </label>
+
+
+      <label>
+
+        رقم الهاتف
+
+        <input
+          id="registerPhone"
+          type="tel"
+          inputmode="tel"
+          placeholder="07xxxxxxxxx"
+          autocomplete="tel"
+        >
+
+      </label>
+
+
+      <label>
+
+        المدينة
+
+        <input
+          id="registerCity"
+          type="text"
+          placeholder="مثال: بغداد"
+          value="بغداد"
+        >
+
+      </label>
+
+
+      <label>
+
+        المنطقة
+
+        <input
+          id="registerRegion"
+          type="text"
+          placeholder="مثال: المنصور"
+        >
+
+      </label>
+
+
+      <label>
+
+        العنوان التفصيلي
+
+        <input
+          id="registerAddress"
+          type="text"
+          placeholder="الحي، المحلة، الشارع، أقرب نقطة دالة"
+        >
+
+      </label>
+
+
+      <div
+        id="customerStatus"
+        class="customer-status"
+      ></div>
+
+
+      <button
+        id="customerSaveBtn"
+        class="customer-save"
+        type="button"
+      >
+        حفظ بياناتي
+      </button>
+
+
+      <button
+        id="customerLogoutBtn"
+        class="customer-logout"
+        type="button"
+        style="display:none"
+      >
+        تسجيل الخروج
+      </button>
+
+    </div>
+
   </div>
+
+</div>
+
+
+
+<footer class="site-footer">
+
+  <div class="container footer-inner">
+
+    <strong>
+      أمازون هايبر ماركت
+    </strong>
+
+    <span>
+      جودة عالية وأسعار مناسبة
+    </span>
+
+    <span>
+      بغداد، العراق
+    </span>
+
+  </div>
+
 </footer>
+
+
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script src="app.js"></script>
+
 </body>
 </html>
