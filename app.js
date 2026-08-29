@@ -560,21 +560,17 @@ function renderOffers(){
       "offerCards"
     );
 
-
   if(!el){
     return;
   }
-
 
   if(!Array.isArray(offers)){
     offers = [];
   }
 
-
   if(offers.length === 0){
 
     el.innerHTML = `
-
       <div
         style="
           grid-column:1/-1;
@@ -583,17 +579,12 @@ function renderOffers(){
           color:#6b756f
         "
       >
-
         لا توجد عروض خاصة حالياً.
-
       </div>
-
     `;
 
     return;
-
   }
-
 
   el.innerHTML =
     offers
@@ -629,7 +620,6 @@ function renderOffers(){
 
           </div>
 
-
           <div class="offer-body">
 
             ${
@@ -640,173 +630,58 @@ function renderOffers(){
                 o.items
                   .map(i => {
 
-                    /* =====================================
-                       إذا كانت بيانات العرض بهذا الشكل:
-
-                       ["رز عنبر", "3000", "2500"]
-
-                       الاسم - السعر السابق - السعر الحالي
-                    ===================================== */
-
-                    if(Array.isArray(i)){
-
-                      const itemName =
-                        i[0] || "";
-
-                      const oldPrice =
-                        i[1];
-
-                      const newPrice =
-                        i[2];
-
-
-                      /*
-                         إذا كان لدينا سعر سابق وحالي
-                      */
-
-                      if(
-                        oldPrice !== undefined &&
-                        newPrice !== undefined
-                      ){
-
-                        return `
-
-                          <div class="offer-item">
-
-                            <span>
-                              ${itemName}
-                            </span>
-
-                            <span class="offer-price">
-
-                              <del>
-                              <span class="offer-price">
-
-  <del>
-    ${money(
-      Number(
-        i.originalPrice !== undefined
-          ? i.originalPrice
-          : i[1]
-      ) || 0
-    )}
-  </del>
-
-  <strong>
-    ${money(
-      Number(
-        i.offerPrice !== undefined
-          ? i.offerPrice
-          : i[2]
-      ) || 0
-    )}
-  </strong>
-
-</span>
-                              </strong>
-
-                            </span>
-
-                          </div>
-
-                        `;
-
-                      }
-
-
-                      /*
-                         دعم الشكل القديم:
-                         ["رز عنبر","2500"]
-                      */
-
-                      return `
-
-                        <div class="offer-item">
-
-                          <span>
-                            ${itemName}
-                          </span>
-
-                          <span class="offer-price">
-
-                            ${oldPrice || ""}
-
-                          </span>
-
-                        </div>
-
-                      `;
-
-                    }
-
+                    let itemName = "";
+                    let oldPrice = 0;
+                    let newPrice = 0;
 
                     /* =====================================
-                       إذا كانت البيانات كائنًا:
-
-                       {
-                         name:"رز عنبر",
-                         oldPrice:3000,
-                         offerPrice:2500
-                       }
+                       صيغة الكائن الجديدة
                     ===================================== */
-
-                    const itemName =
-                      i.name || "";
-
-
-                    const oldPrice =
-                      Number(
-                        i.oldPrice
-                      ) || 0;
-
-
-                    const newPrice =
-                      Number(
-                        i.offerPrice ??
-                        i.newPrice ??
-                        i.price
-                      ) || 0;
-
-
-                    /*
-                       سعر سابق + سعر حالي
-                    */
 
                     if(
-                      oldPrice > 0 &&
-                      newPrice > 0
+                      i &&
+                      typeof i === "object" &&
+                      !Array.isArray(i)
                     ){
 
-                      return `
+                      itemName =
+                        i.name || "";
 
-                        <div class="offer-item">
+                      oldPrice =
+                        Number(
+                          i.originalPrice
+                        ) || 0;
 
-                          <span>
-                            ${itemName}
-                          </span>
-
-                          <span class="offer-price">
-
-                            <del>
-                              ${money(oldPrice)}
-                            </del>
-
-                            <strong>
-                              ${money(newPrice)}
-                            </strong>
-
-                          </span>
-
-                        </div>
-
-                      `;
+                      newPrice =
+                        Number(
+                          i.offerPrice
+                        ) || 0;
 
                     }
 
+                    /* =====================================
+                       دعم الصيغة القديمة
+                    ===================================== */
 
-                    /*
-                       إذا لم يوجد سعر سابق
-                    */
+                    else if(
+                      Array.isArray(i)
+                    ){
+
+                      itemName =
+                        i[0] || "";
+
+                      oldPrice =
+                        Number(
+                          i[1]
+                        ) || 0;
+
+                      newPrice =
+                        Number(
+                          i[2]
+                        ) || 0;
+
+                    }
+
 
                     return `
 
@@ -819,8 +694,23 @@ function renderOffers(){
                         <span class="offer-price">
 
                           ${
+                            oldPrice > 0 &&
+                            oldPrice !== newPrice
+                              ? `
+                                <del>
+                                  ${money(oldPrice)}
+                                </del>
+                              `
+                              : ""
+                          }
+
+                          ${
                             newPrice > 0
-                              ? money(newPrice)
+                              ? `
+                                <strong>
+                                  ${money(newPrice)}
+                                </strong>
+                              `
                               : ""
                           }
 
