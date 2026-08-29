@@ -2000,7 +2000,66 @@ async function loadSavedCustomer(){
 
   updateCustomerAccountUI();
 }
+function setupCustomerAccount(){
 
+  const accountBtn =
+    document.getElementById("customerAccountBtn");
+
+  const closeBtn =
+    document.getElementById("customerCloseBtn");
+
+  const saveBtn =
+    document.getElementById("customerSaveBtn");
+
+  const logoutBtn =
+    document.getElementById("customerLogoutBtn");
+
+  const modal =
+    document.getElementById("customerModal");
+
+  if(accountBtn){
+    accountBtn.addEventListener(
+      "click",
+      openCustomerModal
+    );
+  }
+
+  if(closeBtn){
+    closeBtn.addEventListener(
+      "click",
+      closeCustomerModal
+    );
+  }
+
+  if(saveBtn){
+    saveBtn.addEventListener(
+      "click",
+      saveCustomer
+    );
+  }
+
+  if(logoutBtn){
+    logoutBtn.addEventListener(
+      "click",
+      logoutCustomer
+    );
+  }
+
+  if(modal){
+    modal.addEventListener(
+      "click",
+      event => {
+
+        if(event.target === modal){
+          closeCustomerModal();
+        }
+
+      }
+    );
+  }
+
+  updateCustomerAccountUI();
+}
 setupCustomerAccount();
 loadSavedCustomer();
 
