@@ -2909,11 +2909,152 @@ productDeleteButton.addEventListener(
 
 function renderProductsTable(){
 
+  const filterCategory =
+    document.getElementById(
+      "productFilterCategory"
+    );
+
+  const searchInput =
+    document.getElementById(
+      "productSearch"
+    );
+
+
+  /* ==============================
+     تعبئة قائمة الأقسام
+  ============================== */
+
+  if(filterCategory){
+
+    const currentValue =
+      filterCategory.value;
+
+    filterCategory.innerHTML =
+      `<option value="">
+        جميع الأقسام
+      </option>`;
+
+
+    categories.forEach(
+      category => {
+
+        const option =
+          document.createElement(
+            "option"
+          );
+
+        option.value =
+          category.id;
+
+        option.textContent =
+          category.name;
+
+        filterCategory.appendChild(
+          option
+        );
+
+      }
+    );
+
+
+    if(
+      categories.some(
+        category =>
+          category.id ===
+          currentValue
+      )
+    ){
+
+      filterCategory.value =
+        currentValue;
+
+    }
+
+  }
+
+
+  /* ==============================
+     قراءة الفلترة والبحث
+  ============================== */
+
+  const selectedFilter =
+    filterCategory
+      ?.value || "";
+
+
+  const searchText =
+    searchInput
+      ?.value
+      .trim()
+      .toLowerCase() || "";
+
+
+  let filteredProducts =
+    allProducts.filter(
+      product => {
+
+        const matchesCategory =
+          !selectedFilter ||
+          product.cat ===
+          selectedFilter;
+
+
+        const matchesSearch =
+          !searchText ||
+          String(
+            product.name || ""
+          )
+            .toLowerCase()
+            .includes(
+              searchText
+            );
+
+
+        return (
+          matchesCategory &&
+          matchesSearch
+        );
+
+      }
+    );
+
+
+  /* ==============================
+     عرض النتائج
+  ============================== */
+
   productsTableBody.innerHTML =
     "";
 
 
-  allProducts.forEach(
+  if(filteredProducts.length === 0){
+
+    productsTableBody.innerHTML = `
+
+      <tr>
+
+        <td
+          colspan="6"
+          style="
+            text-align:center;
+            padding:25px;
+            color:#6b756f
+          "
+        >
+
+          لا توجد مواد مطابقة للبحث.
+
+        </td>
+
+      </tr>
+
+    `;
+
+    return;
+  }
+
+
+  filteredProducts.forEach(
     product => {
 
       const tr =
@@ -2996,9 +3137,49 @@ function renderProductsTable(){
     }
   );
 
+
+ /* =====================================
+   تشغيل الفلترة والبحث
+===================================== */
+
+const productFilterCategory =
+  document.getElementById(
+    "productFilterCategory"
+  );
+
+
+const productSearch =
+  document.getElementById(
+    "productSearch"
+  );
+
+
+if(productFilterCategory){
+
+  productFilterCategory.addEventListener(
+    "change",
+    function(){
+
+      renderProductsTable();
+
+    }
+  );
+
 }
 
 
+if(productSearch){
+
+  productSearch.addEventListener(
+    "input",
+    function(){
+
+      renderProductsTable();
+
+    }
+  );
+
+}
 /* =====================================================
    تعديل المادة من الجدول
 ===================================================== */
