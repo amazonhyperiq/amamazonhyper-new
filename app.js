@@ -1257,11 +1257,46 @@ function changeQty(
   delta
 ){
 
+  const product =
+    products.find(
+      p => p.id === id
+    );
+
+  if(!product){
+    return;
+  }
+
+
+  const unit =
+    String(
+      product.unit || ""
+    )
+      .trim()
+      .toLowerCase();
+
+
+  const isWeight =
+    unit.includes("كغم") ||
+    unit.includes("كغ") ||
+    unit.includes("كيلو") ||
+    unit.includes("kg");
+
+
+  const step =
+    isWeight
+      ? 0.25
+      : 1;
+
+
   const q =
     Math.max(
       0,
-      (cart.get(id) || 0) +
-      delta
+      Number(
+        (
+          (cart.get(id) || 0) +
+          (delta * step)
+        ).toFixed(2)
+      )
     );
 
 
