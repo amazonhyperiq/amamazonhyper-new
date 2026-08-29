@@ -221,7 +221,7 @@ async function loadProductsFromSupabase(){
     }
 
 
-    /* ==============================================
+      /* ==============================================
        تحميل الأقسام التي أنشأها المدير
     ============================================== */
 
@@ -233,15 +233,28 @@ async function loadProductsFromSupabase(){
       categories =
         saved.categories.map(c => ({
 
-          id:String(c.id),
+          id:
+            String(c.id),
 
-          name:String(
-            c.name || "قسم"
-          ),
+          name:
+            String(
+              c.name || "قسم"
+            ),
 
-          icon:String(
-            c.icon || "🛒"
-          )
+          icon:
+            String(
+              c.icon || "🛒"
+            ),
+
+          unit:
+            c.unit === "وزن (كغ)"
+              ? "وزن (كغ)"
+              : "قطعة",
+
+          step:
+            Number(c.step) > 0
+              ? Number(c.step)
+              : 1
 
         }));
 
