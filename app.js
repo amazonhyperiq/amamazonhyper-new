@@ -1346,7 +1346,42 @@ if(whatsappBtn){
   whatsappBtn.addEventListener(
     "click",
     () => {
+      
+    /* =========================================
+       منع الزائر غير المسجل من إرسال الطلب
+    ========================================= */
 
+    if(!currentCustomer){
+
+      alert(
+        "يجب تسجيل بياناتك أولاً قبل إرسال الطلب."
+      );
+
+      const modal =
+        document.getElementById(
+          "customerModal"
+        );
+
+      if(modal){
+
+        modal.classList.add(
+          "show"
+        );
+
+      }
+
+      return;
+
+    }
+
+
+    /* =========================================
+       التحقق من السلة
+    ========================================= */
+
+    if(
+      cart.size === 0
+    ){
       if(
         cart.size === 0
       ){
