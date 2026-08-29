@@ -560,17 +560,25 @@ function renderOffers(){
       "offerCards"
     );
 
+
   if(!el){
+
     return;
+
   }
 
+
   if(!Array.isArray(offers)){
+
     offers = [];
+
   }
+
 
   if(offers.length === 0){
 
     el.innerHTML = `
+
       <div
         style="
           grid-column:1/-1;
@@ -579,12 +587,17 @@ function renderOffers(){
           color:#6b756f
         "
       >
+
         لا توجد عروض خاصة حالياً.
+
       </div>
+
     `;
 
     return;
+
   }
+
 
   el.innerHTML =
     offers
@@ -620,108 +633,66 @@ function renderOffers(){
 
           </div>
 
+
           <div class="offer-body">
 
             ${
               Array.isArray(o.items)
 
-                ?
+                ? o.items
+                    .map(i => {
 
-                o.items
-                  .map(i => {
+                      if(
+                        Array.isArray(i)
+                      ){
 
-                    let itemName = "";
-                    let oldPrice = 0;
-                    let newPrice = 0;
+                        return `
 
-                    /* =====================================
-                       صيغة الكائن الجديدة
-                    ===================================== */
+                          <div class="offer-item">
 
-                    if(
-                      i &&
-                      typeof i === "object" &&
-                      !Array.isArray(i)
-                    ){
+                            <span>
+                              ${i[0] || ""}
+                            </span>
 
-                      itemName =
-                        i.name || "";
+                            <span class="offer-price">
+                              ${i[1] || ""}
+                            </span>
 
-                      oldPrice =
-                        Number(
-                          i.originalPrice
-                        ) || 0;
+                          </div>
 
-                      newPrice =
-                        Number(
-                          i.offerPrice
-                        ) || 0;
+                        `;
 
-                    }
-
-                    /* =====================================
-                       دعم الصيغة القديمة
-                    ===================================== */
-
-                    else if(
-                      Array.isArray(i)
-                    ){
-
-                      itemName =
-                        i[0] || "";
-
-                      oldPrice =
-                        Number(
-                          i[1]
-                        ) || 0;
-
-                      newPrice =
-                        Number(
-                          i[2]
-                        ) || 0;
-
-                    }
+                      }
 
 
-                    return `
+                      return `
 
-                      <div class="offer-item">
+                        <div class="offer-item">
 
-                        <span>
-                          ${itemName}
-                        </span>
+                          <span>
+                            ${i.name || ""}
+                          </span>
 
-                        <span class="offer-price">
+                          <span class="offer-price">
 
-                          ${
-                            oldPrice > 0 &&
-                            oldPrice !== newPrice
-                              ? `
-                                <del>
-                                  ${money(oldPrice)}
-                                </del>
-                              `
-                              : ""
-                          }
+                            ${
+                              i.offerPrice
+                                ? money(
+                                    Number(
+                                      i.offerPrice
+                                    )
+                                  )
+                                : ""
+                            }
 
-                          ${
-                            newPrice > 0
-                              ? `
-                                <strong>
-                                  ${money(newPrice)}
-                                </strong>
-                              `
-                              : ""
-                          }
+                          </span>
 
-                        </span>
+                        </div>
 
-                      </div>
+                      `;
 
-                    `;
-
-                  })
-                  .join("")
+                    })
+                    .join("")
 
                 : ""
 
@@ -735,6 +706,8 @@ function renderOffers(){
       .join("");
 
 }
+
+
 /* =====================================================
    تنسيق تاريخ العرض
 ===================================================== */
@@ -1367,7 +1340,6 @@ function updateCart(){
 let currentCustomer = null;
 const CUSTOMER_STORAGE_KEY = "amazon_hyper_customer_id";
 
-
 function normalizePhone(value){
   let phone = String(value || "").trim();
   phone = phone.replace(/[\s\-()]/g, "");
@@ -1402,7 +1374,7 @@ function fillCustomerOrderFields(customer){
   if(address) address.value = customer.address || "";
 
   /*
-     المدينة والمنطقة محفوظتان في city و area داخل حساب الزبون.
+     المدينة والمنطقة محفوظتان في حقلي delivery_group و delivery_area
      داخل حساب الزبون، بدون إضافة أعمدة جديدة إلى قاعدة البيانات.
   */
 
@@ -1418,11 +1390,11 @@ function fillCustomerOrderFields(customer){
       groupSelect.value = String(groupIndex);
       groupSelect.dispatchEvent(new Event("change"));
 
-      if(areaSelect && customer.area){
+      if(areaSelect && customer.region){
         const group = deliveryGroups[groupIndex];
         const areaIndex = Array.isArray(group?.areas)
           ? group.areas.findIndex(
-              area => String(area?.name || "").trim() === String(customer.area).trim()
+              area => String(area?.name || "").trim() === String(customer.region).trim()
             )
           : -1;
 
@@ -1506,512 +1478,227 @@ function closeCustomerModal(){
   const modal = document.getElementById("customerModal");
   if(modal) modal.classList.remove("show");
 }
+
 async function saveCustomer(){
+  const saveBtn = document.getElementById("customerSaveBtn");
 
-  const saveBtn =
-    document.getElementById(
-      "customerSaveBtn"
-    );
-
-  const name =
-    document
-      .getElementById("registerName")
-      ?.value
-      .trim();
-
-  const phone =
-    normalizePhone(
-      document.getElementById(
-        "registerPhone"
-      )?.value
-    );
-
-  const city =
-    document
-      .getElementById("registerCity")
-      ?.value
-      .trim() || "بغداد";
-
-  const area =
-    document
-      .getElementById("registerRegion")
-      ?.value
-      .trim();
-
-  const address =
-    document
-      .getElementById("registerAddress")
-      ?.value
-      .trim();
-
+  const name = document.getElementById("registerName")?.value.trim();
+  const phone = normalizePhone(document.getElementById("registerPhone")?.value);
+  const city = document.getElementById("registerCity")?.value.trim() || "بغداد";
+  const region = document.getElementById("registerRegion")?.value.trim();
+  const address = document.getElementById("registerAddress")?.value.trim();
 
   if(!isValidCustomerName(name)){
-
-    setCustomerStatus(
-      "اكتب الاسم الثنائي أو الثلاثي فقط.",
-      true
-    );
-
+    setCustomerStatus("اكتب الاسم الثنائي أو الثلاثي فقط.", true);
     return;
   }
-
 
   if(!/^07\d{9}$/.test(phone)){
-
-    setCustomerStatus(
-      "رقم الهاتف يجب أن يكون 11 رقمًا ويبدأ بـ 07.",
-      true
-    );
-
+    setCustomerStatus("رقم الهاتف يجب أن يكون 11 رقمًا ويبدأ بـ 07.", true);
     return;
   }
 
-
-  if(!city || !area || !address){
-
-    setCustomerStatus(
-      "يرجى إكمال المدينة والمنطقة والعنوان.",
-      true
-    );
-
+  if(!city || !region || !address){
+    setCustomerStatus("يرجى إكمال المدينة والمنطقة والعنوان.", true);
     return;
   }
-
 
   if(saveBtn){
-
     saveBtn.disabled = true;
-    saveBtn.textContent =
-      "جاري الحفظ...";
-
+    saveBtn.textContent = "جاري الحفظ...";
   }
 
-
   try{
-
     /* البحث عن الزبون برقم الهاتف */
-
-    const {
-      data: existing,
-      error: findError
-    } =
+    const { data: existing, error: findError } =
       await supabaseClient
         .from("customers")
-        .select(
-          "id,name,phone,city,area,address,created_at"
-        )
-        .eq(
-          "phone",
-          phone
-        )
+        .select("id,name,phone,delivery_group,delivery_area,address,created_at")
+        .eq("phone", phone)
         .maybeSingle();
 
-
     if(findError){
-
-      console.error(
-        "Customer lookup error:",
-        findError
-      );
-
-      setCustomerStatus(
-        "تعذر الاتصال بقاعدة بيانات الزبائن. حاول مرة أخرى.",
-        true
-      );
-
+      console.error("Customer lookup error:", findError);
+      setCustomerStatus("تعذر الاتصال بقاعدة بيانات الزبائن. حاول مرة أخرى.", true);
       return;
     }
 
-
-    let savedCustomer =
-      null;
-
-
-    /* =====================================
-       تعديل زبون موجود
-    ===================================== */
+    let savedCustomer = null;
 
     if(existing){
-
-      const {
-        data: updated,
-        error: updateError
-      } =
+      /* تعديل بيانات الزبون الموجود */
+      const { data: updated, error: updateError } =
         await supabaseClient
           .from("customers")
           .update({
-
-            name:
-              name,
-
-            phone:
-              phone,
-
-            city:
-              city,
-
-            area:
-              area,
-
-            address:
-              address
-
+            name,
+            phone,
+            delivery_group: city,
+            delivery_area: region,
+            address
           })
-          .eq(
-            "id",
-            existing.id
-          )
-          .select(
-            "id,name,phone,city,area,address,created_at"
-          )
+          .eq("id", existing.id)
+          .select("id,name,phone,delivery_group,delivery_area,address,created_at")
           .single();
 
-
       if(updateError){
-
-        console.error(
-          "Customer update error:",
-          updateError
-        );
-
-        setCustomerStatus(
-          "تعذر تحديث بيانات الحساب.",
-          true
-        );
-
+        console.error("Customer update error:", updateError);
+        setCustomerStatus("تعذر تحديث بيانات الحساب.", true);
         return;
       }
 
-
-      savedCustomer =
-        updated;
-
-    }
-
-
-    /* =====================================
-       تسجيل زبون جديد
-    ===================================== */
-
-    else{
-
-      const {
-        data: created,
-        error: insertError
-      } =
+      savedCustomer = updated;
+    }else{
+      /* تسجيل زبون جديد */
+      const { data: created, error: insertError } =
         await supabaseClient
           .from("customers")
           .insert({
-
-            name:
-              name,
-
-            phone:
-              phone,
-
-            city:
-              city,
-
-            area:
-              area,
-
-            address:
-              address
-
+            name,
+            phone,
+            delivery_group: city,
+            delivery_area: region,
+            address
           })
-          .select(
-            "id,name,phone,city,area,address,created_at"
-          )
+          .select("id,name,phone,delivery_group,delivery_area,address,created_at")
           .single();
 
-
       if(insertError){
-
-        console.error(
-          "Customer insert error:",
-          insertError
-        );
-
-        setCustomerStatus(
-          "تعذر إنشاء حساب الزبون. حاول مرة أخرى.",
-          true
-        );
-
+        console.error("Customer insert error:", insertError);
+        setCustomerStatus("تعذر إنشاء حساب الزبون. حاول مرة أخرى.", true);
         return;
       }
 
-
-      savedCustomer =
-        created;
-
+      savedCustomer = created;
     }
 
-
-    /* =====================================
-       حفظ الحساب الحالي
-    ===================================== */
-
     currentCustomer = {
-
-      id:
-        savedCustomer.id,
-
-      name:
-        savedCustomer.name,
-
-      phone:
-        savedCustomer.phone,
-
-      city:
-        savedCustomer.city ||
-        city,
-
-      region:
-        savedCustomer.area ||
-        area,
-
-      address:
-        savedCustomer.address ||
-        address,
-
-      created_at:
-        savedCustomer.created_at
-
+      id: savedCustomer.id,
+      name: savedCustomer.name,
+      phone: savedCustomer.phone,
+      city: savedCustomer.delivery_group || city,
+      region: savedCustomer.delivery_area || region,
+      address: savedCustomer.address || address,
+      created_at: savedCustomer.created_at
     };
-
 
     localStorage.setItem(
       CUSTOMER_STORAGE_KEY,
       currentCustomer.id
     );
 
-
-    fillCustomerOrderFields(
-      currentCustomer
-    );
-
+    fillCustomerOrderFields(currentCustomer);
     updateCustomerAccountUI();
 
+    setCustomerStatus("تم حفظ بياناتك بنجاح. يمكنك الآن إرسال الطلب.");
 
-    setCustomerStatus(
-      "تم حفظ بياناتك بنجاح. يمكنك الآن إرسال الطلب."
-    );
-
-
-    setTimeout(
-      () => {
-        closeCustomerModal();
-      },
-      700
-    );
-
+    setTimeout(() => {
+      closeCustomerModal();
+    }, 700);
 
   }catch(error){
-
-    console.error(
-      "Customer save error:",
-      error
-    );
-
-    setCustomerStatus(
-      "حدث خطأ غير متوقع. حاول مرة أخرى.",
-      true
-    );
-
+    console.error("Customer save error:", error);
+    setCustomerStatus("حدث خطأ غير متوقع. حاول مرة أخرى.", true);
   }finally{
-
     if(saveBtn){
-
-      saveBtn.disabled =
-        false;
-
-      saveBtn.textContent =
-        "حفظ بياناتي";
-
+      saveBtn.disabled = false;
+      saveBtn.textContent = "حفظ بياناتي";
     }
-
   }
-
 }
+
 async function loadSavedCustomer(){
+  const customerId = localStorage.getItem(CUSTOMER_STORAGE_KEY);
 
-  const customerId =
-    localStorage.getItem(
-      CUSTOMER_STORAGE_KEY
-    );
-
-
-  if(!customerId){
-    return;
-  }
-
+  if(!customerId) return;
 
   try{
-
-    const {
-      data,
-      error
-    } =
+    const { data, error } =
       await supabaseClient
         .from("customers")
-        .select(
-          "id,name,phone,city,area,address,created_at"
-        )
-        .eq(
-          "id",
-          customerId
-        )
+        .select("id,name,phone,delivery_group,delivery_area,address,created_at")
+        .eq("id", customerId)
         .maybeSingle();
 
-
     if(error){
-
-      console.error(
-        "Saved customer error:",
-        error
-      );
-
+      console.error("Saved customer error:", error);
       return;
     }
-
 
     if(!data){
-
-      localStorage.removeItem(
-        CUSTOMER_STORAGE_KEY
-      );
-
-      currentCustomer =
-        null;
-
-      updateCustomerAccountUI();
-
+      localStorage.removeItem(CUSTOMER_STORAGE_KEY);
       return;
     }
 
-
     currentCustomer = {
-
-      id:
-        data.id,
-
-      name:
-        data.name || "",
-
-      phone:
-        data.phone || "",
-
-      city:
-        data.city || "بغداد",
-
-      region:
-        data.area || "",
-
-      address:
-        data.address || "",
-
-      created_at:
-        data.created_at
-
+      id: data.id,
+      name: data.name || "",
+      phone: data.phone || "",
+      city: data.delivery_group || "بغداد",
+      region: data.delivery_area || "",
+      address: data.address || "",
+      created_at: data.created_at
     };
 
-
     updateCustomerAccountUI();
-
-    fillCustomerOrderFields(
-      currentCustomer
-    );
-
+    fillCustomerOrderFields(currentCustomer);
 
   }catch(error){
-
-    console.error(
-      "Load saved customer error:",
-      error
-    );
-
+    console.error("Load saved customer error:", error);
   }
-
-
-  updateCustomerAccountUI();
 }
+
 function logoutCustomer(){
-
-  localStorage.removeItem(
-    CUSTOMER_STORAGE_KEY
-  );
-
   currentCustomer = null;
+  localStorage.removeItem(CUSTOMER_STORAGE_KEY);
+
+  const name = document.getElementById("customerName");
+  const phone = document.getElementById("customerPhone");
+  const address = document.getElementById("customerAddress");
+
+  if(name) name.value = "";
+  if(phone) phone.value = "";
+  if(address) address.value = "";
 
   updateCustomerAccountUI();
-
   closeCustomerModal();
-
-  alert(
-    "تم تسجيل الخروج من حساب الزبون."
-  );
-
+  alert("تم تسجيل الخروج من حساب الزبون.");
 }
+
 function setupCustomerAccount(){
-
-  const accountBtn =
-    document.getElementById("customerAccountBtn");
-
-  const closeBtn =
-    document.getElementById("customerCloseBtn");
-
-  const saveBtn =
-    document.getElementById("customerSaveBtn");
-
-  const logoutBtn =
-    document.getElementById("customerLogoutBtn");
-
-  const modal =
-    document.getElementById("customerModal");
+  const accountBtn = document.getElementById("customerAccountBtn");
+  const closeBtn = document.getElementById("customerCloseBtn");
+  const saveBtn = document.getElementById("customerSaveBtn");
+  const logoutBtn = document.getElementById("customerLogoutBtn");
+  const modal = document.getElementById("customerModal");
 
   if(accountBtn){
-    accountBtn.addEventListener(
-      "click",
-      openCustomerModal
-    );
+    accountBtn.addEventListener("click", openCustomerModal);
   }
 
   if(closeBtn){
-    closeBtn.addEventListener(
-      "click",
-      closeCustomerModal
-    );
+    closeBtn.addEventListener("click", closeCustomerModal);
   }
 
   if(saveBtn){
-    saveBtn.addEventListener(
-      "click",
-      saveCustomer
-    );
+    saveBtn.addEventListener("click", saveCustomer);
   }
 
   if(logoutBtn){
-    logoutBtn.addEventListener(
-      "click",
-      logoutCustomer
-    );
+    logoutBtn.addEventListener("click", logoutCustomer);
   }
 
   if(modal){
-    modal.addEventListener(
-      "click",
-      event => {
-
-        if(event.target === modal){
-          closeCustomerModal();
-        }
-
+    modal.addEventListener("click", event => {
+      if(event.target === modal){
+        closeCustomerModal();
       }
-    );
+    });
   }
 
   updateCustomerAccountUI();
 }
+
 setupCustomerAccount();
 loadSavedCustomer();
 
