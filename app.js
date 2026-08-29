@@ -1280,37 +1280,47 @@ function changeQty(
   }
 
 
-  const unit =
-    String(
-      product.unit || ""
-    )
-      .trim()
-      .toLowerCase();
+ const unit =
+  String(
+    product.unit || ""
+  )
+    .trim()
+    .toLowerCase();
 
 
-  const isWeight =
-    unit.includes("كغم") ||
-    unit.includes("كغ") ||
-    unit.includes("كيلو") ||
-    unit.includes("kg");
+const isWeight =
+  unit.includes("كغم") ||
+  unit.includes("كغ") ||
+  unit.includes("كيلو") ||
+  unit.includes("kg");
 
 
-  const step =
-    isWeight
-      ? 0.25
-      : 1;
+const category =
+  categories.find(
+    c => c.id === product.cat
+  );
 
 
-  const q =
-    Math.max(
-      0,
-      Number(
-        (
-          (cart.get(id) || 0) +
-          (delta * step)
-        ).toFixed(2)
+const step =
+  isWeight
+    ? (
+        Number(category?.step) > 0
+          ? Number(category.step)
+          : 1
       )
-    );
+    : 1;
+
+
+const q =
+  Math.max(
+    0,
+    Number(
+      (
+        (cart.get(id) || 0) +
+        (delta * step)
+      ).toFixed(2)
+    )
+  );
 
 
   if(q){
