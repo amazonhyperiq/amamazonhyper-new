@@ -1589,6 +1589,7 @@ async function saveCustomer(){
   if(saveBtn){
 
     saveBtn.disabled = true;
+
     saveBtn.textContent =
       "جاري الحفظ...";
 
@@ -1597,8 +1598,6 @@ async function saveCustomer(){
 
   try{
 
-    /* البحث عن الزبون برقم الهاتف */
-
     const {
       data: existing,
       error: findError
@@ -1606,7 +1605,7 @@ async function saveCustomer(){
       await supabaseClient
         .from("customers")
         .select(
-          "id,name,phone,city,area,address,created_at"
+          "id,name,phone,delivery_group,delivery_area,address,created_at"
         )
         .eq(
           "phone",
@@ -1631,13 +1630,8 @@ async function saveCustomer(){
     }
 
 
-    let savedCustomer =
-      null;
+    let savedCustomer = null;
 
-
-    /* =====================================
-       تعديل زبون موجود
-    ===================================== */
 
     if(existing){
 
@@ -1655,10 +1649,10 @@ async function saveCustomer(){
             phone:
               phone,
 
-            city:
+            delivery_group:
               city,
 
-            area:
+            delivery_area:
               area,
 
             address:
@@ -1670,7 +1664,7 @@ async function saveCustomer(){
             existing.id
           )
           .select(
-            "id,name,phone,city,area,address,created_at"
+            "id,name,phone,delivery_group,delivery_area,address,created_at"
           )
           .single();
 
@@ -1694,14 +1688,7 @@ async function saveCustomer(){
       savedCustomer =
         updated;
 
-    }
-
-
-    /* =====================================
-       تسجيل زبون جديد
-    ===================================== */
-
-    else{
+    }else{
 
       const {
         data: created,
@@ -1717,10 +1704,10 @@ async function saveCustomer(){
             phone:
               phone,
 
-            city:
+            delivery_group:
               city,
 
-            area:
+            delivery_area:
               area,
 
             address:
@@ -1728,7 +1715,7 @@ async function saveCustomer(){
 
           })
           .select(
-            "id,name,phone,city,area,address,created_at"
+            "id,name,phone,delivery_group,delivery_area,address,created_at"
           )
           .single();
 
@@ -1755,32 +1742,25 @@ async function saveCustomer(){
     }
 
 
-    /* =====================================
-       حفظ الحساب الحالي
-    ===================================== */
-
     currentCustomer = {
 
       id:
         savedCustomer.id,
 
       name:
-        savedCustomer.name,
+        savedCustomer.name || "",
 
       phone:
-        savedCustomer.phone,
+        savedCustomer.phone || "",
 
       city:
-        savedCustomer.city ||
-        city,
+        savedCustomer.delivery_group || city,
 
       region:
-        savedCustomer.area ||
-        area,
+        savedCustomer.delivery_area || area,
 
       address:
-        savedCustomer.address ||
-        address,
+        savedCustomer.address || address,
 
       created_at:
         savedCustomer.created_at
@@ -1797,6 +1777,7 @@ async function saveCustomer(){
     fillCustomerOrderFields(
       currentCustomer
     );
+
 
     updateCustomerAccountUI();
 
