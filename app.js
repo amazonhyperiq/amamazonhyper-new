@@ -562,16 +562,12 @@ function renderOffers(){
 
 
   if(!el){
-
     return;
-
   }
 
 
   if(!Array.isArray(offers)){
-
     offers = [];
-
   }
 
 
@@ -639,11 +635,38 @@ function renderOffers(){
             ${
               Array.isArray(o.items)
 
-                ? o.items
-                    .map(i => {
+                ?
+
+                o.items
+                  .map(i => {
+
+                    /* =====================================
+                       إذا كانت بيانات العرض بهذا الشكل:
+
+                       ["رز عنبر", "3000", "2500"]
+
+                       الاسم - السعر السابق - السعر الحالي
+                    ===================================== */
+
+                    if(Array.isArray(i)){
+
+                      const itemName =
+                        i[0] || "";
+
+                      const oldPrice =
+                        i[1];
+
+                      const newPrice =
+                        i[2];
+
+
+                      /*
+                         إذا كان لدينا سعر سابق وحالي
+                      */
 
                       if(
-                        Array.isArray(i)
+                        oldPrice !== undefined &&
+                        newPrice !== undefined
                       ){
 
                         return `
@@ -651,11 +674,23 @@ function renderOffers(){
                           <div class="offer-item">
 
                             <span>
-                              ${i[0] || ""}
+                              ${itemName}
                             </span>
 
                             <span class="offer-price">
-                              ${i[1] || ""}
+
+                              <del>
+                                ${money(
+                                  Number(oldPrice) || 0
+                                )}
+                              </del>
+
+                              <strong>
+                                ${money(
+                                  Number(newPrice) || 0
+                                )}
+                              </strong>
+
                             </span>
 
                           </div>
@@ -665,25 +700,22 @@ function renderOffers(){
                       }
 
 
+                      /*
+                         دعم الشكل القديم:
+                         ["رز عنبر","2500"]
+                      */
+
                       return `
 
                         <div class="offer-item">
 
                           <span>
-                            ${i.name || ""}
+                            ${itemName}
                           </span>
 
                           <span class="offer-price">
 
-                            ${
-                              i.offerPrice
-                                ? money(
-                                    Number(
-                                      i.offerPrice
-                                    )
-                                  )
-                                : ""
-                            }
+                            ${oldPrice || ""}
 
                           </span>
 
@@ -691,8 +723,101 @@ function renderOffers(){
 
                       `;
 
-                    })
-                    .join("")
+                    }
+
+
+                    /* =====================================
+                       إذا كانت البيانات كائنًا:
+
+                       {
+                         name:"رز عنبر",
+                         oldPrice:3000,
+                         offerPrice:2500
+                       }
+                    ===================================== */
+
+                    const itemName =
+                      i.name || "";
+
+
+                    const oldPrice =
+                      Number(
+                        i.oldPrice
+                      ) || 0;
+
+
+                    const newPrice =
+                      Number(
+                        i.offerPrice ??
+                        i.newPrice ??
+                        i.price
+                      ) || 0;
+
+
+                    /*
+                       سعر سابق + سعر حالي
+                    */
+
+                    if(
+                      oldPrice > 0 &&
+                      newPrice > 0
+                    ){
+
+                      return `
+
+                        <div class="offer-item">
+
+                          <span>
+                            ${itemName}
+                          </span>
+
+                          <span class="offer-price">
+
+                            <del>
+                              ${money(oldPrice)}
+                            </del>
+
+                            <strong>
+                              ${money(newPrice)}
+                            </strong>
+
+                          </span>
+
+                        </div>
+
+                      `;
+
+                    }
+
+
+                    /*
+                       إذا لم يوجد سعر سابق
+                    */
+
+                    return `
+
+                      <div class="offer-item">
+
+                        <span>
+                          ${itemName}
+                        </span>
+
+                        <span class="offer-price">
+
+                          ${
+                            newPrice > 0
+                              ? money(newPrice)
+                              : ""
+                          }
+
+                        </span>
+
+                      </div>
+
+                    `;
+
+                  })
+                  .join("")
 
                 : ""
 
@@ -706,8 +831,6 @@ function renderOffers(){
       .join("");
 
 }
-
-
 /* =====================================================
    تنسيق تاريخ العرض
 ===================================================== */
