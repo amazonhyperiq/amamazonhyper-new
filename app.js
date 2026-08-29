@@ -1367,6 +1367,72 @@ function updateCart(){
 let currentCustomer = null;
 const CUSTOMER_STORAGE_KEY = "amazon_hyper_customer_id";
 
+async function loadSavedCustomer(){
+
+  const customerId =
+    localStorage.getItem(
+      CUSTOMER_STORAGE_KEY
+    );
+
+  if(!customerId){
+    return;
+  }
+
+  try{
+
+    const {
+      data,
+      error
+    } = await supabaseClient
+      .from("customers")
+      .select("*")
+      .eq(
+        "id",
+        customerId
+      )
+      .single();
+
+    if(error){
+      console.error(
+        "خطأ في تحميل حساب الزبون:",
+        error
+      );
+
+      localStorage.removeItem(
+        CUSTOMER_STORAGE_KEY
+      );
+
+      currentCustomer = null;
+
+      return;
+    }
+
+    if(data){
+
+      currentCustomer =
+        data;
+
+      fillCustomerOrderFields(
+        currentCustomer
+      );
+
+      console.log(
+        "تم تحميل حساب الزبون:",
+        currentCustomer
+      );
+
+    }
+
+  }catch(error){
+
+    console.error(
+      "خطأ في قراءة حساب الزبون:",
+      error
+    );
+
+  }
+}
+
 function normalizePhone(value){
   let phone = String(value || "").trim();
   phone = phone.replace(/[\s\-()]/g, "");
