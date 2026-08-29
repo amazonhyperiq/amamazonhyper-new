@@ -680,15 +680,29 @@ function renderOffers(){
                             <span class="offer-price">
 
                               <del>
-                                ${money(
-                                  Number(oldPrice) || 0
-                                )}
-                              </del>
+                              <span class="offer-price">
 
-                              <strong>
-                                ${money(
-                                  Number(newPrice) || 0
-                                )}
+  <del>
+    ${money(
+      Number(
+        i.originalPrice !== undefined
+          ? i.originalPrice
+          : i[1]
+      ) || 0
+    )}
+  </del>
+
+  <strong>
+    ${money(
+      Number(
+        i.offerPrice !== undefined
+          ? i.offerPrice
+          : i[2]
+      ) || 0
+    )}
+  </strong>
+
+</span>
                               </strong>
 
                             </span>
