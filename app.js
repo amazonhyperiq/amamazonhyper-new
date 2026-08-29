@@ -1,156 +1,72 @@
-const SUPABASE_URL = "https://vvexorzjkpwduykinwsw.supabase.co";
-const SUPABASE_KEY = "sb_publishable_RoMHq19grLJWNu95uPSwug_XwiKt2bB";
+const SUPABASE_URL = “https://vvexorzjkpwduykinwsw.supabase.co”; const
+SUPABASE_KEY = “sb_publishable_RoMHq19grLJWNu95uPSwug_XwiKt2bB”;
 
-const supabaseClient = supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
+const supabaseClient = supabase.createClient( SUPABASE_URL, SUPABASE_KEY
 );
 
-
-/* =====================================================
-   الأقسام
+/* ===================================================== الأقسام
 ===================================================== */
 
-let categories = [
-  {id:"meat",name:"اللحوم الطازجة",icon:"🥩"},
-  {id:"chicken",name:"الدجاج فريش",icon:"🍗"},
-  {id:"vegetables",name:"الفواكه والخضار",icon:"🥬"},
-  {id:"canned-veg",name:"الخضراوات المعلبة (فريش)",icon:"🥫"},
-  {id:"food",name:"الرز والزيت والمعجون (المواد الغذائية)",icon:"🛒"},
-  {id:"deli-pickles",name:"الأجبان والألبان والمخللات (الدلي)",icon:"🧀"},
-  {id:"legumes-packaging",name:"البقوليات ومواد التعبئة (الوزن)",icon:"⚖️"},
-  {id:"drinks",name:"العصائر والمشروبات",icon:"🥤"},
-  {id:"dairy",name:"الأجبان والألبان",icon:"🥛"},
-  {id:"cleaning",name:"مواد التنظيف المنزلية",icon:"🧴"},
-  {id:"laundry",name:"مساحيق غسيل الملابس",icon:"🧺"},
-  {id:"cosmetic",name:"مواد العناية بالشعر والبشرة والجسم",icon:"💄"},
-  {id:"tissues-paper",name:"الكلينس والورقيات",icon:"🧻"},
-  {id:"cleaning-tools",name:"أدوات التنظيف المنزلية",icon:"🧽"}
-];
+let categories = [ {id:“meat”,name:“اللحوم الطازجة”,icon:“🥩”},
+{id:“chicken”,name:“الدجاج فريش”,icon:“🍗”},
+{id:“vegetables”,name:“الفواكه والخضار”,icon:“🥬”},
+{id:“canned-veg”,name:“الخضراوات المعلبة (فريش)”,icon:“🥫”},
+{id:“food”,name:“الرز والزيت والمعجون (المواد الغذائية)”,icon:“🛒”},
+{id:“deli-pickles”,name:“الأجبان والألبان والمخللات (الدلي)”,icon:“🧀”},
+{id:“legumes-packaging”,name:“البقوليات ومواد التعبئة
+(الوزن)”,icon:“⚖️”}, {id:“drinks”,name:“العصائر والمشروبات”,icon:“🥤”},
+{id:“dairy”,name:“الأجبان والألبان”,icon:“🥛”},
+{id:“cleaning”,name:“مواد التنظيف المنزلية”,icon:“🧴”},
+{id:“laundry”,name:“مساحيق غسيل الملابس”,icon:“🧺”},
+{id:“cosmetic”,name:“مواد العناية بالشعر والبشرة والجسم”,icon:“💄”},
+{id:“tissues-paper”,name:“الكلينس والورقيات”,icon:“🧻”},
+{id:“cleaning-tools”,name:“أدوات التنظيف المنزلية”,icon:“🧽”}];
 
+/* ===================================================== المنتجات
+الافتراضية ===================================================== */
 
-/* =====================================================
-   المنتجات الافتراضية
-===================================================== */
+let products = [ { id:1, cat:“food”, name:“رز عنبر”, price:3000,
+unit:“قطعة”, icon:“🍚” },
 
-let products = [
-  {
-    id:1,
-    cat:"food",
-    name:"رز عنبر",
-    price:3000,
-    unit:"قطعة",
-    icon:"🍚"
-  },
+{ id:2, cat:“food”, name:“زيت طبخ”, price:4500, unit:“قطعة”, icon:“🫗”
+},
 
-  {
-    id:2,
-    cat:"food",
-    name:"زيت طبخ",
-    price:4500,
-    unit:"قطعة",
-    icon:"🫗"
-  },
+{ id:3, cat:“food”, name:“سكر”, price:1500, unit:“قطعة”, icon:“🍬” },
 
-  {
-    id:3,
-    cat:"food",
-    name:"سكر",
-    price:1500,
-    unit:"قطعة",
-    icon:"🍬"
-  },
+{ id:4, cat:“food”, name:“معجون طماطم”, price:1000, unit:“قطعة”,
+icon:“🥫” },
 
-  {
-    id:4,
-    cat:"food",
-    name:"معجون طماطم",
-    price:1000,
-    unit:"قطعة",
-    icon:"🥫"
-  },
+{ id:5, cat:“cleaning”, name:“مسحوق غسيل”, price:7500, unit:“قطعة”,
+icon:“🧺” },
 
-  {
-    id:5,
-    cat:"cleaning",
-    name:"مسحوق غسيل",
-    price:7500,
-    unit:"قطعة",
-    icon:"🧺"
-  },
+{ id:6, cat:“cleaning”, name:“سائل جلي”, price:3000, unit:“قطعة”,
+icon:“🧽” },
 
-  {
-    id:6,
-    cat:"cleaning",
-    name:"سائل جلي",
-    price:3000,
-    unit:"قطعة",
-    icon:"🧽"
-  },
+{ id:7, cat:“cosmetic”, name:“شامبو”, price:6500, unit:“قطعة”, icon:“🧴”
+},
 
-  {
-    id:7,
-    cat:"cosmetic",
-    name:"شامبو",
-    price:6500,
-    unit:"قطعة",
-    icon:"🧴"
-  },
+{ id:8, cat:“cosmetic”, name:“كريم مرطب”, price:8500, unit:“قطعة”,
+icon:“🧴” },
 
-  {
-    id:8,
-    cat:"cosmetic",
-    name:"كريم مرطب",
-    price:8500,
-    unit:"قطعة",
-    icon:"🧴"
-  },
+{ id:9, cat:“meat”, name:“لحم غنم بالعظم”, price:22000, unit:“كغم”,
+icon:“🥩” },
 
-  {
-    id:9,
-    cat:"meat",
-    name:"لحم غنم بالعظم",
-    price:22000,
-    unit:"كغم",
-    icon:"🥩"
-  },
+{ id:10, cat:“meat”, name:“لحم غنم شرح”, price:27000, unit:“كغم”,
+icon:“🥩” },
 
-  {
-    id:10,
-    cat:"meat",
-    name:"لحم غنم شرح",
-    price:27000,
-    unit:"كغم",
-    icon:"🥩"
-  },
+{ id:11, cat:“chicken”, name:“دجاج ذبح عراقي”, price:5750, unit:“قطعة”,
+icon:“🍗” },
 
-  {
-    id:11,
-    cat:"chicken",
-    name:"دجاج ذبح عراقي",
-    price:5750,
-    unit:"قطعة",
-    icon:"🍗"
-  },
+{ id:12, cat:“vegetables”, name:“طماطم”, price:2000, unit:“كغم”,
+icon:“🍅” } ];
 
-  {
-    id:12,
-    cat:"vegetables",
-    name:"طماطم",
-    price:2000,
-    unit:"كغم",
-    icon:"🍅"
-  }
-];
-
-
-/* =====================================================
-   تحميل الأقسام والمنتجات والعروض ومناطق التوصيل
+/* ===================================================== تحميل الأقسام
+والمنتجات والعروض ومناطق التوصيل
 ===================================================== */
 
 async function loadProductsFromSupabase(){
 
-  try{
+try{
 
     const { data, error } =
       await supabaseClient
@@ -412,74 +328,53 @@ async function loadProductsFromSupabase(){
       deliveryGroups.length
     );
 
-
-  }catch(err){
+}catch(err){
 
     console.error(
       "Supabase connection error:",
       err
     );
 
-  }
+}
 
 }
 
-
-/* =====================================================
-   العروض
+/* ===================================================== العروض
 ===================================================== */
 
 let offers = [];
 
-
-/* =====================================================
-   مناطق التوصيل
+/* ===================================================== مناطق التوصيل
 ===================================================== */
 
 let deliveryGroups = [];
 
+/* ===================================================== السلة والقسم
+المحدد ===================================================== */
 
-/* =====================================================
-   السلة والقسم المحدد
-===================================================== */
-
-let selectedCategory = "food";
+let selectedCategory = “food”;
 
 const cart = new Map();
 
-
-/* =====================================================
-   تنسيق العملة
+/* ===================================================== تنسيق العملة
 ===================================================== */
 
-const money = n =>
-  new Intl.NumberFormat("ar-IQ")
-    .format(n) +
-  " د.ع";
+const money = n => new Intl.NumberFormat(“ar-IQ”) .format(n) + ” د.ع”;
 
-
-/* =====================================================
-   عرض الأقسام
+/* ===================================================== عرض الأقسام
 ===================================================== */
 
 function renderCategories(){
 
-  const el =
-    document.getElementById(
-      "categories"
-    );
+const el = document.getElementById( “categories” );
 
-
-  if(!el){
+if(!el){
 
     return;
 
-  }
+}
 
-
-  el.innerHTML =
-    categories
-      .map(c => `
+el.innerHTML = categories .map(c => `
 
         <button
           class="category ${
@@ -503,12 +398,7 @@ function renderCategories(){
       `)
       .join("");
 
-
-  el
-    .querySelectorAll(
-      ".category"
-    )
-    .forEach(btn => {
+el .querySelectorAll( “.category” ) .forEach(btn => {
 
       btn.addEventListener(
         "click",
@@ -548,34 +438,26 @@ function renderCategories(){
 
 }
 
-
-/* =====================================================
-   عرض العروض
+/* ===================================================== عرض العروض
 ===================================================== */
 
 function renderOffers(){
 
-  const el =
-    document.getElementById(
-      "offerCards"
-    );
+const el = document.getElementById( “offerCards” );
 
-
-  if(!el){
+if(!el){
 
     return;
 
-  }
+}
 
-
-  if(!Array.isArray(offers)){
+if(!Array.isArray(offers)){
 
     offers = [];
 
-  }
+}
 
-
-  if(offers.length === 0){
+if(offers.length === 0){
 
     el.innerHTML = `
 
@@ -596,12 +478,9 @@ function renderOffers(){
 
     return;
 
-  }
+}
 
-
-  el.innerHTML =
-    offers
-      .map(o => `
+el.innerHTML = offers .map(o => `
 
         <article class="offer-card">
 
@@ -707,102 +586,59 @@ function renderOffers(){
 
 }
 
+/* ===================================================== تنسيق تاريخ
+العرض ===================================================== */
 
-/* =====================================================
-   تنسيق تاريخ العرض
-===================================================== */
+function formatOfferDate( date ){
 
-function formatOfferDate(
-  date
-){
-
-  if(!date){
+if(!date){
 
     return "";
 
-  }
+}
 
+const parts = String(date).split(“-”);
 
-  const parts =
-    String(date).split("-");
-
-
-  if(parts.length === 3){
+if(parts.length === 3){
 
     return `${parts[2]}/${parts[1]}`;
 
-  }
+}
 
-
-  return date;
+return date;
 
 }
 
-
-/* =====================================================
-   عرض مناطق التوصيل
-===================================================== */
+/* ===================================================== عرض مناطق
+التوصيل ===================================================== */
 
 function renderDeliveryGroups(){
 
-  const groupSelect =
-    document.getElementById(
-      "deliveryGroup"
-    );
+const groupSelect = document.getElementById( “deliveryGroup” );
 
+const areaSelect = document.getElementById( “deliveryArea” );
 
-  const areaSelect =
-    document.getElementById(
-      "deliveryArea"
-    );
-
-
-  if(
-    !groupSelect ||
-    !areaSelect
-  ){
+if( !groupSelect || !areaSelect ){
 
     return;
 
-  }
+}
 
+groupSelect.innerHTML =
+<option value="">         اختر المنطقة الرئيسية       </option>;
 
-  groupSelect.innerHTML =
-    `
-      <option value="">
-        اختر المنطقة الرئيسية
-      </option>
-    `;
+areaSelect.innerHTML =
+<option value="">         اختر المنطقة       </option>;
 
+areaSelect.disabled = true;
 
-  areaSelect.innerHTML =
-    `
-      <option value="">
-        اختر المنطقة
-      </option>
-    `;
-
-
-  areaSelect.disabled =
-    true;
-
-
-  if(
-    !Array.isArray(
-      deliveryGroups
-    )
-  ){
+if( !Array.isArray( deliveryGroups ) ){
 
     deliveryGroups = [];
 
-  }
+}
 
-
-  deliveryGroups.forEach(
-    (
-      group,
-      index
-    ) => {
+deliveryGroups.forEach( ( group, index ) => {
 
       if(
         !group ||
@@ -833,11 +669,10 @@ function renderDeliveryGroups(){
       );
 
     }
-  );
 
+);
 
-  groupSelect.onchange =
-  function(){
+groupSelect.onchange = function(){
 
     const index =
       Number(
@@ -929,11 +764,9 @@ function renderDeliveryGroups(){
     areaSelect.disabled =
       false;
 
-  };
+};
 
-
-  areaSelect.onchange =
-  function(){
+areaSelect.onchange = function(){
 
     const groupIndex =
       Number(
@@ -998,120 +831,77 @@ function renderDeliveryGroups(){
       fee
     );
 
-  };
+};
 
 }
 
+/* ===================================================== إظهار أجور
+التوصيل ===================================================== */
 
-/* =====================================================
-   إظهار أجور التوصيل
-===================================================== */
+function showDeliverySummary( groupName, areaName, fee ){
 
-function showDeliverySummary(
-  groupName,
-  areaName,
-  fee
-){
+const summary = document.getElementById( “deliverySummary” );
 
-  const summary =
-    document.getElementById(
-      "deliverySummary"
-    );
+const feeElement = document.getElementById( “deliveryFee” );
 
+const areaText = document.getElementById( “deliveryAreaText” );
 
-  const feeElement =
-    document.getElementById(
-      "deliveryFee"
-    );
-
-
-  const areaText =
-    document.getElementById(
-      "deliveryAreaText"
-    );
-
-
-  if(!summary){
+if(!summary){
 
     return;
 
-  }
+}
 
-
-  if(feeElement){
+if(feeElement){
 
     feeElement.textContent =
       money(fee);
 
-  }
+}
 
-
-  if(areaText){
+if(areaText){
 
     areaText.textContent =
       `${groupName} — ${areaName}`;
 
-  }
+}
 
-
-  summary.style.display =
-    "flex";
+summary.style.display = “flex”;
 
 }
 
-
-/* =====================================================
-   إخفاء أجور التوصيل
-===================================================== */
+/* ===================================================== إخفاء أجور
+التوصيل ===================================================== */
 
 function hideDeliverySummary(){
 
-  const summary =
-    document.getElementById(
-      "deliverySummary"
-    );
+const summary = document.getElementById( “deliverySummary” );
 
-
-  if(summary){
+if(summary){
 
     summary.style.display =
       "none";
 
-  }
+}
 
 }
 
-
-/* =====================================================
-   عرض المنتجات
+/* ===================================================== عرض المنتجات
 ===================================================== */
 
 function renderProducts(){
 
-  const el =
-    document.getElementById(
-      "productsGrid"
-    );
+const el = document.getElementById( “productsGrid” );
 
-
-  if(!el){
+if(!el){
 
     return;
 
-  }
+}
 
+const list = products.filter( p => p.cat === selectedCategory );
 
-  const list =
-    products.filter(
-      p =>
-        p.cat ===
-        selectedCategory
-    );
-
-
-  el.innerHTML =
-    list
-      .map(p => {
+el.innerHTML = list .map(p => {
 
         const q =
           cart.get(p.id) || 0;
@@ -1212,60 +1002,42 @@ function renderProducts(){
 
 }
 
-
-/* =====================================================
-   تغيير الكمية
+/* ===================================================== تغيير الكمية
 ===================================================== */
 
-function changeQty(
-  id,
-  delta
-){
+function changeQty( id, delta ){
 
-  const q =
-    Math.max(
-      0,
-      (cart.get(id) || 0) +
-      delta
-    );
+const q = Math.max( 0, (cart.get(id) || 0) + delta );
 
-
-  if(q){
+if(q){
 
     cart.set(
       id,
       q
     );
 
-  }else{
+}else{
 
     cart.delete(id);
 
-  }
+}
 
+renderProducts();
 
-  renderProducts();
-
-  updateCart();
+updateCart();
 
 }
 
-
-/* =====================================================
-   تحديث السلة
+/* ===================================================== تحديث السلة
 ===================================================== */
 
 function updateCart(){
 
-  let total = 0;
+let total = 0;
 
-  let count = 0;
+let count = 0;
 
-
-  for(
-    const [id,q]
-    of cart
-  ){
+for( const [id,q] of cart ){
 
     const p =
       products.find(
@@ -1284,104 +1056,46 @@ function updateCart(){
 
     }
 
-  }
+}
 
+const cartTotal = document.getElementById( “cartTotal” );
 
-  const cartTotal =
-    document.getElementById(
-      "cartTotal"
-    );
-
-
-  if(cartTotal){
+if(cartTotal){
 
     cartTotal.textContent =
       money(total);
 
-  }
+}
 
+const cartCount = document.getElementById( “cartCount” );
 
-  const cartCount =
-    document.getElementById(
-      "cartCount"
-    );
-
-
-  if(cartCount){
+if(cartCount){
 
     cartCount.textContent =
       count;
 
-  }
+}
 
+const cartCountTop = document.getElementById( “cartCountTop” );
 
-  const cartCountTop =
-    document.getElementById(
-      "cartCountTop"
-    );
-
-
-  if(cartCountTop){
+if(cartCountTop){
 
     cartCountTop.textContent =
       count;
 
-  }
+}
 
 }
 
+/* ===================================================== إرسال الطلب إلى
+واتساب ===================================================== */
 
-/* =====================================================
-   إرسال الطلب إلى واتساب
-===================================================== */
-
-const whatsappBtn =
-  document.getElementById(
-    "whatsappBtn"
-  );
-
+const whatsappBtn = document.getElementById( “whatsappBtn” );
 
 if(whatsappBtn){
 
-  whatsappBtn.addEventListener(
-    "click",
-    () => {
-      
-    /* =========================================
-       منع الزائر غير المسجل من إرسال الطلب
-    ========================================= */
+whatsappBtn.addEventListener( “click”, () => {
 
-    if(!currentCustomer){
-
-      alert(
-        "يجب تسجيل بياناتك أولاً قبل إرسال الطلب."
-      );
-
-      const modal =
-        document.getElementById(
-          "customerModal"
-        );
-
-      if(modal){
-
-        modal.classList.add(
-          "show"
-        );
-
-      }
-
-      return;
-
-    }
-
-
-    /* =========================================
-       التحقق من السلة
-    ========================================= */
-
-    if(
-      cart.size === 0
-    ){
       if(
         cart.size === 0
       ){
@@ -1614,36 +1328,29 @@ if(whatsappBtn){
       );
 
     }
-  );
+
+);
 
 }
 
-
-/* =====================================================
-   الشريط المتحرك
+/* ===================================================== الشريط المتحرك
 ===================================================== */
 
-const tickerText =
-  document.getElementById(
-    "tickerText"
-  );
-
+const tickerText = document.getElementById( “tickerText” );
 
 if(tickerText){
 
-  tickerText.textContent =
-    "عروض خاصة • خصومات مميزة • توصيل داخل بغداد • الكمية والأسعار حسب توفر المخزون";
+tickerText.textContent = “عروض خاصة • خصومات مميزة • توصيل داخل بغداد •
+الكمية والأسعار حسب توفر المخزون”;
 
 }
 
-
-/* =====================================================
-   تحميل الشريط من Supabase
-===================================================== */
+/* ===================================================== تحميل الشريط من
+Supabase ===================================================== */
 
 async function loadTicker(){
 
-  try{
+try{
 
     const {
       data,
@@ -1686,21 +1393,18 @@ async function loadTicker(){
 
     }
 
-
-  }catch(error){
+}catch(error){
 
     console.error(
       "Ticker loading error:",
       error
     );
 
-  }
+}
 
 }
 
-
-/* =====================================================
-   تشغيل الموقع
+/* ===================================================== تشغيل الموقع
 ===================================================== */
 
 renderCategories();
@@ -1716,496 +1420,3 @@ updateCart();
 loadTicker();
 
 loadProductsFromSupabase();
-
-/* =====================================================
-   حساب الزبون
-===================================================== */
-
-let currentCustomer = null;
-
-const CUSTOMER_STORAGE_KEY = "amazon_customer_id";
-
-
-/* =====================================================
-   فتح نافذة تسجيل الزبون
-===================================================== */
-
-document.getElementById("customerAccountBtn")?.addEventListener("click", () => {
-
-  const modal = document.getElementById("customerModal");
-
-  if(modal){
-    modal.classList.add("show");
-  }
-
-});
-
-
-/* =====================================================
-   إغلاق نافذة تسجيل الزبون
-===================================================== */
-
-document.getElementById("customerCloseBtn")?.addEventListener("click", () => {
-
-  const modal = document.getElementById("customerModal");
-
-  if(modal){
-    modal.classList.remove("show");
-  }
-
-});
-
-
-/* =====================================================
-   التحقق من الاسم
-===================================================== */
-
-function validCustomerName(name){
-
-  const words = name
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean);
-
-  return words.length >= 2 && words.length <= 3;
-
-}
-
-
-/* =====================================================
-   تنظيف رقم الهاتف
-===================================================== */
-
-function cleanCustomerPhone(phone){
-
-  phone = String(phone || "")
-    .trim()
-    .replace(/\s+/g,"")
-    .replace(/-/g,"");
-
-  if(phone.startsWith("+964")){
-    phone = "0" + phone.substring(4);
-  }
-
-  if(phone.startsWith("964")){
-    phone = "0" + phone.substring(3);
-  }
-
-  return phone;
-
-}
-
-
-/* =====================================================
-   حفظ بيانات الزبون
-===================================================== */
-
-document.getElementById("customerSaveBtn")?.addEventListener("click", async () => {
-
-  const status =
-    document.getElementById("customerStatus");
-
-  const saveBtn =
-    document.getElementById("customerSaveBtn");
-
-  const name =
-    document.getElementById("registerName")
-      .value
-      .trim();
-
-  const phone =
-    cleanCustomerPhone(
-      document.getElementById("registerPhone").value
-    );
-
-  const city =
-    document.getElementById("registerCity")
-      .value
-      .trim();
-
-  const region =
-    document.getElementById("registerRegion")
-      .value
-      .trim();
-
-  const address =
-    document.getElementById("registerAddress")
-      .value
-      .trim();
-
-
-  /* الاسم */
-
-  if(!validCustomerName(name)){
-
-    status.textContent =
-      "اكتب الاسم الثنائي أو الثلاثي.";
-
-    status.style.display = "block";
-
-    return;
-
-  }
-
-
-  /* الهاتف */
-
-  if(!/^07\d{9}$/.test(phone)){
-
-    status.textContent =
-      "رقم الهاتف يجب أن يبدأ بـ 07 ويتكون من 11 رقمًا.";
-
-    status.style.display = "block";
-
-    return;
-
-  }
-
-
-  /* العنوان */
-
-  if(!city || !region || !address){
-
-    status.textContent =
-      "يرجى إكمال المدينة والمنطقة والعنوان.";
-
-    status.style.display = "block";
-
-    return;
-
-  }
-
-
-  saveBtn.disabled = true;
-
-  saveBtn.textContent =
-    "جاري الحفظ...";
-
-
-  try{
-
-    /* البحث عن الزبون بواسطة الهاتف */
-
-    const {
-      data: existingCustomer,
-      error: searchError
-    } =
-      await supabaseClient
-        .from("customers")
-        .select("*")
-        .eq("phone", phone)
-        .maybeSingle();
-
-
-    if(searchError){
-
-      console.error(
-        "Customer search error:",
-        searchError
-      );
-
-      throw searchError;
-
-    }
-
-
-    let customer;
-
-
-    /* =================================================
-       الزبون موجود مسبقًا
-    ================================================= */
-
-    if(existingCustomer){
-
-      const {
-        data,
-        error
-      } =
-        await supabaseClient
-          .from("customers")
-          .update({
-
-            name: name,
-
-            phone: phone,
-
-            delivery_group: city,
-
-            delivery_area: region,
-
-            address: address
-
-          })
-          .eq(
-            "id",
-            existingCustomer.id
-          )
-          .select("*")
-          .single();
-
-
-      if(error)
-        throw error;
-
-
-      customer = data;
-
-
-    }else{
-
-      /* =================================================
-         زبون جديد
-      ================================================= */
-
-      const {
-        data,
-        error
-      } =
-        await supabaseClient
-          .from("customers")
-          .insert({
-
-            name: name,
-
-            phone: phone,
-
-            delivery_group: city,
-
-            delivery_area: region,
-
-            address: address
-
-          })
-          .select("*")
-          .single();
-
-
-      if(error)
-        throw error;
-
-
-      customer = data;
-
-    }
-
-
-    /* =================================================
-       حفظ الحساب الحالي
-    ================================================= */
-
-    currentCustomer = customer;
-
-
-    localStorage.setItem(
-      CUSTOMER_STORAGE_KEY,
-      customer.id
-    );
-
-
-    /* =================================================
-       تعبئة بيانات الطلب
-    ================================================= */
-
-    document.getElementById("customerName").value =
-      customer.name || "";
-
-    document.getElementById("customerPhone").value =
-      customer.phone || "";
-
-    document.getElementById("customerAddress").value =
-      customer.address || "";
-
-
-    /* =================================================
-       تغيير زر الحساب
-    ================================================= */
-
-    const accountBtn =
-      document.getElementById(
-        "customerAccountBtn"
-      );
-
-    const nameDisplay =
-      document.getElementById(
-        "customerNameDisplay"
-      );
-
-
-    if(accountBtn){
-
-      accountBtn.textContent =
-        "👤 حسابي";
-
-    }
-
-
-    if(nameDisplay){
-
-      nameDisplay.textContent =
-        customer.name || "";
-
-      nameDisplay.style.display =
-        "inline";
-
-    }
-
-
-    status.textContent =
-      "تم حفظ بياناتك بنجاح.";
-
-    status.style.display =
-      "block";
-
-
-    setTimeout(() => {
-
-      const modal =
-        document.getElementById(
-          "customerModal"
-        );
-
-      if(modal){
-
-        modal.classList.remove(
-          "show"
-        );
-
-      }
-
-    },700);
-
-
-  }catch(error){
-
-    console.error(
-      "Customer save error:",
-      error
-    );
-
-
-    status.textContent =
-      "تعذر حفظ بياناتك. تأكد من الاتصال وحاول مرة أخرى.";
-
-    status.style.display =
-      "block";
-
-
-  }finally{
-
-    saveBtn.disabled =
-      false;
-
-    saveBtn.textContent =
-      "حفظ بياناتي";
-
-  }
-
-});
-
-
-/* =====================================================
-   تحميل حساب الزبون عند فتح الموقع
-===================================================== */
-
-async function loadSavedCustomer(){
-
-  const customerId =
-    localStorage.getItem(
-      CUSTOMER_STORAGE_KEY
-    );
-
-
-  if(!customerId)
-    return;
-
-
-  try{
-
-    const {
-      data,
-      error
-    } =
-      await supabaseClient
-        .from("customers")
-        .select("*")
-        .eq("id", customerId)
-        .maybeSingle();
-
-
-    if(error)
-      throw error;
-
-
-    if(!data){
-
-      localStorage.removeItem(
-        CUSTOMER_STORAGE_KEY
-      );
-
-      return;
-
-    }
-
-
-    currentCustomer =
-      data;
-
-
-    /* تعبئة بيانات الطلب */
-
-    document.getElementById("customerName").value =
-      data.name || "";
-
-    document.getElementById("customerPhone").value =
-      data.phone || "";
-
-    document.getElementById("customerAddress").value =
-      data.address || "";
-
-
-    /* تحديث زر الحساب */
-
-    const accountBtn =
-      document.getElementById(
-        "customerAccountBtn"
-      );
-
-    const nameDisplay =
-      document.getElementById(
-        "customerNameDisplay"
-      );
-
-
-    if(accountBtn){
-
-      accountBtn.textContent =
-        "👤 حسابي";
-
-    }
-
-
-    if(nameDisplay){
-
-      nameDisplay.textContent =
-        data.name || "";
-
-      nameDisplay.style.display =
-        "inline";
-
-    }
-
-
-  }catch(error){
-
-    console.error(
-      "Load customer error:",
-      error
-    );
-
-  }
-
-}
-
-
-loadSavedCustomer();
