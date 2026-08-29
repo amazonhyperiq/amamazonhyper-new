@@ -1401,7 +1401,7 @@ function fillCustomerOrderFields(customer){
   if(address) address.value = customer.address || "";
 
   /*
-     المدينة والمنطقة محفوظتان في حقلي delivery_group و delivery_area
+     المدينة والمنطقة محفوظتان في city و area داخل حساب الزبون.
      داخل حساب الزبون، بدون إضافة أعمدة جديدة إلى قاعدة البيانات.
   */
 
@@ -1417,11 +1417,11 @@ function fillCustomerOrderFields(customer){
       groupSelect.value = String(groupIndex);
       groupSelect.dispatchEvent(new Event("change"));
 
-      if(areaSelect && customer.region){
+      if(areaSelect && customer.area){
         const group = deliveryGroups[groupIndex];
         const areaIndex = Array.isArray(group?.areas)
           ? group.areas.findIndex(
-              area => String(area?.name || "").trim() === String(customer.region).trim()
+              area => String(area?.name || "").trim() === String(customer.area).trim()
             )
           : -1;
 
