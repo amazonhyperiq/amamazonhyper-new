@@ -1997,7 +1997,7 @@ async function loadSavedCustomer(){
 
   }
 
-}
+
   updateCustomerAccountUI();
 }
 
