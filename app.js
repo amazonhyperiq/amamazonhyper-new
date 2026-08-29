@@ -1829,11 +1829,9 @@ async function loadSavedCustomer(){
       CUSTOMER_STORAGE_KEY
     );
 
-
   if(!customerId){
     return;
   }
-
 
   try{
 
@@ -1844,14 +1842,13 @@ async function loadSavedCustomer(){
       await supabaseClient
         .from("customers")
         .select(
-          "id,name,phone,city,area,address,created_at"
+          "id,name,phone,delivery_group,delivery_area,address,created_at"
         )
         .eq(
           "id",
           customerId
         )
         .maybeSingle();
-
 
     if(error){
 
@@ -1863,21 +1860,18 @@ async function loadSavedCustomer(){
       return;
     }
 
-
     if(!data){
 
       localStorage.removeItem(
         CUSTOMER_STORAGE_KEY
       );
 
-      currentCustomer =
-        null;
+      currentCustomer = null;
 
       updateCustomerAccountUI();
 
       return;
     }
-
 
     currentCustomer = {
 
@@ -1891,10 +1885,10 @@ async function loadSavedCustomer(){
         data.phone || "",
 
       city:
-        data.city || "بغداد",
+        data.delivery_group || "بغداد",
 
       region:
-        data.area || "",
+        data.delivery_area || "",
 
       address:
         data.address || "",
@@ -1904,13 +1898,11 @@ async function loadSavedCustomer(){
 
     };
 
-
     updateCustomerAccountUI();
 
     fillCustomerOrderFields(
       currentCustomer
     );
-
 
   }catch(error){
 
@@ -1921,9 +1913,8 @@ async function loadSavedCustomer(){
 
   }
 
-
-  updateCustomerAccountUI();
 }
+
 function logoutCustomer(){
 
   localStorage.removeItem(
