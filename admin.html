@@ -2276,6 +2276,8 @@ function clearProductForm(){
     )
     .checked = true;
 
+  document.getElementById("weightStep").value = "1";
+
 }
 
 
@@ -2315,6 +2317,12 @@ productSaveButton.addEventListener(
       unitRadio
         ? unitRadio.value
         : "قطعة";
+
+
+    const productStep =
+      unit === "وزن (كغ)"
+        ? Number(document.getElementById("weightStep").value)
+        : 1;
 
 
     if(!name){
@@ -2442,6 +2450,8 @@ productSaveButton.addEventListener(
 
           unit:unit,
 
+          step:productStep,
+
           active:active
 
         };
@@ -2519,6 +2529,8 @@ productSaveButton.addEventListener(
           price:price,
 
           unit:unit,
+
+          step:productStep,
 
           icon:"🛒",
 
@@ -3153,6 +3165,13 @@ function(id){
       true;
 
   }
+
+  const savedStep = Number(product.step);
+
+  document.getElementById("weightStep").value =
+    savedStep === 0.25 || savedStep === 0.5 || savedStep === 1
+      ? String(savedStep)
+      : "1";
 
 
   document
