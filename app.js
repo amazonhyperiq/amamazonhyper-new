@@ -298,6 +298,20 @@ async function loadProductsFromSupabase(){
             unit:
               product.unit || "قطعة",
 
+            /* حفظ خطوة الوزن الخاصة بالمنتج إن كانت موجودة */
+            step:
+              Number(
+                product.step ??
+                product.weightStep ??
+                product.quantityStep
+              ) > 0
+                ? Number(
+                    product.step ??
+                    product.weightStep ??
+                    product.quantityStep
+                  )
+                : null,
+
             icon:
               product.icon || "🛒"
 
@@ -370,6 +384,20 @@ async function loadProductsFromSupabase(){
 
                 unit:
                   product.unit || "قطعة",
+
+                /* دعم خطوة الوزن في البيانات القديمة أيضاً */
+                step:
+                  Number(
+                    product.step ??
+                    product.weightStep ??
+                    product.quantityStep
+                  ) > 0
+                    ? Number(
+                        product.step ??
+                        product.weightStep ??
+                        product.quantityStep
+                      )
+                    : null,
 
                 icon:
                   product.icon || "🛒"
@@ -1280,50 +1308,91 @@ function changeQty(
   }
 
 
- const unit =
-  String(
-    product.unit || ""
-  )
-    .trim()
-    .toLowerCase();
+  /* =====================================================
+     تحديد ما إذا كانت المادة تباع بالوزن
+     ندعم جميع الصيغ الشائعة حتى لا تتحول الكمية إلى 1 كغم
+  ===================================================== */
 
-
-const isWeight =
-  unit.includes("كغم") ||
-  unit.includes("كغ") ||
-  unit.includes("كيلو") ||
-  unit.includes("kg");
-
-
-const category =
-  categories.find(
-    c => c.id === product.cat
-  );
-
-
-const step =
-  isWeight
-    ? (
-        Number(category?.step) > 0
-          ? Number(category.step)
-          : 1
-      )
-    : 1;
-
-
-const q =
-  Math.max(
-    0,
-    Number(
-      (
-        (cart.get(id) || 0) +
-        (delta * step)
-      ).toFixed(2)
+  const unit =
+    String(
+      product.unit || ""
     )
-  );
+      .trim()
+      .toLowerCase();
 
 
-  if(q){
+  const isWeight =
+    unit.includes("كغم") ||
+    unit.includes("كغ") ||
+    unit.includes("كيلو") ||
+    unit.includes("كجم") ||
+    unit.includes("kg") ||
+    unit.includes("وزن");
+
+
+  const category =
+    categories.find(
+      c => c.id === product.cat
+    );
+
+
+  /*
+     الأولوية:
+     1) خطوة المنتج التي حفظتها لوحة الإدارة
+     2) خطوة القسم
+     3) 0.5 كغم كافتراضي للمواد الوزنية
+     المواد بالقطعة تبقى 1
+  */
+
+  let step = 1;
+
+  if(isWeight){
+
+    const productStep =
+      Number(product.step);
+
+    const categoryStep =
+      Number(category?.step);
+
+    if(productStep > 0){
+
+      step = productStep;
+
+    }else if(categoryStep > 0){
+
+      step = categoryStep;
+
+    }else{
+
+      step = 0.5;
+
+    }
+
+  }
+
+
+  /*
+     الحساب بوحدة 0.01 كغم لمنع أخطاء الكسور العشرية
+     مثل 0.25 + 0.25 = 0.50
+  */
+
+  const currentQty =
+    Number(cart.get(id) || 0);
+
+  const newQty =
+    currentQty +
+    (Number(delta) * step);
+
+  const q =
+    Math.max(
+      0,
+      Number(
+        newQty.toFixed(2)
+      )
+    );
+
+
+  if(q > 0){
 
     cart.set(
       id,
@@ -1342,6 +1411,8 @@ const q =
   updateCart();
 
 }
+
+
 /* =====================================================
    تحديث السلة
 ===================================================== */
