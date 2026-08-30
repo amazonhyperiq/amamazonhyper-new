@@ -2311,16 +2311,25 @@ productCategory.addEventListener(
   "change",
   function(){
 
+    const filter =
+      document.getElementById(
+        "productFilterCategory"
+      );
+
+    if(filter){
+      filter.value = this.value;
+    }
+
+    refreshProductSelector();
+
     if(
       productMode.value ===
       "edit"
     ){
-
-      refreshProductSelector();
-
       clearProductForm();
-
     }
+
+    renderProductsTable();
 
   }
 );
@@ -2957,52 +2966,44 @@ function renderProductsTable(){
 
   if(filterCategory){
 
-    const currentValue =
+    /* عرض مواد القسم المحدد فقط مع الحفاظ على اختيار الفلتر */
+    const currentFilter =
       filterCategory.value;
 
-    filterCategory.innerHTML =
-      `<option value="">
-        جميع الأقسام
-      </option>`;
+    const currentValue =
+      categories.some(
+        category =>
+          category.id === currentFilter
+      )
+        ? currentFilter
+        : (
+            categories.some(
+              category =>
+                category.id === productCategory.value
+            )
+              ? productCategory.value
+              : (categories[0]?.id || "")
+          );
 
+    filterCategory.innerHTML = "";
 
     categories.forEach(
       category => {
 
         const option =
-          document.createElement(
-            "option"
-          );
+          document.createElement("option");
 
-        option.value =
-          category.id;
+        option.value = category.id;
+        option.textContent = category.name;
 
-        option.textContent =
-          category.name;
-
-        filterCategory.appendChild(
-          option
-        );
+        filterCategory.appendChild(option);
 
       }
     );
 
-
-    if(
-      categories.some(
-        category =>
-          category.id ===
-          currentValue
-      )
-    ){
-
-      filterCategory.value =
-        currentValue;
-
-    }
+    filterCategory.value = currentValue;
 
   }
-
 
   /* ==============================
      قراءة الفلترة والبحث
@@ -3145,16 +3146,35 @@ function renderProductsTable(){
 
         <td>
 
-          <button
-            type="button"
-            class="save"
-            style="padding:7px 12px"
-            onclick="editProductFromTable(${Number(product.id)})"
-          >
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
 
-            تعديل
+            <button
+              type="button"
+              class="save"
+              style="padding:7px 12px"
+              onclick="editProductFromTable(${Number(product.id)})"
+            >
+              تعديل
+            </button>
 
-          </button>
+            <button
+              type="button"
+              class="delete"
+              style="padding:7px 12px"
+              onclick="deleteProductFromTable(${Number(product.id)})"
+            >
+              حذف
+            </button>
+
+            <button
+              type="button"
+              style="padding:7px 12px;border:0;border-radius:10px;background:#64748b;color:#fff;font-weight:800;cursor:pointer"
+              onclick="toggleProductFromTable(${Number(product.id)})"
+            >
+              ${product.active !== false ? "إخفاء" : "إظهار"}
+            </button>
+
+          </div>
 
         </td>
 
@@ -3245,6 +3265,14 @@ function(id){
   productCategory.value =
     product.cat;
 
+  const filter =
+    document.getElementById(
+      "productFilterCategory"
+    );
+
+  if(filter){
+    filter.value = product.cat;
+  }
 
   refreshProductSelector();
 
@@ -3289,6 +3317,130 @@ function(id){
       behavior:"smooth"
     });
 
+};
+
+
+/* =====================================================
+   حذف المادة من الجدول
+===================================================== */
+
+window.deleteProductFromTable =
+async function(id){
+
+  const product =
+    allProducts.find(
+      p => Number(p.id) === Number(id)
+    );
+
+  if(!product) return;
+
+  if(!confirm(
+    "هل أنت متأكد من حذف مادة:\n" + product.name + " ؟"
+  )) return;
+
+  try{
+    const { data: row, error: readError } =
+      await db
+        .from("products")
+        .select("id,data")
+        .eq("id",1)
+        .single();
+
+    if(readError) throw readError;
+
+    const oldData = row.data || {};
+    const products = Array.isArray(oldData.products)
+      ? oldData.products.filter(
+          p => Number(p.id) !== Number(id)
+        )
+      : [];
+
+    const { error:updateError } =
+      await db
+        .from("products")
+        .update({
+          data:{...oldData,products}
+        })
+        .eq("id",1);
+
+    if(updateError) throw updateError;
+
+    allProducts = products;
+    refreshProductSelector();
+    renderProductsTable();
+    clearProductForm();
+    alert("تم حذف المادة بنجاح ✅");
+
+  }catch(error){
+    console.error(error);
+    alert("فشل حذف المادة: " + error.message);
+  }
+};
+
+
+/* =====================================================
+   إخفاء / إظهار المادة من الموقع
+===================================================== */
+
+window.toggleProductFromTable =
+async function(id){
+
+  const product =
+    allProducts.find(
+      p => Number(p.id) === Number(id)
+    );
+
+  if(!product) return;
+
+  const nextActive =
+    product.active === false;
+
+  try{
+    const { data: row, error: readError } =
+      await db
+        .from("products")
+        .select("id,data")
+        .eq("id",1)
+        .single();
+
+    if(readError) throw readError;
+
+    const oldData = row.data || {};
+    const products = Array.isArray(oldData.products)
+      ? oldData.products.map(
+          p => Number(p.id) === Number(id)
+            ? {...p,active:nextActive}
+            : p
+        )
+      : [];
+
+    const { error:updateError } =
+      await db
+        .from("products")
+        .update({
+          data:{...oldData,products}
+        })
+        .eq("id",1);
+
+    if(updateError) throw updateError;
+
+    allProducts = products;
+    renderProductsTable();
+    refreshProductSelector();
+
+    alert(
+      nextActive
+        ? "تم إظهار المادة في الموقع ✅"
+        : "تم إخفاء المادة من الموقع ✅"
+    );
+
+  }catch(error){
+    console.error(error);
+    alert(
+      "فشل تغيير ظهور المادة: " +
+      error.message
+    );
+  }
 };
 
 
