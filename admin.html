@@ -1,13 +1,11 @@
-<!doctype html>
-<html lang="ar" dir="rtl">
+<!DOCTYPE html>
 
+<html dir="rtl" lang="ar">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
 <title>لوحة تحكم — أمازون هايبر ماركت</title>
-
-<link rel="stylesheet" href="style.css">
-
+<link href="style.css" rel="stylesheet"/>
 <style>
 body{
   background:#eef3ef
@@ -285,789 +283,639 @@ body{
 
 }
 
+
+/* =====================================================
+   إدارة الطلبات
+===================================================== */
+.orders-toolbar{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  align-items:end;
+  margin-bottom:16px
+}
+.orders-toolbar label{
+  flex:1 1 220px
+}
+.orders-toolbar button{
+  min-height:45px
+}
+.order-stats{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:10px;
+  margin-bottom:16px
+}
+.order-stat{
+  background:#f7faf8;
+  border:1px solid #dce6df;
+  border-radius:14px;
+  padding:14px;
+  text-align:center
+}
+.order-stat strong{
+  display:block;
+  font-size:24px;
+  color:#075d2d
+}
+.order-stat span{
+  display:block;
+  margin-top:5px;
+  color:#6b756e;
+  font-size:12px;
+  font-weight:800
+}
+.order-status{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:6px 10px;
+  border-radius:999px;
+  font-weight:900;
+  font-size:12px;
+  white-space:nowrap
+}
+.order-status-new{background:#fff7d6;color:#8a5a00}
+.order-status-received{background:#e8f1ff;color:#245b9c}
+.order-status-preparing{background:#f3e8ff;color:#6d28a8}
+.order-status-delivered{background:#e7f8ed;color:#087438}
+.order-status-cancelled{background:#ffe8e8;color:#b42318}
+.order-actions{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap
+}
+.order-actions select{
+  width:auto;
+  min-width:145px;
+  margin-top:0
+}
+.order-details{
+  background:#f8fbf9;
+  border:1px solid #e1e9e4;
+  border-radius:12px;
+  padding:12px;
+  line-height:1.9;
+  min-width:300px
+}
+.order-items{
+  margin:8px 0 0;
+  padding-right:20px
+}
+.order-total{
+  font-weight:900;
+  color:#075d2d
+}
+.order-empty{
+  text-align:center;
+  padding:35px 15px;
+  color:#6b756e
+}
+.order-error{
+  background:#fff0f0;
+  color:#b42318;
+  border:1px solid #fecaca;
+  padding:14px;
+  border-radius:12px;
+  line-height:1.8
+}
+.order-refreshing{
+  opacity:.65;
+  pointer-events:none
+}
+@media(max-width:1000px){
+  .order-stats{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:700px){
+  .order-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .orders-toolbar{display:grid;grid-template-columns:1fr}
+  .orders-toolbar label{width:100%}
+  .order-details{min-width:250px}
+}
+
 </style>
-
 </head>
-
 <body>
-
 <script>
 
 if(sessionStorage.getItem('adminLoggedIn')!=='1'){
   location.replace('login.html');
 }
-
 </script>
-
 <div class="admin">
-
 <header class="top">
-
-  <div>
-
-    <h1 style="margin:0">
+<div>
+<h1 style="margin:0">
       أمازون هايبر ماركت
     </h1>
-
-    <small>
+<small>
       لوحة التحكم الجديدة
     </small>
-
-  </div>
-
-  <div>
+</div>
+<div>
     👤 المدير
   </div>
-
 </header>
-
 <div style="margin-top:10px;text-align:left">
-
-<button
-onclick="sessionStorage.removeItem('adminLoggedIn');location.href='login.html'"
-style="background:#dc2626;color:#fff;border:0;padding:9px 15px;border-radius:9px;font-weight:800;cursor:pointer">
+<button onclick="sessionStorage.removeItem('adminLoggedIn');location.href='login.html'" style="background:#dc2626;color:#fff;border:0;padding:9px 15px;border-radius:9px;font-weight:800;cursor:pointer">
 
 تسجيل الخروج
 
 </button>
-
 </div>
-
-
 <div class="layout">
-
 <aside class="side">
-
 <a class="active" href="#">
 الرئيسية
 </a>
-
 <a href="#sections">
 الأقسام
 </a>
-
 <a href="#products">
 المواد والمنتجات
 </a>
-
 <a href="#offers">
 العروض الخاصة
 </a>
-
 <a href="#delivery">
 مناطق التوصيل
 </a>
-
 <a href="#ticker">
 الشريط المتحرك
 </a>
-
-<a href="#">
+<a href="#orders">
 الطلبات
 </a>
-
 <a href="#">
 الإعدادات
 </a>
-
 </aside>
-
-
 <section>
-
-
 <!-- =========================
      الأقسام
 ========================= -->
-
 <div class="panel" id="sections">
-
 <h2>
 إدارة الأقسام
 </h2>
-
 <p class="hint">
 من هنا تستطيع إضافة قسم جديد، تعديل اسم أي قسم، حذف قسم، وتحديد طريقة البيع. التغييرات تُحفظ في قاعدة البيانات وتظهر في المتجر.
 </p>
-
-
 <div class="admin-grid">
-
 <label>
 
 اختر العملية
 
 <select id="categoryMode">
-
 <option value="add">
 إضافة قسم جديد
 </option>
-
 <option value="edit">
 تعديل قسم موجود
 </option>
-
 </select>
-
 </label>
-
-
-<label
-id="existingCategoryBox"
-style="display:none">
+<label id="existingCategoryBox" style="display:none">
 
 اختر القسم
 
 <select id="existingCategory">
-
 <option value="">
 اختر القسم
 </option>
-
 </select>
-
 </label>
-
-
 <label>
 
 اسم القسم
 
-<input
-id="categoryName"
-placeholder="مثال: اللحوم الطازجة"
->
-
+<input id="categoryName" placeholder="مثال: اللحوم الطازجة"/>
 </label>
-
-
 <label>
 
 أيقونة القسم
 
-<input
-id="categoryIcon"
-maxlength="4"
-placeholder="🥩"
->
-
+<input id="categoryIcon" maxlength="4" placeholder="🥩"/>
 </label>
-
 </div>
-
-
 <div class="unit-box">
-
 <b>
 طريقة بيع القسم
 </b>
-
 <p class="hint">
 
 يمكن تحديد طريقة البيع الافتراضية للمواد التابعة للقسم. ويمكن تخصيص الوحدة لكل مادة من قسم المواد والمنتجات.
 
 </p>
-
 <label>
-
-<input
-type="radio"
-name="categoryUnit"
-value="قطعة"
-checked
->
+<input checked="" name="categoryUnit" type="radio" value="قطعة"/>
 
 يباع بالقطعة
 
 </label>
-
-
 <label>
-
-<input
-type="radio"
-name="categoryUnit"
-value="وزن (كغ)"
->
+<input name="categoryUnit" type="radio" value="وزن (كغ)"/>
 
 يباع بالوزن (كغ)
 
 </label>
-
-
 <label>
 
 خطوة الزيادة للوزن
 
 <select id="categoryWeightStep">
-
 <option value="0.25">
 0.25 كغ
 </option>
-
 <option value="0.50">
 0.50 كغ
 </option>
-
 <option value="1">
 1 كغ
 </option>
-
 </select>
-
 </label>
-
 </div>
-
-
-<button
-type="button"
-class="save"
-id="categorySaveButton"
->
+<button class="save" id="categorySaveButton" type="button">
 
 حفظ القسم
 
 </button>
-
-
-<button
-type="button"
-class="delete"
-id="categoryDeleteButton"
->
+<button class="delete" id="categoryDeleteButton" type="button">
 
 حذف القسم
 
 </button>
-
-
-<button
-type="button"
-class="save"
-id="categoryClearButton"
-style="background:#64748b"
->
+<button class="save" id="categoryClearButton" style="background:#64748b" type="button">
 
 تفريغ الحقول
 
 </button>
-
-
 <div class="table-wrap">
-
 <table class="table">
-
 <thead>
-
 <tr>
-
 <th>
 القسم
 </th>
-
 <th>
 الأيقونة
 </th>
-
 <th>
 طريقة البيع
 </th>
-
 <th>
 عدد المواد
 </th>
-
 <th>
 إجراء
 </th>
-
 </tr>
-
 </thead>
-
 <tbody id="categoriesTableBody">
-
 </tbody>
-
 </table>
-
 </div>
-
 </div>
-
-
 <!-- =========================
      المواد
 ========================= -->
-
 <div class="panel" id="products">
-
 <h2>
 إضافة / تعديل مادة
 </h2>
-
-
 <div class="admin-grid">
-
-
 <label>
 
 نوع العملية
 
 <select id="productMode">
-
 <option value="add">
 إضافة مادة جديدة
 </option>
-
 <option value="edit">
 تعديل مادة موجودة
 </option>
-
 </select>
-
 </label>
-
-
 <label>
 
 اختر القسم
 
 <select id="productCategory">
 </select>
-
 </label>
-
-
 <div id="editProductBox">
-
 <label>
 
 اختر المادة الموجودة
 
 <select id="existingProduct">
-
 <option value="">
 اختر المادة
 </option>
-
 </select>
-
 </label>
-
 </div>
-
-
 <label>
 
 اسم المادة
 
-<input
-id="productName"
-placeholder="اسم المادة"
->
-
+<input id="productName" placeholder="اسم المادة"/>
 </label>
-
-
 <label>
 
 السعر الأساسي
 
-<input
-id="productPrice"
-type="number"
-placeholder="السعر بالدينار"
->
-
+<input id="productPrice" placeholder="السعر بالدينار" type="number"/>
 </label>
-
-
 <label>
 
 صورة المادة
 
-<input
-id="productImage"
-type="file"
-accept="image/*"
->
-
+<input accept="image/*" id="productImage" type="file"/>
 </label>
-
-
 </div>
-
-
 <div class="unit-box">
-
 <b>
 طريقة بيع المادة
 </b>
-
 <p class="hint">
 
 يمكن أن ترث إعداد القسم أو تخصيصها للمادة.
 
 </p>
-
-
 <label>
-
-<input
-type="radio"
-name="produnit"
-value="قطعة"
-checked
->
+<input checked="" name="produnit" type="radio" value="قطعة"/>
 
 قطعة
 
 </label>
-
-
 <label>
-
-<input
-type="radio"
-name="produnit"
-value="وزن (كغ)"
->
+<input name="produnit" type="radio" value="وزن (كغ)"/>
 
 وزن (كغ)
 
 </label>
-
-
 <label>
 
 خطوة الوزن
 
 <select id="weightStep">
-
 <option value="0.25">
 0.25 كغ
 </option>
-
 <option value="0.50">
 0.50 كغ
 </option>
-
 <option value="1">
 1 كغ
 </option>
-
 </select>
-
 </label>
-
 </div>
-
-
 <label class="check">
-
-<input
-id="productActive"
-type="checkbox"
-checked
->
+<input checked="" id="productActive" type="checkbox"/>
 
 ظهور المادة في الصفحة
 
 </label>
-
-
-<button
-class="save"
-id="productSaveButton"
->
+<button class="save" id="productSaveButton">
 
 حفظ
 
 </button>
-
-
-<button
-class="delete"
-id="productDeleteButton"
->
+<button class="delete" id="productDeleteButton">
 
 حذف
 
 </button>
-
-<div
-  style="
+<div style="
     display:grid;
     grid-template-columns:1fr 1fr;
     gap:10px;
     margin-top:18px;
     margin-bottom:10px;
-  "
->
-
-  <label>
+  ">
+<label>
 
     اختر القسم
 
     <select id="productFilterCategory">
-
-      <option value="">
+<option value="">
         جميع الأقسام
       </option>
-
-    </select>
-
-  </label>
-
-
-  <label>
+</select>
+</label>
+<label>
 
     بحث عن المادة
 
-    <input
-      id="productSearch"
-      type="text"
-      placeholder="اكتب اسم المادة..."
-    >
-
-  </label>
-
+    <input id="productSearch" placeholder="اكتب اسم المادة..." type="text"/>
+</label>
 </div>
 <div class="table-wrap">
-
 <table class="table">
-
 <thead>
-
 <tr>
-
 <th>
 القسم
 </th>
-
 <th>
 المادة
 </th>
-
 <th>
 الوحدة
 </th>
-
 <th>
 السعر
 </th>
-
 <th>
 ظهور
 </th>
-
 <th>
 إجراء
 </th>
-
 </tr>
-
 </thead>
-
 <tbody id="productsTableBody">
-
 </tbody>
-
 </table>
-
 </div>
-
 </div>
-
-
 <!-- =========================
      العروض
 ========================= -->
-
 <div class="panel" id="offers">
-
 <h2>
 إدارة العروض الخاصة
 </h2>
-
 <div class="admin-grid">
-
 <label>
 
 عنوان العرض
 
-<input
-id="offerTitle"
-placeholder="مثال: عرض خاص 20%"
->
-
+<input id="offerTitle" placeholder="مثال: عرض خاص 20%"/>
 </label>
-
-
 <label>
 
 من تاريخ
 
-<input
-id="offerFrom"
-type="date"
->
-
+<input id="offerFrom" type="date"/>
 </label>
-
-
 <label>
 
 إلى تاريخ
 
-<input
-id="offerTo"
-type="date"
->
-
+<input id="offerTo" type="date"/>
 </label>
-
 </div>
-
 <p class="hint">
 
 أقل عدد 5 مواد، ويمكن رفع العدد حتى 8 مواد داخل العرض.
 
 </p>
-
 <div id="offerRows">
 </div>
-
-
-<button
-class="save"
-id="addOfferRow"
->
+<button class="save" id="addOfferRow">
 
 + إضافة مادة
 
 </button>
-
-
-<button
-class="save"
-id="offerSaveButton"
->
+<button class="save" id="offerSaveButton">
 
 حفظ العرض
 
 </button>
-
-
-<button
-type="button"
-class="delete"
-id="offerDeleteButton"
->
+<button class="delete" id="offerDeleteButton" type="button">
 
 حذف العرض
 
 </button>
-
 </div>
-
-
 <!-- =========================
      مناطق التوصيل
 ========================= -->
-
 <div class="panel" id="delivery">
-
 <h2>
 إدارة مناطق التوصيل
 </h2>
-
 <p class="hint">
 
 أضف منطقة رئيسية مثل الكرخ أو الرصافة، ثم أضف المناطق التابعة لها وحدد أجور التوصيل.
 
 </p>
-
-
 <div class="delivery-admin-box">
-
 <div class="admin-grid">
-
 <label>
 
 اسم المنطقة الرئيسية
 
-<input
-id="deliveryGroupName"
-placeholder="مثال: الكرخ"
->
-
+<input id="deliveryGroupName" placeholder="مثال: الكرخ"/>
 </label>
-
-
 <div class="delivery-actions">
-
-<button
-type="button"
-class="save"
-id="addDeliveryGroupButton"
->
+<button class="save" id="addDeliveryGroupButton" type="button">
 
 + إضافة منطقة رئيسية
 
 </button>
-
 </div>
-
 </div>
-
-
 <div id="deliveryGroupsList">
 </div>
-
 </div>
-
 </div>
-
-
+<!-- =========================
+     الطلبات
+========================= -->
+<div class="panel" id="orders">
+<h2>إدارة الطلبات</h2>
+<p class="hint">
+    هنا تظهر الطلبات المحفوظة من المتجر، ويمكن تغيير حالة كل طلب ومتابعة تفاصيله.
+  </p>
+<div class="order-stats">
+<div class="order-stat">
+<strong id="ordersCountAll">0</strong>
+<span>كل الطلبات</span>
+</div>
+<div class="order-stat">
+<strong id="ordersCountNew">0</strong>
+<span>جديدة</span>
+</div>
+<div class="order-stat">
+<strong id="ordersCountReceived">0</strong>
+<span>تم الاستلام</span>
+</div>
+<div class="order-stat">
+<strong id="ordersCountPreparing">0</strong>
+<span>قيد التجهيز</span>
+</div>
+<div class="order-stat">
+<strong id="ordersCountDelivered">0</strong>
+<span>تم التوصيل</span>
+</div>
+</div>
+<div class="orders-toolbar">
+<label>
+      فلترة حسب الحالة
+      <select id="ordersStatusFilter">
+<option value="">كل الحالات</option>
+<option value="new">جديد</option>
+<option value="received">تم الاستلام</option>
+<option value="preparing">قيد التجهيز</option>
+<option value="delivered">تم التوصيل</option>
+<option value="cancelled">ملغى</option>
+</select>
+</label>
+<label>
+      بحث بالاسم أو الهاتف أو المنطقة
+      <input id="ordersSearch" placeholder="اكتب كلمة البحث..." type="text"/>
+</label>
+<button class="save" id="ordersRefreshButton" type="button">
+      🔄 تحديث الطلبات
+    </button>
+</div>
+<div id="ordersMessage"></div>
+<div class="table-wrap">
+<table class="table">
+<thead>
+<tr>
+<th>رقم الطلب</th>
+<th>التاريخ</th>
+<th>الزبون</th>
+<th>التوصيل</th>
+<th>الإجمالي</th>
+<th>الحالة</th>
+<th>الإجراء</th>
+</tr>
+</thead>
+<tbody id="ordersTableBody">
+<tr>
+<td class="order-empty" colspan="7">جاري تحميل الطلبات...</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <!-- =========================
      الشريط المتحرك
 ========================= -->
-
 <div class="panel" id="ticker">
-
 <h2>
 إدارة الشريط المتحرك
 </h2>
-
-<textarea
-id="tickerInput"
-rows="3"
-placeholder="اكتب النص الذي سيظهر في الشريط المتحرك..."
-></textarea>
-
-<br>
-
-<button
-class="save"
-id="tickerSaveButton"
->
+<textarea id="tickerInput" placeholder="اكتب النص الذي سيظهر في الشريط المتحرك..." rows="3"></textarea>
+<br/>
+<button class="save" id="tickerSaveButton">
 
 حفظ النص
 
 </button>
-
 </div>
-
-
 <div class="panel">
-
 <h2>
 رسالة الوزن والسعر
 </h2>
-
 <p class="note">
 
 النص المقترح الذي يظهر للزبون ويُرسل أيضاً مع الطلب:
@@ -1075,20 +923,11 @@ id="tickerSaveButton"
 «بعض المواد تباع بالوزن، وقد يختلف الوزن الفعلي والسعر النهائي قليلاً بعد التجهيز. سيتم تأكيد الوزن والسعر النهائي مع الزبون قبل التسليم.»
 
 </p>
-
 </div>
-
-
 </section>
-
 </div>
-
 </div>
-
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-
 <script>
 
 /* =====================================================
@@ -4880,8 +4719,464 @@ loadDeliveryGroups();
 
 loadProducts();
 
+/* =====================================================
+   إدارة الطلبات
+===================================================== */
+
+const ORDER_STATUS = {
+  new: {
+    label: "جديد",
+    className: "order-status-new"
+  },
+  received: {
+    label: "تم الاستلام",
+    className: "order-status-received"
+  },
+  preparing: {
+    label: "قيد التجهيز",
+    className: "order-status-preparing"
+  },
+  delivered: {
+    label: "تم التوصيل",
+    className: "order-status-delivered"
+  },
+  cancelled: {
+    label: "ملغى",
+    className: "order-status-cancelled"
+  }
+};
+
+let adminOrders = [];
+
+function orderMoney(value){
+  return new Intl.NumberFormat("ar-IQ").format(
+    Number(value) || 0
+  ) + " د.ع";
+}
+
+function orderStatusInfo(status){
+  const key = String(status || "new").toLowerCase();
+  return ORDER_STATUS[key] || {
+    label: key || "غير محدد",
+    className: "order-status-new"
+  };
+}
+
+function orderDate(value){
+  if(!value) return "—";
+
+  const d = new Date(value);
+
+  if(Number.isNaN(d.getTime())){
+    return String(value);
+  }
+
+  return d.toLocaleString("ar-IQ", {
+    year:"numeric",
+    month:"2-digit",
+    day:"2-digit",
+    hour:"2-digit",
+    minute:"2-digit"
+  });
+}
+
+function orderIdShort(id){
+  const value = String(id || "");
+
+  if(value.length <= 10){
+    return value || "—";
+  }
+
+  return value.slice(0,8) + "…";
+}
+
+function parseOrderItems(items){
+  if(Array.isArray(items)){
+    return items;
+  }
+
+  if(typeof items === "string"){
+    try{
+      const parsed = JSON.parse(items);
+      return Array.isArray(parsed) ? parsed : [];
+    }catch(e){
+      return [];
+    }
+  }
+
+  return [];
+}
+
+function escapeOrderHtml(value){
+  return String(value ?? "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+}
+
+function orderItemsHtml(items){
+  const list = parseOrderItems(items);
+
+  if(!list.length){
+    return "<div>لا توجد تفاصيل مواد.</div>";
+  }
+
+  return `
+    <ul class="order-items">
+      ${list.map(item => {
+        const name = escapeOrderHtml(item.name || "مادة");
+        const quantity = Number(item.quantity ?? item.qty ?? 0);
+        const unit = escapeOrderHtml(item.unit || "");
+        const total = orderMoney(item.total ?? (
+          Number(item.price || 0) * quantity
+        ));
+
+        return `
+          <li>
+            ${name} — ${quantity} ${unit} — ${total}
+          </li>
+        `;
+      }).join("")}
+    </ul>
+  `;
+}
+
+function renderOrderStats(){
+  const count = status =>
+    adminOrders.filter(
+      order => String(order.status || "new").toLowerCase() === status
+    ).length;
+
+  const ids = {
+    all: adminOrders.length,
+    new: count("new"),
+    received: count("received"),
+    preparing: count("preparing"),
+    delivered: count("delivered")
+  };
+
+  document.getElementById("ordersCountAll").textContent = ids.all;
+  document.getElementById("ordersCountNew").textContent = ids.new;
+  document.getElementById("ordersCountReceived").textContent = ids.received;
+  document.getElementById("ordersCountPreparing").textContent = ids.preparing;
+  document.getElementById("ordersCountDelivered").textContent = ids.delivered;
+}
+
+function renderOrders(){
+  const body = document.getElementById("ordersTableBody");
+  const filter = document.getElementById("ordersStatusFilter")?.value || "";
+  const search = (
+    document.getElementById("ordersSearch")?.value || ""
+  ).trim().toLowerCase();
+
+  if(!body) return;
+
+  const filtered = adminOrders.filter(order => {
+    const status = String(order.status || "new").toLowerCase();
+
+    const matchesStatus =
+      !filter || status === filter;
+
+    const haystack = [
+      order.id,
+      order.customer_name,
+      order.customer_phone,
+      order.delivery_group,
+      order.delivery_area,
+      order.address
+    ].map(v => String(v || "").toLowerCase()).join(" ");
+
+    const matchesSearch =
+      !search || haystack.includes(search);
+
+    return matchesStatus && matchesSearch;
+  });
+
+  if(!filtered.length){
+    body.innerHTML = `
+      <tr>
+        <td colspan="7" class="order-empty">
+          لا توجد طلبات مطابقة.
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  body.innerHTML = filtered.map(order => {
+    const info = orderStatusInfo(order.status);
+
+    const customer =
+      escapeOrderHtml(order.customer_name || "بدون اسم");
+
+    const phone =
+      escapeOrderHtml(order.customer_phone || "—");
+
+    const group =
+      escapeOrderHtml(order.delivery_group || "—");
+
+    const area =
+      escapeOrderHtml(order.delivery_area || "—");
+
+    const address =
+      escapeOrderHtml(order.address || "—");
+
+    const notes =
+      escapeOrderHtml(order.notes || "لا توجد");
+
+    const productsTotal =
+      orderMoney(order.products_total);
+
+    const deliveryFee =
+      orderMoney(order.delivery_fee);
+
+    const total =
+      orderMoney(order.total);
+
+    const items =
+      orderItemsHtml(order.items);
+
+    return `
+      <tr>
+        <td>
+          <strong>#${escapeOrderHtml(orderIdShort(order.id))}</strong>
+        </td>
+
+        <td>
+          ${escapeOrderHtml(orderDate(order.created_at))}
+        </td>
+
+        <td>
+          <strong>${customer}</strong><br>
+          <small>${phone}</small>
+        </td>
+
+        <td>
+          <strong>${group}</strong><br>
+          <small>${area}</small>
+        </td>
+
+        <td class="order-total">
+          ${total}
+        </td>
+
+        <td>
+          <span class="order-status ${info.className}">
+            ${escapeOrderHtml(info.label)}
+          </span>
+        </td>
+
+        <td>
+          <div class="order-actions">
+            <select
+              data-order-status="${escapeOrderHtml(order.id)}"
+              aria-label="تغيير حالة الطلب"
+            >
+              ${Object.entries(ORDER_STATUS).map(([key,value]) => `
+                <option
+                  value="${key}"
+                  ${String(order.status || "new").toLowerCase() === key ? "selected" : ""}
+                >
+                  ${escapeOrderHtml(value.label)}
+                </option>
+              `).join("")}
+            </select>
+          </div>
+
+          <details style="margin-top:8px">
+            <summary style="cursor:pointer;font-weight:800;color:#087438">
+              تفاصيل الطلب
+            </summary>
+
+            <div class="order-details">
+              <div><strong>العنوان:</strong> ${address}</div>
+              <div><strong>المواد:</strong></div>
+              ${items}
+              <div><strong>المواد:</strong> ${productsTotal}</div>
+              <div><strong>التوصيل:</strong> ${deliveryFee}</div>
+              <div class="order-total"><strong>الإجمالي:</strong> ${total}</div>
+              <div><strong>الملاحظات:</strong> ${notes}</div>
+            </div>
+          </details>
+        </td>
+      </tr>
+    `;
+  }).join("");
+
+  body.querySelectorAll("[data-order-status]").forEach(select => {
+    select.addEventListener("change", async function(){
+      const orderId = this.getAttribute("data-order-status");
+      const newStatus = this.value;
+
+      await updateOrderStatus(orderId, newStatus);
+    });
+  });
+}
+
+async function loadOrders(){
+  const body = document.getElementById("ordersTableBody");
+  const message = document.getElementById("ordersMessage");
+  const refresh = document.getElementById("ordersRefreshButton");
+
+  if(body){
+    body.innerHTML = `
+      <tr>
+        <td colspan="7" class="order-empty">
+          جاري تحميل الطلبات...
+        </td>
+      </tr>
+    `;
+  }
+
+  if(message){
+    message.innerHTML = "";
+  }
+
+  if(refresh){
+    refresh.disabled = true;
+    refresh.textContent = "جاري التحديث...";
+  }
+
+  try{
+    const {
+      data,
+      error
+    } = await db
+      .from("orders")
+      .select("*")
+      .order("created_at", {
+        ascending:false
+      });
+
+    if(error){
+      throw error;
+    }
+
+    adminOrders =
+      Array.isArray(data) ? data : [];
+
+    renderOrderStats();
+    renderOrders();
+
+  }catch(error){
+    console.error("Orders loading error:", error);
+
+    adminOrders = [];
+    renderOrderStats();
+
+    if(body){
+      body.innerHTML = `
+        <tr>
+          <td colspan="7">
+            <div class="order-error">
+              تعذر تحميل الطلبات من قاعدة البيانات.<br>
+              ${escapeOrderHtml(error.message)}
+            </div>
+          </td>
+        </tr>
+      `;
+    }
+
+  }finally{
+    if(refresh){
+      refresh.disabled = false;
+      refresh.textContent = "🔄 تحديث الطلبات";
+    }
+  }
+}
+
+async function updateOrderStatus(orderId, newStatus){
+  const order = adminOrders.find(
+    item => String(item.id) === String(orderId)
+  );
+
+  if(!order){
+    return;
+  }
+
+  const oldStatus =
+    String(order.status || "new").toLowerCase();
+
+  if(oldStatus === newStatus){
+    return;
+  }
+
+  const confirmed = confirm(
+    "تغيير حالة الطلب إلى: " +
+    (ORDER_STATUS[newStatus]?.label || newStatus) +
+    "؟"
+  );
+
+  if(!confirmed){
+    renderOrders();
+    return;
+  }
+
+  try{
+    const {
+      error
+    } = await db
+      .from("orders")
+      .update({
+        status:newStatus
+      })
+      .eq("id", orderId);
+
+    if(error){
+      throw error;
+    }
+
+    order.status = newStatus;
+
+    renderOrderStats();
+    renderOrders();
+
+  }catch(error){
+    console.error("Order status update error:", error);
+
+    alert(
+      "فشل تغيير حالة الطلب:\n" +
+      error.message
+    );
+
+    renderOrders();
+  }
+}
+
+const ordersStatusFilter =
+  document.getElementById("ordersStatusFilter");
+
+const ordersSearch =
+  document.getElementById("ordersSearch");
+
+const ordersRefreshButton =
+  document.getElementById("ordersRefreshButton");
+
+if(ordersStatusFilter){
+  ordersStatusFilter.addEventListener(
+    "change",
+    renderOrders
+  );
+}
+
+if(ordersSearch){
+  ordersSearch.addEventListener(
+    "input",
+    renderOrders
+  );
+}
+
+if(ordersRefreshButton){
+  ordersRefreshButton.addEventListener(
+    "click",
+    loadOrders
+  );
+}
+
+/* تحميل الطلبات عند فتح لوحة الإدارة */
+loadOrders();
 </script>
-
 </body>
-
 </html>
