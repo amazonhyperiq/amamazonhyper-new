@@ -396,33 +396,11 @@ body{
 </style>
 </head>
 <body>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <script>
-const SUPABASE_URL="https://vvexorzjkpwduykinwsw.supabase.co";
-const SUPABASE_KEY="sb_publishable_RoMHq19grLJWNu95uPSwug_XwiKt2bB";
 
-const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-
-(async()=>{
-  const {data:{session}}=await db.auth.getSession();
-
-  if(!session){
-    location.replace("login.html");
-    return;
-  }
-
-  const {data:role,error}=await db
-    .from("user_roles")
-    .select("role")
-    .eq("user_id",session.user.id)
-    .single();
-
-  if(error || role?.role!=="admin"){
-    await db.auth.signOut();
-    location.replace("login.html");
-  }
-})();
+if(sessionStorage.getItem('adminLoggedIn')!=='1'){
+  location.replace('login.html');
+}
 </script>
 <div class="admin">
 <header class="top">
