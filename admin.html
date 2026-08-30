@@ -2141,6 +2141,9 @@ async function loadProducts(){
         row.data.categories
       );
 
+    // تعبئة قائمة الأقسام في نموذج إضافة / تعديل المادة
+    renderCategoryOptions();
+
 
    const productFilterCategory =
   document.getElementById(
