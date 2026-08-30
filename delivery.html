@@ -24,24 +24,57 @@ button{border:0;border-radius:11px;padding:13px 18px;font-weight:900;cursor:poin
 </head>
 <body>
 <div class="wrap">
-<header>
-  <h1>🚚 موظف التوصيل</h1>
-  <div class="hint">الطلبات الجاهزة للتوصيل</div>
-</header>
 
-<div class="row" style="margin-bottom:14px">
-  <strong id="count">0 طلب</strong>
-  <button class="refresh" id="refresh">🔄 تحديث</button>
-</div>
+  <div id="loginBox" class="card" style="max-width:460px;margin:40px auto">
+    <div style="font-size:50px;text-align:center">🚚</div>
+    <h1 style="text-align:center;color:#075b2b">دخول موظف التوصيل</h1>
+    <p style="text-align:center;color:#68736d">أمازون هايبر ماركت</p>
 
-<div id="message"></div>
-<div id="orders"></div>
+    <label style="display:block;font-weight:900;margin:16px 0 7px">البريد الإلكتروني</label>
+    <input id="email" type="email" autocomplete="username"
+           placeholder="البريد الإلكتروني"
+           style="width:100%;padding:14px;border:1px solid #d4ded7;border-radius:12px;font:inherit">
+
+    <label style="display:block;font-weight:900;margin:16px 0 7px">كلمة المرور</label>
+    <input id="password" type="password" autocomplete="current-password"
+           placeholder="كلمة المرور"
+           style="width:100%;padding:14px;border:1px solid #d4ded7;border-radius:12px;font:inherit">
+
+    <button id="loginBtn" class="complete">دخول</button>
+    <div id="loginError" class="error" style="margin-top:12px"></div>
+    <a href="index.html" style="display:block;text-align:center;margin-top:15px;color:#087438;text-decoration:none">
+      العودة إلى المتجر
+    </a>
+  </div>
+
+  <div id="dashboard" style="display:none">
+    <header>
+      <div class="row">
+        <div>
+          <h1>🚚 موظف التوصيل</h1>
+          <div class="hint">الطلبات الجاهزة للتوصيل</div>
+        </div>
+        <button class="refresh" id="logout">تسجيل الخروج</button>
+      </div>
+    </header>
+
+    <div class="row" style="margin-bottom:14px">
+      <strong id="count">0 طلب</strong>
+      <button class="refresh" id="refresh">🔄 تحديث</button>
+    </div>
+
+    <div id="message"></div>
+    <div id="orders"></div>
+  </div>
+
 </div>
 
 <script>
 const SUPABASE_URL="https://vvexorzjkpwduykinwsw.supabase.co";
 const SUPABASE_KEY="sb_publishable_RoMHq19grLJWNu95uPSwug_XwiKt2bB";
 const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
+const DELIVERY_EMAIL="altaiemar52@gmail.com";
 
 function money(v){
   return new Intl.NumberFormat("ar-IQ").format(Number(v)||0)+" د.ع";
@@ -121,8 +154,66 @@ async function completeOrder(id){
   await loadOrders();
 }
 
+async function showDashboard(session){
+  const email=(session?.user?.email||"").toLowerCase();
+  if(email!==DELIVERY_EMAIL){
+    await db.auth.signOut();
+    document.getElementById("loginError").textContent="هذا الحساب ليس حساب موظف التوصيل.";
+    return;
+  }
+
+  document.getElementById("loginBox").style.display="none";
+  document.getElementById("dashboard").style.display="block";
+  await loadOrders();
+}
+
+document.getElementById("loginBtn").addEventListener("click",async()=>{
+  const email=document.getElementById("email").value.trim().toLowerCase();
+  const password=document.getElementById("password").value;
+  const err=document.getElementById("loginError");
+  err.textContent="";
+
+  if(email!==DELIVERY_EMAIL){
+    err.textContent="استخدم بريد موظف التوصيل فقط.";
+    return;
+  }
+  if(!password){
+    err.textContent="أدخل كلمة المرور.";
+    return;
+  }
+
+  const btn=document.getElementById("loginBtn");
+  btn.disabled=true;
+  btn.textContent="جاري الدخول...";
+
+  const {data,error}=await db.auth.signInWithPassword({email,password});
+
+  btn.disabled=false;
+  btn.textContent="دخول";
+
+  if(error){
+    err.textContent=error.message==="Invalid login credentials"
+      ?"البريد الإلكتروني أو كلمة المرور غير صحيحة."
+      :error.message;
+    return;
+  }
+
+  await showDashboard(data.session);
+});
+
 document.getElementById("refresh").addEventListener("click",loadOrders);
-loadOrders();
+
+document.getElementById("logout").addEventListener("click",async()=>{
+  await db.auth.signOut();
+  document.getElementById("dashboard").style.display="none";
+  document.getElementById("loginBox").style.display="block";
+  document.getElementById("password").value="";
+});
+
+(async()=>{
+  const {data}=await db.auth.getSession();
+  if(data.session) await showDashboard(data.session);
+})();
 </script>
 </body>
 </html>
