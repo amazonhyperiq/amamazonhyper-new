@@ -839,6 +839,10 @@ if(sessionStorage.getItem('adminLoggedIn')!=='1'){
 <span>كل الطلبات</span>
 </div>
 <div class="order-stat">
+<strong id="ordersTotalSales">0 د.ع</strong>
+<span>إجمالي المبيعات</span>
+</div>
+<div class="order-stat">
 <strong id="ordersCountNew">0</strong>
 <span>جديدة</span>
 </div>
@@ -4857,7 +4861,13 @@ function renderOrderStats(){
     delivered: count("delivered")
   };
 
+  const totalSales = adminOrders.reduce(
+    (sum, order) => sum + (Number(order.total) || 0),
+    0
+  );
+
   document.getElementById("ordersCountAll").textContent = ids.all;
+  document.getElementById("ordersTotalSales").textContent = orderMoney(totalSales);
   document.getElementById("ordersCountNew").textContent = ids.new;
   document.getElementById("ordersCountReceived").textContent = ids.received;
   document.getElementById("ordersCountPreparing").textContent = ids.preparing;
