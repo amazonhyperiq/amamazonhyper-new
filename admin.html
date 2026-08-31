@@ -584,9 +584,6 @@ style="margin:0">
 <thead>
 <tr>
 <th>
-الترتيب
-</th>
-<th>
 القسم
 </th>
 <th>
@@ -775,6 +772,33 @@ style="margin:0">
 </div>
 </div>
 <!-- =========================
+     الإضافة الجماعية للمواد
+========================= -->
+<div class="panel" id="bulkProducts">
+<h2>إضافة عدة مواد دفعة واحدة</h2>
+<p class="hint">يمكنك إضافة مادة واحدة أو حتى 10 مواد في العملية نفسها. الإضافة المفردة الأصلية تبقى تعمل بشكل طبيعي.</p>
+
+<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin-bottom:14px">
+  <label style="flex:1 1 260px">
+    القسم
+    <select id="bulkProductCategory"></select>
+  </label>
+  <button class="save" id="addBulkRowButton" type="button">+ إضافة صف</button>
+  <button class="save" id="saveBulkProductsButton" type="button">حفظ الكل</button>
+</div>
+
+<div class="table-wrap">
+<table class="table">
+<thead><tr>
+<th>#</th><th>اسم المادة</th><th>السعر</th><th>الوحدة</th><th>خطوة الوزن</th><th>ظهور</th><th>إجراء</th>
+</tr></thead>
+<tbody id="bulkProductsBody"></tbody>
+</table>
+</div>
+<div id="bulkProductsMessage" class="hint" style="margin-top:12px"></div>
+</div>
+
+<!-- =========================
      العروض
 ========================= -->
 <div class="panel" id="offers">
@@ -803,7 +827,7 @@ style="margin:0">
 </div>
 <p class="hint">
 
-أقل عدد 5 مواد، ويمكن رفع العدد حتى 8 مواد داخل العرض.
+يمكنك إضافة مادة واحدة أو حتى 10 مواد داخل العرض. يبدأ العرض بدون خانات، واضغط «+ إضافة مادة» لإضافة المواد.
 
 </p>
 <div id="offerRows">
@@ -868,6 +892,10 @@ style="margin:0">
 <div class="order-stat">
 <strong id="ordersCountAll">0</strong>
 <span>كل الطلبات</span>
+</div>
+<div class="order-stat">
+<strong id="ordersTotalSales">0 د.ع</strong>
+<span>إجمالي المبيعات</span>
 </div>
 <div class="order-stat">
 <strong id="ordersCountNew">0</strong>
@@ -1379,38 +1407,6 @@ function renderCategoriesTable(){
 }
 
 
-window.moveCategory = function(id, direction){
-
-  const index =
-    categories.findIndex(
-      c => c.id === id
-    );
-
-  if(index < 0) return;
-
-  const target =
-    index + direction;
-
-  if(
-    target < 0 ||
-    target >= categories.length
-  ) return;
-
-  const next =
-    categories.map(
-      c => ({...c})
-    );
-
-  const temp = next[index];
-  next[index] = next[target];
-  next[target] = temp;
-
-  categories = next;
-
-  renderCategoryOptions();
-  renderCategoriesTable();
-};
-
 function clearCategoryForm(){
 
   categoryName.value =
@@ -1565,51 +1561,6 @@ async function saveCategoryData(
 
 }
 
-
-const saveCategoryOrderButton =
-  document.getElementById(
-    "saveCategoryOrderButton"
-  );
-
-if(saveCategoryOrderButton){
-
-  saveCategoryOrderButton.addEventListener(
-    "click",
-    async () => {
-
-      saveCategoryOrderButton.disabled = true;
-
-      try{
-
-        await saveCategoryData(
-          categories.map(
-            c => ({...c})
-          )
-        );
-
-        alert(
-          "تم حفظ ترتيب الأقسام بنجاح ✅"
-        );
-
-      }catch(e){
-
-        console.error(e);
-
-        alert(
-          "فشل حفظ ترتيب الأقسام: " +
-          e.message
-        );
-
-      }finally{
-
-        saveCategoryOrderButton.disabled = false;
-
-      }
-
-    }
-  );
-
-}
 
 categoryMode.addEventListener(
   "change",
@@ -2392,6 +2343,8 @@ function clearProductForm(){
     )
     .checked = true;
 
+  document.getElementById("weightStep").value = "1";
+
 }
 
 
@@ -2431,6 +2384,12 @@ productSaveButton.addEventListener(
       unitRadio
         ? unitRadio.value
         : "قطعة";
+
+
+    const productStep =
+      unit === "وزن (كغ)"
+        ? Number(document.getElementById("weightStep").value)
+        : 1;
 
 
     if(!name){
@@ -2558,6 +2517,8 @@ productSaveButton.addEventListener(
 
           unit:unit,
 
+          step:productStep,
+
           active:active
 
         };
@@ -2635,6 +2596,8 @@ productSaveButton.addEventListener(
           price:price,
 
           unit:unit,
+
+          step:productStep,
 
           icon:"🛒",
 
@@ -3270,6 +3233,13 @@ function(id){
 
   }
 
+  const savedStep = Number(product.step);
+
+  document.getElementById("weightStep").value =
+    savedStep === 0.25 || savedStep === 0.5 || savedStep === 1
+      ? String(savedStep)
+      : "1";
+
 
   document
     .getElementById(
@@ -3464,90 +3434,31 @@ document.getElementById(
 
 function addRow(){
 
-  if(
-    box.children.length >= 8
-  ){
-
-    alert(
-      "الحد الأقصى 8 مواد"
-    );
-
+  if(box.children.length >= 10){
+    alert("الحد الأقصى 10 مواد");
     return;
-
   }
 
-
-  const d =
-    document.createElement(
-      "div"
-    );
-
-
-  d.className =
-    "offer-row";
-
+  const d = document.createElement("div");
+  d.className = "offer-row";
 
   d.innerHTML =
-
     '<input placeholder="اسم المادة">' +
-
     '<input type="number" placeholder="السعر الأصلي">' +
-
     '<input type="number" placeholder="سعر العرض">' +
-
     '<input type="file" accept="image/*">' +
-
     '<button type="button" class="delete">حذف</button>';
 
-
-  d.querySelector(
-    "button"
-  ).onclick =
-  function(){
-
-    if(
-      box.children.length > 5
-    ){
-
-      d.remove();
-
-    }else{
-
-      alert(
-        "يجب أن يبقى في العرض 5 مواد على الأقل"
-      );
-
-    }
-
+  d.querySelector("button").onclick = function(){
+    d.remove();
   };
 
-
-  box.appendChild(
-    d
-  );
-
+  box.appendChild(d);
 }
-
-
-/* إنشاء أول 5 خانات */
-
-for(
-  let i = 0;
-  i < 5;
-  i++
-){
-
-  addRow();
-
-}
-
 
 document
-  .getElementById(
-    "addOfferRow"
-  )
-  .onclick =
-  addRow;
+  .getElementById("addOfferRow")
+  .onclick = addRow;
 
 
 /* =====================================================
@@ -3614,16 +3525,9 @@ offerSaveButton.addEventListener(
       );
 
 
-    if(
-      rows.length < 5
-    ){
-
-      alert(
-        "يجب أن يحتوي العرض على 5 مواد على الأقل"
-      );
-
+    if(rows.length < 1){
+      alert("أضف مادة واحدة على الأقل إلى العرض");
       return;
-
     }
 
 
@@ -3675,16 +3579,9 @@ offerSaveButton.addEventListener(
     );
 
 
-    if(
-      items.length < 5
-    ){
-
-      alert(
-        "يرجى إدخال أسماء 5 مواد على الأقل"
-      );
-
+    if(items.length < 1){
+      alert("يرجى إدخال اسم مادة واحدة على الأقل");
       return;
-
     }
 
 
@@ -4977,7 +4874,13 @@ function renderOrderStats(){
     delivered: count("delivered")
   };
 
+  const totalSales = adminOrders.reduce(
+    (sum, order) => sum + (Number(order.total) || 0),
+    0
+  );
+
   document.getElementById("ordersCountAll").textContent = ids.all;
+  document.getElementById("ordersTotalSales").textContent = orderMoney(totalSales);
   document.getElementById("ordersCountNew").textContent = ids.new;
   document.getElementById("ordersCountReceived").textContent = ids.received;
   document.getElementById("ordersCountPreparing").textContent = ids.preparing;
@@ -5297,6 +5200,232 @@ if(ordersRefreshButton){
 
 /* تحميل الطلبات عند فتح لوحة الإدارة */
 loadOrders();
+
+/* =====================================================
+   الإضافة الجماعية للمواد — من 1 إلى 10
+===================================================== */
+const bulkProductCategory = document.getElementById("bulkProductCategory");
+const addBulkRowButton = document.getElementById("addBulkRowButton");
+const saveBulkProductsButton = document.getElementById("saveBulkProductsButton");
+const bulkProductsBody = document.getElementById("bulkProductsBody");
+const bulkProductsMessage = document.getElementById("bulkProductsMessage");
+
+function fillBulkCategoryOptions(){
+  if(!bulkProductCategory) return;
+  const old = bulkProductCategory.value;
+  bulkProductCategory.innerHTML = "";
+  categories.forEach(c=>{
+    const o=document.createElement("option");
+    o.value=c.id;
+    o.textContent=c.name;
+    bulkProductCategory.appendChild(o);
+  });
+  if(categories.some(c=>c.id===old)) bulkProductCategory.value=old;
+}
+
+function bulkRowCount(){
+  return bulkProductsBody ? bulkProductsBody.querySelectorAll("tr").length : 0;
+}
+
+function addBulkProductRow(){
+  const count=bulkRowCount();
+  if(count>=10){
+    alert("الحد الأقصى 10 مواد في العملية الواحدة.");
+    return;
+  }
+  const tr=document.createElement("tr");
+  tr.className="bulk-product-row";
+  tr.innerHTML=`
+    <td class="bulk-number">${count+1}</td>
+    <td><input class="bulk-name" type="text" placeholder="اسم المادة" style="min-width:170px"></td>
+    <td><input class="bulk-price" type="number" min="1" placeholder="السعر" style="min-width:120px"></td>
+    <td>
+      <select class="bulk-unit" style="min-width:125px">
+        <option value="قطعة">قطعة</option>
+        <option value="وزن (كغ)">وزن (كغ)</option>
+      </select>
+    </td>
+    <td>
+      <select class="bulk-step" style="min-width:110px">
+        <option value="0.25">0.25 كغ</option>
+        <option value="0.50">0.50 كغ</option>
+        <option value="1">1 كغ</option>
+      </select>
+    </td>
+    <td style="text-align:center"><input class="bulk-active" type="checkbox" checked style="width:auto"></td>
+    <td><button type="button" class="delete bulk-remove">حذف</button></td>
+  `;
+  bulkProductsBody.appendChild(tr);
+  tr.querySelector(".bulk-unit").addEventListener("change",()=>{
+    tr.querySelector(".bulk-step").disabled=tr.querySelector(".bulk-unit").value!=="وزن (كغ)";
+  });
+  tr.querySelector(".bulk-remove").addEventListener("click",()=>{
+    tr.remove();
+    renumberBulkRows();
+  });
+  tr.querySelector(".bulk-unit").dispatchEvent(new Event("change"));
+  renumberBulkRows();
+}
+
+function renumberBulkRows(){
+  [...bulkProductsBody.querySelectorAll("tr")].forEach((tr,i)=>{
+    tr.querySelector(".bulk-number").textContent=i+1;
+  });
+}
+
+function prepareBulkRows(){
+  if(bulkRowCount()===0) addBulkProductRow();
+}
+
+async function saveBulkProducts(){
+  const rows=[...bulkProductsBody.querySelectorAll("tr")];
+  if(!rows.length){
+    alert("أضف مادة واحدة على الأقل.");
+    return;
+  }
+  if(rows.length>10){
+    alert("الحد الأقصى 10 مواد.");
+    return;
+  }
+  const category=bulkProductCategory.value;
+  if(!category){
+    alert("اختر القسم أولاً.");
+    return;
+  }
+
+  const newProducts=[];
+  for(let i=0;i<rows.length;i++){
+    const tr=rows[i];
+    const name=tr.querySelector(".bulk-name").value.trim();
+    const price=Number(tr.querySelector(".bulk-price").value);
+    const unit=tr.querySelector(".bulk-unit").value;
+    const step=unit==="وزن (كغ)" ? Number(tr.querySelector(".bulk-step").value) : 1;
+    if(!name){ alert(`يرجى كتابة اسم المادة في الصف ${i+1}.`); return; }
+    if(!price || price<=0){ alert(`يرجى كتابة سعر صحيح في الصف ${i+1}.`); return; }
+    if(![0.25,0.5,1].includes(step)){ alert(`خطوة الوزن غير صحيحة في الصف ${i+1}.`); return; }
+    newProducts.push({name,price,unit,step,active:tr.querySelector(".bulk-active").checked});
+  }
+
+  saveBulkProductsButton.disabled=true;
+  addBulkRowButton.disabled=true;
+  saveBulkProductsButton.textContent="جاري الحفظ...";
+  bulkProductsMessage.textContent="";
+  try{
+    const {data:row,error}=await db.from("products").select("id,data").eq("id",1).single();
+    if(error) throw error;
+    const oldData=row.data||{};
+    const products=Array.isArray(oldData.products)?[...oldData.products]:[];
+    let nextId=products.length ? Math.max(...products.map(p=>Number(p.id)||0))+1 : 1;
+    newProducts.forEach(p=>{
+      products.push({id:nextId++,cat:category,name:p.name,price:p.price,unit:p.unit,step:p.step,icon:"🛒",active:p.active});
+    });
+    const {error:updateError}=await db.from("products").update({data:{...oldData,products}}).eq("id",1);
+    if(updateError) throw updateError;
+    allProducts=products;
+    refreshProductSelector();
+    renderProductsTable();
+    bulkProductsBody.innerHTML="";
+    addBulkProductRow();
+    bulkProductsMessage.textContent=`تمت إضافة ${newProducts.length} مادة بنجاح ✅`;
+  }catch(error){
+    console.error(error);
+    bulkProductsMessage.textContent="فشل الحفظ: "+error.message;
+  }finally{
+    saveBulkProductsButton.disabled=false;
+    addBulkRowButton.disabled=false;
+    saveBulkProductsButton.textContent="حفظ الكل";
+  }
+}
+
+if(addBulkRowButton){
+  addBulkRowButton.addEventListener("click",addBulkProductRow);
+  saveBulkProductsButton.addEventListener("click",saveBulkProducts);
+  fillBulkCategoryOptions();
+  addBulkProductRow();
+}
+
+
+/* =====================================================
+   ترتيب الأقسام - إضافة مستقلة لا تغيّر وظائف المواد
+===================================================== */
+
+window.moveCategory = function(id, direction){
+
+  const index =
+    categories.findIndex(
+      c => c.id === id
+    );
+
+  if(index < 0) return;
+
+  const target =
+    index + direction;
+
+  if(
+    target < 0 ||
+    target >= categories.length
+  ) return;
+
+  const next =
+    categories.map(
+      c => ({...c})
+    );
+
+  const temp = next[index];
+  next[index] = next[target];
+  next[target] = temp;
+
+  categories = next;
+
+  renderCategoryOptions();
+  renderCategoriesTable();
+};
+
+const saveCategoryOrderButton =
+  document.getElementById(
+    "saveCategoryOrderButton"
+  );
+
+if(saveCategoryOrderButton){
+
+  saveCategoryOrderButton.addEventListener(
+    "click",
+    async () => {
+
+      saveCategoryOrderButton.disabled = true;
+
+      try{
+
+        await saveCategoryData(
+          categories.map(
+            c => ({...c})
+          )
+        );
+
+        alert(
+          "تم حفظ ترتيب الأقسام بنجاح ✅"
+        );
+
+      }catch(e){
+
+        console.error(e);
+
+        alert(
+          "فشل حفظ ترتيب الأقسام: " +
+          e.message
+        );
+
+      }finally{
+
+        saveCategoryOrderButton.disabled = false;
+
+      }
+
+    }
+  );
+
+}
+
 </script>
 </body>
 </html>
