@@ -728,10 +728,11 @@ style="margin:0">
   "
 >
   <h3 style="margin:0 0 6px;color:#075d2d">
-    إدارة ظهور المواد
+    إدارة ظهور المواد حسب القسم
   </h3>
+
   <p class="hint" style="margin:0 0 10px">
-    اختر قسماً لعرض مواده فقط، ثم فعّل أو أخفِ كل مادة بدون عرض قائمة المتجر كاملة.
+    اختر القسم، ثم اختر إظهار جميع المواد أو إخفاء جميع المواد دفعة واحدة.
   </p>
 
   <label>
@@ -742,11 +743,38 @@ style="margin:0">
   </label>
 
   <div
-    id="productVisibilityList"
-    style="margin-top:12px"
+    style="
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:12px;
+    "
+  >
+    <button
+      type="button"
+      class="save"
+      id="showCategoryProductsButton"
+      style="flex:1 1 220px"
+    >
+      ✅ إظهار جميع مواد القسم
+    </button>
+
+    <button
+      type="button"
+      class="delete"
+      id="hideCategoryProductsButton"
+      style="flex:1 1 220px"
+    >
+      🚫 إخفاء جميع مواد القسم
+    </button>
+  </div>
+
+  <div
+    id="productVisibilityStatus"
+    class="hint"
+    style="margin-top:10px"
   ></div>
 </div>
-
 
 <div class="hint" style="margin-top:10px">
   البحث والقائمة التفصيلية للمواد تبقى متاحة عند الحاجة.
@@ -5463,7 +5491,7 @@ if(saveCategoryOrderButton){
 
 
 /* =====================================================
-   إدارة ظهور المواد حسب القسم — واجهة مختصرة
+   إدارة ظهور جميع مواد القسم دفعة واحدة
    لا تغيّر إضافة/تعديل المواد الحالية.
 ===================================================== */
 
@@ -5508,21 +5536,236 @@ function fillProductVisibilityCategories(){
   }
 }
 
-async function toggleProductVisibilityCompact(
-  productId,
-  nextActive
+function renderProductVisibilityStatus(){
+
+  const select =
+    document.getElementById(
+      "productVisibilityCategory"
+    );
+
+  const status =
+    document.getElementById(
+      "productVisibilityStatus"
+    );
+
+  if(!select || !status)
+    return;
+
+  if(!select.value){
+    status.textContent =
+      "اختر قسماً أولاً.";
+    return;
+  }
+
+  const items =
+    (allProducts || [])
+      .filter(
+        p =>
+          String(p.cat) ===
+          String(select.value)
+      );
+
+  const category =
+    (categories || []).find(
+      c =>
+        String(c.id) ===
+        String(select.value)
+    );
+
+  if(!items.length){
+
+    status.textContent =
+      `القسم «${category?.name || ""}» لا يحتوي على مواد حالياً.`;
+
+    return;
+  }
+
+  const visible =
+    items.filter(
+      p => p.active !== false
+    ).length;
+
+  status.textContent =
+    `القسم «${category?.name || ""}»: `
+    + `${items.length} مادة — `
+    + `${visible} ظاهرة و`
+    + `${items.length - visible} مخفية.`;
+}
+
+async function setCategoryProductsVisibility(
+  shouldShow
 ){
+
+  const select =
+    document.getElementById(
+      "productVisibilityCategory"
+    );
+
+  if(!select || !select.value){
+    alert("اختر القسم أولاً.");
+    return;
+  }
+
+  const categoryId =
+    String(select.value);
 
   try{
 
     const {
       data:row,
       error
-    } = await db
-      .from("products")
-      .select("id,data")
-      .eq("id",1)
-      .single();
+    } =
+      await db
+        .from("products")
+        .select("id,data")
+        .eq("id",1)
+        .single();
+
+    if(error)
+      throw error;
+
+    const data =
+      row.data || {};
+
+    const productsList =
+      Array.isArray(data.products)
+        ? data.products
+        : [];
+
+    let changed = 0;
+
+    const nextProducts =
+      productsList.map(
+        product => {
+
+          if(
+            String(product.cat) !==
+            categoryId
+          ){
+            return product;
+          }
+
+          changed++;
+
+          return {
+            ...product,
+            active:
+              Boolean(shouldShow)
+          };
+        }
+      );
+
+    if(changed === 0){
+      alert("لا توجد مواد في هذا القسم.");
+      return;
+    }
+
+    const {
+      error:updateError
+    } =
+      await db
+        .from("products")
+        .update({
+          data:{
+            ...data,
+            products:
+              nextProducts
+          }
+        })
+        .eq("id",1);
+
+    if(updateError)
+      throw updateError;
+
+    await loadProducts();
+
+    fillProductVisibilityCategories();
+
+    if(select)
+      select.value = categoryId;
+
+    renderProductVisibilityStatus();
+
+    alert(
+      shouldShow
+        ? `تم إظهار ${changed} مادة في القسم ✅`
+        : `تم إخفاء ${changed} مادة في القسم ✅`
+    );
+
+  }catch(error){
+
+    console.error(error);
+
+    alert(
+      "فشل تحديث ظهور مواد القسم: " +
+      error.message
+    );
+  }
+}
+
+const productVisibilityCategory =
+  document.getElementById(
+    "productVisibilityCategory"
+  );
+
+const showCategoryProductsButton =
+  document.getElementById(
+    "showCategoryProductsButton"
+  );
+
+const hideCategoryProductsButton =
+  document.getElementById(
+    "hideCategoryProductsButton"
+  );
+
+if(productVisibilityCategory){
+
+  productVisibilityCategory.addEventListener(
+    "change",
+    renderProductVisibilityStatus
+  );
+
+  fillProductVisibilityCategories();
+
+  renderProductVisibilityStatus();
+}
+
+if(showCategoryProductsButton){
+
+  showCategoryProductsButton.addEventListener(
+    "click",
+    () =>
+      setCategoryProductsVisibility(true)
+  );
+}
+
+if(hideCategoryProductsButton){
+
+  hideCategoryProductsButton.addEventListener(
+    "click",
+    () =>
+      setCategoryProductsVisibility(false)
+  );
+}
+
+
+/* =====================================================
+   إجراءات المواد: تعديل / حذف / إظهار-إخفاء
+===================================================== */
+
+window.toggleProductVisibility = async function(productId){
+
+  try{
+
+    const {
+      data:row,
+      error
+    } =
+      await db
+        .from("products")
+        .select("id,data")
+        .eq("id",1)
+        .single();
 
     if(error)
       throw error;
@@ -5537,32 +5780,45 @@ async function toggleProductVisibilityCompact(
 
     const index =
       list.findIndex(
-        p => String(p.id) === String(productId)
+        p =>
+          String(p.id) ===
+          String(productId)
       );
 
     if(index < 0)
       throw new Error("لم يتم العثور على المادة.");
 
+    const nextActive =
+      list[index].active === false;
+
     list[index] = {
       ...list[index],
-      active: Boolean(nextActive)
+      active: nextActive
     };
-
-    data.products = list;
 
     const {
       error:updateError
-    } = await db
-      .from("products")
-      .update({data})
-      .eq("id",1);
+    } =
+      await db
+        .from("products")
+        .update({
+          data:{
+            ...data,
+            products:list
+          }
+        })
+        .eq("id",1);
 
     if(updateError)
       throw updateError;
 
-    await loadProducts();
+    if(typeof loadProducts === "function"){
+      await loadProducts();
+    }
 
-    renderProductVisibilityList();
+    if(typeof renderProductsTable === "function"){
+      renderProductsTable();
+    }
 
   }catch(error){
 
@@ -5574,156 +5830,95 @@ async function toggleProductVisibilityCompact(
     );
 
   }
-}
+};
 
-function renderProductVisibilityList(){
 
-  const listEl =
-    document.getElementById(
-      "productVisibilityList"
-    );
+(function(){
+  if(typeof renderProductsTable !== "function") return;
 
-  const select =
-    document.getElementById(
-      "productVisibilityCategory"
-    );
+  const originalRenderProductsTable = renderProductsTable;
 
-  if(!listEl || !select)
-    return;
+  window.renderProductsTable = function(){
+    originalRenderProductsTable.apply(this, arguments);
 
-  const categoryId =
-    String(select.value || "");
+    const tbody =
+      document.getElementById("productsTableBody");
 
-  if(!categoryId){
+    if(!tbody) return;
 
-    listEl.innerHTML =
-      '<div class="hint">اختر قسماً لعرض مواده.</div>';
+    tbody.querySelectorAll("tr").forEach(
+      tr => {
 
-    return;
-  }
+        if(
+          tr.querySelector(
+            ".product-visibility-action"
+          )
+        ){
+          return;
+        }
 
-  const items =
-    (allProducts || [])
-      .filter(
-        p =>
-          String(p.cat) === categoryId
-      );
+        const actionCell =
+          tr.lastElementChild;
 
-  if(!items.length){
+        if(!actionCell){
+          return;
+        }
 
-    listEl.innerHTML =
-      '<div class="hint">لا توجد مواد في هذا القسم.</div>';
+        const firstButton =
+          actionCell.querySelector("button");
 
-    return;
-  }
+        if(!firstButton){
+          return;
+        }
 
-  listEl.innerHTML =
-    items.map(
-      p => `
+        const onclick =
+          firstButton.getAttribute("onclick") || "";
 
-        <div
-          style="
-            display:flex;
-            align-items:center;
-            justify-content:space-between;
-            gap:10px;
-            padding:10px 0;
-            border-bottom:1px solid #e4ebe6;
-          "
-        >
+        const match =
+          onclick.match(
+            /editProduct\(['"]([^'"]+)['"]\)/
+          );
 
-          <div style="min-width:0">
-            <strong
-              style="
-                display:block;
-                overflow-wrap:anywhere;
-              "
-            >
-              ${String(p.name || "مادة")}
-            </strong>
+        if(!match){
+          return;
+        }
 
-            <span
-              class="hint"
-            >
-              ${Number(p.price || 0).toLocaleString("ar-IQ")} د.ع
-              —
-              ${String(p.unit || "قطعة")}
-            </span>
-          </div>
+        const productId =
+          match[1];
 
-          <label
-            style="
-              display:flex;
-              align-items:center;
-              gap:7px;
-              white-space:nowrap;
-              cursor:pointer;
-            "
-          >
-            <input
-              type="checkbox"
-              class="product-visibility-check"
-              data-product-id="${String(p.id)}"
-              ${p.active !== false ? "checked" : ""}
-            >
+        const product =
+          (allProducts || []).find(
+            p =>
+              String(p.id) ===
+              String(productId)
+          );
 
-            <span>
-              ${p.active !== false ? "ظاهر" : "مخفي"}
-            </span>
+        const visibilityButton =
+          document.createElement("button");
 
-          </label>
+        visibilityButton.type = "button";
+        visibilityButton.className =
+          "save product-visibility-action";
+        visibilityButton.style.background =
+          "#64748b";
+        visibilityButton.textContent =
+          product?.active === false
+            ? "إظهار"
+            : "إخفاء";
 
-        </div>
-
-      `
-    )
-    .join("");
-
-  listEl
-    .querySelectorAll(
-      ".product-visibility-check"
-    )
-    .forEach(
-      checkbox => {
-
-        checkbox.addEventListener(
-          "change",
-          async event => {
-
-            const nextActive =
-              event.target.checked;
-
-            event.target.disabled =
-              true;
-
-            await toggleProductVisibilityCompact(
-              event.target.dataset.productId,
-              nextActive
-            );
-
-          }
+        visibilityButton.addEventListener(
+          "click",
+          () =>
+            toggleProductVisibility(productId)
         );
 
+        actionCell.appendChild(
+          visibilityButton
+        );
       }
     );
-}
-
-const productVisibilityCategory =
-  document.getElementById(
-    "productVisibilityCategory"
-  );
-
-if(productVisibilityCategory){
-
-  productVisibilityCategory.addEventListener(
-    "change",
-    renderProductVisibilityList
-  );
-
-  fillProductVisibilityCategories();
-
-}
-
+  };
+})();
 </script>
 </body>
 </html>
