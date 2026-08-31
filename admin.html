@@ -551,10 +551,41 @@ if(sessionStorage.getItem('adminLoggedIn')!=='1'){
 تفريغ الحقول
 
 </button>
+<div
+style="
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:10px;
+flex-wrap:wrap;
+margin:12px 0;
+padding:12px;
+background:#f8fafc;
+border:1px solid #e2e8f0;
+border-radius:12px;
+">
+<div>
+<b>ترتيب عرض الأقسام</b>
+<div class="hint" style="margin:4px 0 0">
+استخدم ↑ و ↓ لتحديد أولوية ظهور الأقسام للزبائن.
+</div>
+</div>
+<button
+class="save"
+id="saveCategoryOrderButton"
+type="button"
+style="margin:0">
+💾 حفظ ترتيب الأقسام
+</button>
+</div>
+
 <div class="table-wrap">
 <table class="table">
 <thead>
 <tr>
+<th>
+الترتيب
+</th>
 <th>
 القسم
 </th>
@@ -1312,16 +1343,28 @@ function renderCategoriesTable(){
         </td>
 
         <td>
-
-          <button
-            type="button"
-            class="save"
-            style="padding:7px 12px"
-            onclick="editCategory('${c.id}')"
-          >
-            تعديل
-          </button>
-
+          <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap">
+            <button
+              type="button"
+              class="save"
+              style="padding:6px 10px"
+              onclick="moveCategory('${c.id}', -1)"
+              title="رفع القسم"
+            >↑</button>
+            <button
+              type="button"
+              class="save"
+              style="padding:6px 10px"
+              onclick="moveCategory('${c.id}', 1)"
+              title="تنزيل القسم"
+            >↓</button>
+            <button
+              type="button"
+              class="save"
+              style="padding:6px 10px"
+              onclick="editCategory('${c.id}')"
+            >تعديل</button>
+          </div>
         </td>
       `;
 
@@ -1335,6 +1378,38 @@ function renderCategoriesTable(){
 
 }
 
+
+window.moveCategory = function(id, direction){
+
+  const index =
+    categories.findIndex(
+      c => c.id === id
+    );
+
+  if(index < 0) return;
+
+  const target =
+    index + direction;
+
+  if(
+    target < 0 ||
+    target >= categories.length
+  ) return;
+
+  const next =
+    categories.map(
+      c => ({...c})
+    );
+
+  const temp = next[index];
+  next[index] = next[target];
+  next[target] = temp;
+
+  categories = next;
+
+  renderCategoryOptions();
+  renderCategoriesTable();
+};
 
 function clearCategoryForm(){
 
@@ -1490,6 +1565,51 @@ async function saveCategoryData(
 
 }
 
+
+const saveCategoryOrderButton =
+  document.getElementById(
+    "saveCategoryOrderButton"
+  );
+
+if(saveCategoryOrderButton){
+
+  saveCategoryOrderButton.addEventListener(
+    "click",
+    async () => {
+
+      saveCategoryOrderButton.disabled = true;
+
+      try{
+
+        await saveCategoryData(
+          categories.map(
+            c => ({...c})
+          )
+        );
+
+        alert(
+          "تم حفظ ترتيب الأقسام بنجاح ✅"
+        );
+
+      }catch(e){
+
+        console.error(e);
+
+        alert(
+          "فشل حفظ ترتيب الأقسام: " +
+          e.message
+        );
+
+      }finally{
+
+        saveCategoryOrderButton.disabled = false;
+
+      }
+
+    }
+  );
+
+}
 
 categoryMode.addEventListener(
   "change",
