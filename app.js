@@ -1486,18 +1486,11 @@ function fillCustomerOrderFields(customer){
       groupSelect.value = String(groupIndex);
       groupSelect.dispatchEvent(new Event("change"));
 
-      const savedAreaName =
-        customer.region ||
-        customer.area ||
-        "";
-
-      if(areaSelect && savedAreaName){
+      if(areaSelect && customer.area){
         const group = deliveryGroups[groupIndex];
         const areaIndex = Array.isArray(group?.areas)
           ? group.areas.findIndex(
-              area =>
-                String(area?.name || "").trim() ===
-                String(savedAreaName).trim()
+              area => String(area?.name || "").trim() === String(customer.area).trim()
             )
           : -1;
 
@@ -1552,6 +1545,164 @@ function setCustomerStatus(message, isError = false){
   status.style.color = isError ? "#b42318" : "#333";
 }
 
+function renderCustomerRegionOptions(selectedRegion = ""){
+  const select =
+    document.getElementById("registerRegion");
+
+  const customWrap =
+    document.getElementById("customRegionWrap");
+
+  const customInput =
+    document.getElementById("registerRegionCustom");
+
+  if(!select) return;
+
+  const regions = [];
+
+  if(Array.isArray(deliveryGroups)){
+    deliveryGroups.forEach(group => {
+      if(!group || !Array.isArray(group.areas)) return;
+
+      group.areas.forEach(area => {
+        const regionName =
+          String(area?.name || "").trim();
+
+        if(
+          regionName &&
+          !regions.includes(regionName)
+        ){
+          regions.push(regionName);
+        }
+      });
+    });
+  }
+
+  select.innerHTML =
+    '<option value="">اختر المنطقة</option>';
+
+  regions.forEach(regionName => {
+    const option =
+      document.createElement("option");
+
+    option.value =
+      regionName;
+
+    option.textContent =
+      regionName;
+
+    select.appendChild(option);
+  });
+
+  const otherOption =
+    document.createElement("option");
+
+  otherOption.value =
+    "__OTHER__";
+
+  otherOption.textContent =
+    "منطقتي غير موجودة";
+
+  select.appendChild(otherOption);
+
+  const savedRegion =
+    String(selectedRegion || "").trim();
+
+  if(
+    savedRegion &&
+    regions.includes(savedRegion)
+  ){
+    select.value = savedRegion;
+
+    if(customWrap)
+      customWrap.style.display = "none";
+
+    if(customInput)
+      customInput.value = "";
+
+  }else if(savedRegion){
+
+    select.value = "__OTHER__";
+
+    if(customWrap)
+      customWrap.style.display = "block";
+
+    if(customInput)
+      customInput.value = savedRegion;
+
+  }else{
+
+    select.value = "";
+
+    if(customWrap)
+      customWrap.style.display = "none";
+
+    if(customInput)
+      customInput.value = "";
+  }
+}
+
+function getCustomerSelectedRegion(){
+  const select =
+    document.getElementById("registerRegion");
+
+  const customInput =
+    document.getElementById("registerRegionCustom");
+
+  if(!select)
+    return "";
+
+  if(select.value === "__OTHER__"){
+    return String(
+      customInput?.value || ""
+    ).trim();
+  }
+
+  return String(
+    select.value || ""
+  ).trim();
+}
+
+function setupCustomerRegionSelector(){
+  const select =
+    document.getElementById("registerRegion");
+
+  const customWrap =
+    document.getElementById("customRegionWrap");
+
+  const customInput =
+    document.getElementById("registerRegionCustom");
+
+  if(!select)
+    return;
+
+  select.addEventListener(
+    "change",
+    () => {
+
+      const isOther =
+        select.value === "__OTHER__";
+
+      if(customWrap){
+        customWrap.style.display =
+          isOther
+            ? "block"
+            : "none";
+      }
+
+      if(!isOther && customInput){
+        customInput.value = "";
+      }
+
+      if(isOther){
+        customInput?.focus();
+      }
+    }
+  );
+}
+
+setupCustomerRegionSelector();
+
+
 function openCustomerModal(){
   const modal = document.getElementById("customerModal");
   if(!modal) return;
@@ -1566,11 +1717,16 @@ function openCustomerModal(){
     if(name) name.value = currentCustomer.name || "";
     if(phone) phone.value = currentCustomer.phone || "";
     if(city) city.value = currentCustomer.city || "بغداد";
-    if(region) region.value = currentCustomer.region || "";
+
+    renderCustomerRegionOptions(
+      currentCustomer.region || ""
+    );
+
     if(address) address.value = currentCustomer.address || "";
 
     setCustomerStatus("بيانات حسابك محفوظة. يمكنك تعديلها ثم الضغط على حفظ بياناتي.");
   }else{
+    renderCustomerRegionOptions("");
     setCustomerStatus("");
   }
 
@@ -1608,10 +1764,7 @@ async function saveCustomer(){
       .trim() || "بغداد";
 
   const area =
-    document
-      .getElementById("registerRegion")
-      ?.value
-      .trim();
+    getCustomerSelectedRegion();
 
   const address =
     document
@@ -2201,53 +2354,6 @@ if(whatsappBtn){
       }
 
 
-      /*
-         حماية إضافية: إذا كانت منطقة الزبون محفوظة
-         لكن قوائم الاختيار لم تُحمّل، نستخرج الأجرة
-         مباشرة من بيانات مناطق التوصيل.
-      */
-      if(
-        currentCustomer &&
-        (!deliveryAreaName || deliveryFee === 0)
-      ){
-        const savedGroupName =
-          currentCustomer.city || "";
-
-        const savedAreaName =
-          currentCustomer.region ||
-          currentCustomer.area ||
-          "";
-
-        const savedGroup =
-          deliveryGroups.find(
-            group =>
-              String(group?.name || "").trim() ===
-              String(savedGroupName).trim()
-          );
-
-        if(savedGroup){
-          deliveryGroupName =
-            savedGroup.name || deliveryGroupName;
-
-          const savedArea =
-            Array.isArray(savedGroup.areas)
-              ? savedGroup.areas.find(
-                  area =>
-                    String(area?.name || "").trim() ===
-                    String(savedAreaName).trim()
-                )
-              : null;
-
-          if(savedArea){
-            deliveryAreaName =
-              savedArea.name || deliveryAreaName;
-
-            deliveryFee =
-              Number(savedArea.fee) || 0;
-          }
-        }
-      }
-
       /* ==============================================
          حساب إجمالي المواد
       ============================================== */
@@ -2471,7 +2577,13 @@ updateCart();
 loadTicker();
 
 loadProductsFromSupabase().then(() => {
+
+  renderCustomerRegionOptions(
+    currentCustomer?.region || ""
+  );
+
   if(currentCustomer){
     fillCustomerOrderFields(currentCustomer);
   }
+
 });
