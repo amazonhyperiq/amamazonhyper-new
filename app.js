@@ -2225,13 +2225,8 @@ if(whatsappBtn){
           total: itemTotal
         });
 
-        /* تنسيق WhatsApp: عزل القيم المختلطة عربي/أرقام لمنع انقلاب الاتجاه */
-        const RTL = "\u200F";
-        const LTR = "\u200E";
-
         lines.push(
-          RTL +
-          `• ${p.name} — الكمية: ${LTR}${q}${LTR} ${p.unit} — السعر: ${LTR}${money(itemTotal)}${LTR}`
+          `- ${p.name}: ${q} ${p.unit} — ${money(itemTotal)}`
         );
 
       }
@@ -2241,25 +2236,20 @@ if(whatsappBtn){
         productsTotal + deliveryFee;
 
 
-      const safePhone = `${LTR}${phone}${LTR}`;
-      const safeDeliveryFee = `${LTR}${money(deliveryFee)}${LTR}`;
-      const safeProductsTotal = `${LTR}${money(productsTotal)}${LTR}`;
-      const safeTotal = `${LTR}${money(total)}${LTR}`;
-
       lines.push(
         "",
-        RTL + `الاسم: ${name}`,
-        RTL + `الهاتف: ${safePhone}`,
-        RTL + `المدينة: ${currentCustomer.city || "بغداد"}`,
-        RTL + `منطقة التوصيل الرئيسية: ${deliveryGroupName || currentCustomer.city || "لم يتم الاختيار"}`,
-        RTL + `منطقة التوصيل: ${deliveryAreaName || currentCustomer.region || "لم يتم الاختيار"}`,
-        RTL + `أجور التوصيل: ${safeDeliveryFee}`,
-        RTL + `العنوان: ${address}`,
-        RTL + `الملاحظات: ${notes || "لا توجد"}`,
-        RTL + `المجموع التقريبي للمواد: ${safeProductsTotal}`,
-        RTL + `الإجمالي التقريبي: ${safeTotal}`,
+        `الاسم: ${name}`,
+        `الهاتف: ${phone}`,
+        `المدينة: ${currentCustomer.city || "بغداد"}`,
+        `منطقة التوصيل الرئيسية: ${deliveryGroupName || currentCustomer.city || "لم يتم الاختيار"}`,
+        `منطقة التوصيل: ${deliveryAreaName || currentCustomer.region || "لم يتم الاختيار"}`,
+        `أجور التوصيل: ${money(deliveryFee)}`,
+        `العنوان: ${address}`,
+        `الملاحظات: ${notes || "لا توجد"}`,
+        `المجموع التقريبي للمواد: ${money(productsTotal)}`,
+        `الإجمالي التقريبي: ${money(total)}`,
         "",
-        RTL + "تنويه: المواد التي تباع بالوزن قد يختلف وزنها وسعرها النهائي قليلاً بعد التجهيز، وسيتم تأكيد السعر النهائي قبل التسليم."
+        "تنويه: المواد التي تباع بالوزن قد يختلف وزنها وسعرها النهائي قليلاً بعد التجهيز، وسيتم تأكيد السعر النهائي قبل التسليم."
       );
 
 
@@ -2312,17 +2302,12 @@ if(whatsappBtn){
         "9647842000516";
 
 
-      window.open(
+      /* فتح واتساب بنفس الصفحة لتجنب حظر النوافذ المنبثقة على iPhone */
+      const whatsappMessage = lines.join("\n");
+      const whatsappUrl =
+        `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`;
 
-        `https://wa.me/${whatsappNumber}?text=${
-          encodeURIComponent(
-            lines.join("\n")
-          )
-        }`,
-
-        "_blank"
-
-      );
+      window.location.href = whatsappUrl;
 
     }
   );
