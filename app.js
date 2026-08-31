@@ -184,6 +184,17 @@ async function loadProductsFromSupabase(){
     const saved =
       data.data;
 
+    /* ==============================================
+       تحميل محتوى الصفحة الرئيسية
+    ============================================== */
+    if(saved.siteContent){
+      siteContent = {
+        ...siteContent,
+        ...saved.siteContent
+      };
+    }
+
+
 
     /* ==============================================
        تحميل العروض
@@ -2439,6 +2450,216 @@ if(whatsappBtn){
    الشريط المتحرك
 ===================================================== */
 
+
+/* =====================================================
+   محتوى الصفحة الرئيسية
+===================================================== */
+
+let siteContent = {
+  enabled:true,
+
+  welcomeTitle:
+    "👋 أهلاً وسهلاً بكم في أمازون هايبر ماركت 🛒",
+
+  welcomeText:
+    "نرحب بكم في متجرنا الإلكتروني، ونسعد بخدمتكم وتوفير احتياجاتكم بسهولة، مع توصيل طلباتكم إلى العنوان المحدد.",
+
+  howToUse:
+    "1. اختر القسم الذي تريد.\n" +
+    "2. اختر المادة وحدد الكمية أو الوزن.\n" +
+    "3. أضف المواد إلى السلة من علامة +.\n" +
+    "4. سجّل بالموقع بالبيانات الصحيحة.\n" +
+    "5. تأكد من منطقة وعنوان التوصيل.\n" +
+    "6. أضف الاحتياجات التي لم تجدها أو الملاحظات قبل إرسال الطلب.\n" +
+    "7. قبل الإرسال عبر WhatsApp، تأكد من اختيار المنطقة والعنوان لبيان مبلغ التوصيل.\n" +
+    "8. اضغط إرسال الطلب عبر WhatsApp بعد التأكد من جميع التفاصيل.",
+
+  notesInfo:
+    "أضف الاحتياجات التي لم تجدها أو أي ملاحظات خاصة بالطلب في خانة الملاحظات قبل الإرسال.",
+
+  deliveryPhone:
+    "07842000516",
+
+  storeAddress:
+    "بغداد / المنصور / شارع أبو جعفر المنصور",
+
+  deliveryNote:
+    "قبل الإرسال عبر WhatsApp تأكد من اختيار المنطقة والعنوان بشكل صحيح ليتم احتساب مبلغ التوصيل."
+};
+
+
+function renderSiteContent(){
+
+  const mount =
+    document.getElementById(
+      "siteWelcomeMount"
+    );
+
+  if(!mount)
+    return;
+
+  const c = {
+    ...siteContent
+  };
+
+  if(c.enabled === false){
+    mount.innerHTML = "";
+    return;
+  }
+
+  mount.innerHTML = "";
+
+  const section =
+    document.createElement("section");
+
+  section.className = "section";
+  section.style.cssText =
+    "background:linear-gradient(135deg,#f7fff8,#eef8f1);" +
+    "border:1px solid #d7e9dc;" +
+    "margin-bottom:12px;";
+
+  const heading =
+    document.createElement("div");
+
+  heading.className = "section-heading";
+
+  const h2 =
+    document.createElement("h2");
+
+  h2.textContent =
+    c.welcomeTitle ||
+    "أهلاً وسهلاً بكم";
+
+  heading.appendChild(h2);
+
+  const p =
+    document.createElement("p");
+
+  p.textContent =
+    c.welcomeText || "";
+
+  heading.appendChild(p);
+
+  section.appendChild(heading);
+
+  const grid =
+    document.createElement("div");
+
+  grid.style.cssText =
+    "display:grid;" +
+    "grid-template-columns:repeat(2,minmax(0,1fr));" +
+    "gap:12px;";
+
+  const howBox =
+    document.createElement("div");
+
+  howBox.style.cssText =
+    "background:#fff;" +
+    "border:1px solid #e0ebe3;" +
+    "border-radius:14px;" +
+    "padding:14px;";
+
+  const howTitle =
+    document.createElement("strong");
+
+  howTitle.textContent =
+    "📌 طريقة استخدام الموقع";
+
+  howBox.appendChild(howTitle);
+
+  const how =
+    document.createElement("div");
+
+  how.style.cssText =
+    "margin-top:10px;" +
+    "white-space:pre-line;" +
+    "line-height:1.9;" +
+    "color:#37413b;";
+
+  how.textContent =
+    c.howToUse || "";
+
+  howBox.appendChild(how);
+
+  grid.appendChild(howBox);
+
+  const infoBox =
+    document.createElement("div");
+
+  infoBox.style.cssText =
+    "background:#fff;" +
+    "border:1px solid #e0ebe3;" +
+    "border-radius:14px;" +
+    "padding:14px;";
+
+  const infoTitle =
+    document.createElement("strong");
+
+  infoTitle.textContent =
+    "🚚 معلومات مهمة";
+
+  infoBox.appendChild(infoTitle);
+
+  const phone =
+    document.createElement("p");
+
+  phone.style.margin =
+    "10px 0 6px";
+
+  phone.textContent =
+    "📞 هاتف التوصيل: " +
+    (c.deliveryPhone || "");
+
+  infoBox.appendChild(phone);
+
+  const address =
+    document.createElement("p");
+
+  address.style.margin =
+    "6px 0";
+
+  address.textContent =
+    "📍 العنوان: " +
+    (c.storeAddress || "");
+
+  infoBox.appendChild(address);
+
+  const notes =
+    document.createElement("p");
+
+  notes.style.margin =
+    "6px 0";
+
+  notes.textContent =
+    "📝 الملاحظات: " +
+    (c.notesInfo || "");
+
+  infoBox.appendChild(notes);
+
+  const delivery =
+    document.createElement("p");
+
+  delivery.style.margin =
+    "6px 0";
+
+  delivery.style.fontWeight =
+    "800";
+
+  delivery.textContent =
+    "⚠️ " +
+    (c.deliveryNote || "");
+
+  infoBox.appendChild(delivery);
+
+  grid.appendChild(infoBox);
+
+  section.appendChild(grid);
+
+  mount.appendChild(section);
+
+}
+
+
 const tickerText =
   document.getElementById(
     "tickerText"
@@ -2518,6 +2739,10 @@ async function loadTicker(){
 /* =====================================================
    تشغيل الموقع
 ===================================================== */
+
+renderSiteContent();
+
+renderSiteContent();
 
 renderCategories();
 
