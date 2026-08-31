@@ -440,6 +440,9 @@ if(sessionStorage.getItem('adminLoggedIn')!=='1'){
 <a href="#delivery">
 مناطق التوصيل
 </a>
+<a href="#siteContent">
+محتوى الصفحة الرئيسية
+</a>
 <a href="#ticker">
 الشريط المتحرك
 </a>
@@ -496,6 +499,9 @@ if(sessionStorage.getItem('adminLoggedIn')!=='1'){
 أيقونة القسم
 
 <input id="categoryIcon" maxlength="4" placeholder="🥩"/>
+<p class="hint" style="margin:5px 0 0">
+اكتب أو الصق رمز الأيقونة الذي تريده، ويمكن تغييره عند إضافة أو تعديل القسم.
+</p>
 </label>
 </div>
 <div class="unit-box">
@@ -1017,6 +1023,64 @@ style="margin:0">
 </table>
 </div>
 </div>
+<!-- =========================
+     محتوى الصفحة الرئيسية
+========================= -->
+<div class="panel" id="siteContent">
+<h2>إدارة محتوى الصفحة الرئيسية</h2>
+<p class="hint">
+من هنا تستطيع تعديل رسالة الترحيب وتعليمات استخدام الموقع ومعلومات التوصيل والعنوان، وتظهر للزبون في الصفحة الرئيسية.
+</p>
+
+<div class="admin-grid">
+  <label>
+    عنوان الترحيب
+    <input id="siteWelcomeTitle" placeholder="مثال: 👋 أهلاً وسهلاً بكم في أمازون هايبر ماركت">
+  </label>
+
+  <label>
+    رقم هاتف التوصيل
+    <input id="siteDeliveryPhone" placeholder="07842000516" inputmode="tel">
+  </label>
+
+  <label style="grid-column:1/-1">
+    رسالة الترحيب
+    <textarea id="siteWelcomeText" rows="4" placeholder="اكتب رسالة الترحيب التي ستظهر للزبائن..."></textarea>
+  </label>
+
+  <label style="grid-column:1/-1">
+    طريقة استخدام الموقع
+    <textarea id="siteHowToUse" rows="9" placeholder="كل خطوة في سطر مستقل..."></textarea>
+  </label>
+
+  <label style="grid-column:1/-1">
+    ملاحظة الاحتياجات والملاحظات
+    <textarea id="siteNotesInfo" rows="3" placeholder="مثال: أضف الاحتياجات التي لم تجدها أو أي ملاحظات خاصة قبل إرسال الطلب."></textarea>
+  </label>
+
+  <label>
+    عنوان المتجر
+    <input id="siteStoreAddress" placeholder="بغداد / المنصور / شارع أبو جعفر المنصور">
+  </label>
+
+  <label>
+    ملاحظة التوصيل
+    <input id="siteDeliveryNote" placeholder="تأكد من اختيار المنطقة والعنوان قبل الإرسال ليتم احتساب أجور التوصيل.">
+  </label>
+</div>
+
+<label class="check">
+  <input id="siteContentEnabled" type="checkbox" checked>
+  إظهار رسالة الترحيب والتعليمات للزبائن
+</label>
+
+<button class="save" id="siteContentSaveButton" type="button">
+حفظ محتوى الصفحة
+</button>
+
+<div id="siteContentStatus" class="hint" style="margin-top:10px"></div>
+</div>
+
 <!-- =========================
      الشريط المتحرك
 ========================= -->
@@ -4797,17 +4861,7 @@ loadDeliveryGroups();
    تشغيل لوحة المواد
 ===================================================== */
 
-loadProducts().then(() => {
-  if(typeof fillBulkCategoryOptions === "function"){
-    fillBulkCategoryOptions();
-  }
-  if(typeof fillProductVisibilityCategories === "function"){
-    fillProductVisibilityCategories();
-    if(typeof renderProductVisibilityStatus === "function"){
-      renderProductVisibilityStatus();
-    }
-  }
-});
+loadProducts();
 
 /* =====================================================
    إدارة الطلبات
@@ -5413,6 +5467,7 @@ async function saveBulkProducts(){
 if(addBulkRowButton){
   addBulkRowButton.addEventListener("click",addBulkProductRow);
   saveBulkProductsButton.addEventListener("click",saveBulkProducts);
+  fillBulkCategoryOptions();
   addBulkProductRow();
 }
 
@@ -5928,6 +5983,240 @@ window.toggleProductVisibility = async function(productId){
     );
   };
 })();
+
+/* =====================================================
+   إدارة محتوى الصفحة الرئيسية
+   إضافة مستقلة لا تغيّر الوظائف السابقة.
+===================================================== */
+
+const SITE_CONTENT_DEFAULTS = {
+  enabled: true,
+
+  welcomeTitle:
+    "👋 أهلاً وسهلاً بكم في أمازون هايبر ماركت 🛒",
+
+  welcomeText:
+    "نرحب بكم في متجرنا الإلكتروني، ونسعد بخدمتكم وتوفير احتياجاتكم بسهولة، مع توصيل طلباتكم إلى العنوان المحدد.",
+
+  howToUse:
+    "1. اختر القسم الذي تريد.\n" +
+    "2. اختر المادة وحدد الكمية أو الوزن.\n" +
+    "3. أضف المواد إلى السلة من علامة +.\n" +
+    "4. سجّل بالموقع بالبيانات الصحيحة.\n" +
+    "5. تأكد من منطقة وعنوان التوصيل.\n" +
+    "6. أضف الاحتياجات التي لم تجدها أو الملاحظات قبل إرسال الطلب.\n" +
+    "7. قبل الإرسال عبر WhatsApp، تأكد من اختيار المنطقة والعنوان لبيان مبلغ التوصيل.\n" +
+    "8. اضغط إرسال الطلب عبر WhatsApp بعد التأكد من جميع التفاصيل.",
+
+  notesInfo:
+    "أضف الاحتياجات التي لم تجدها أو أي ملاحظات خاصة بالطلب في خانة الملاحظات قبل الإرسال.",
+
+  deliveryPhone:
+    "07842000516",
+
+  storeAddress:
+    "بغداد / المنصور / شارع أبو جعفر المنصور",
+
+  deliveryNote:
+    "قبل الإرسال عبر WhatsApp تأكد من اختيار المنطقة والعنوان بشكل صحيح ليتم احتساب مبلغ التوصيل."
+};
+
+const siteContentFields = {
+  title: document.getElementById("siteWelcomeTitle"),
+  text: document.getElementById("siteWelcomeText"),
+  how: document.getElementById("siteHowToUse"),
+  notes: document.getElementById("siteNotesInfo"),
+  phone: document.getElementById("siteDeliveryPhone"),
+  address: document.getElementById("siteStoreAddress"),
+  deliveryNote: document.getElementById("siteDeliveryNote"),
+  enabled: document.getElementById("siteContentEnabled"),
+  button: document.getElementById("siteContentSaveButton"),
+  status: document.getElementById("siteContentStatus")
+};
+
+function putSiteContentInForm(content){
+
+  const c = {
+    ...SITE_CONTENT_DEFAULTS,
+    ...(content || {})
+  };
+
+  if(siteContentFields.title){
+    siteContentFields.title.value = c.welcomeTitle;
+  }
+
+  if(siteContentFields.text){
+    siteContentFields.text.value = c.welcomeText;
+  }
+
+  if(siteContentFields.how){
+    siteContentFields.how.value = c.howToUse;
+  }
+
+  if(siteContentFields.notes){
+    siteContentFields.notes.value = c.notesInfo;
+  }
+
+  if(siteContentFields.phone){
+    siteContentFields.phone.value = c.deliveryPhone;
+  }
+
+  if(siteContentFields.address){
+    siteContentFields.address.value = c.storeAddress;
+  }
+
+  if(siteContentFields.deliveryNote){
+    siteContentFields.deliveryNote.value = c.deliveryNote;
+  }
+
+  if(siteContentFields.enabled){
+    siteContentFields.enabled.checked = c.enabled !== false;
+  }
+}
+
+async function loadSiteContentAdmin(){
+
+  try{
+
+    const {data:row,error} =
+      await db
+        .from("products")
+        .select("id,data")
+        .eq("id",1)
+        .single();
+
+    if(error)
+      throw error;
+
+    putSiteContentInForm(
+      row?.data?.siteContent ||
+      SITE_CONTENT_DEFAULTS
+    );
+
+  }catch(error){
+
+    console.error("Site content load error:", error);
+
+    putSiteContentInForm(
+      SITE_CONTENT_DEFAULTS
+    );
+  }
+}
+
+if(siteContentFields.button){
+
+  siteContentFields.button.addEventListener(
+    "click",
+    async function(){
+
+      siteContentFields.button.disabled = true;
+      siteContentFields.button.textContent = "جاري الحفظ...";
+      if(siteContentFields.status){
+        siteContentFields.status.textContent = "";
+      }
+
+      try{
+
+        const {data:row,error:readError} =
+          await db
+            .from("products")
+            .select("id,data")
+            .eq("id",1)
+            .single();
+
+        if(readError)
+          throw readError;
+
+        const oldData =
+          row?.data || {};
+
+        const siteContent = {
+          enabled:
+            siteContentFields.enabled?.checked !== false,
+
+          welcomeTitle:
+            siteContentFields.title?.value.trim() ||
+            SITE_CONTENT_DEFAULTS.welcomeTitle,
+
+          welcomeText:
+            siteContentFields.text?.value.trim() ||
+            SITE_CONTENT_DEFAULTS.welcomeText,
+
+          howToUse:
+            siteContentFields.how?.value.trim() ||
+            SITE_CONTENT_DEFAULTS.howToUse,
+
+          notesInfo:
+            siteContentFields.notes?.value.trim() ||
+            SITE_CONTENT_DEFAULTS.notesInfo,
+
+          deliveryPhone:
+            siteContentFields.phone?.value.trim() ||
+            SITE_CONTENT_DEFAULTS.deliveryPhone,
+
+          storeAddress:
+            siteContentFields.address?.value.trim() ||
+            SITE_CONTENT_DEFAULTS.storeAddress,
+
+          deliveryNote:
+            siteContentFields.deliveryNote?.value.trim() ||
+            SITE_CONTENT_DEFAULTS.deliveryNote
+        };
+
+        const {error:updateError} =
+          await db
+            .from("products")
+            .update({
+              data:{
+                ...oldData,
+                siteContent
+              }
+            })
+            .eq("id",1);
+
+        if(updateError)
+          throw updateError;
+
+        if(siteContentFields.status){
+          siteContentFields.status.textContent =
+            "تم حفظ محتوى الصفحة الرئيسية بنجاح ✅";
+        }
+
+        alert(
+          "تم حفظ محتوى الصفحة الرئيسية بنجاح ✅"
+        );
+
+      }catch(error){
+
+        console.error(
+          "Site content save error:",
+          error
+        );
+
+        if(siteContentFields.status){
+          siteContentFields.status.textContent =
+            "فشل الحفظ: " + error.message;
+        }
+
+        alert(
+          "فشل حفظ محتوى الصفحة: " +
+          error.message
+        );
+
+      }finally{
+
+        siteContentFields.button.disabled = false;
+        siteContentFields.button.textContent =
+          "حفظ محتوى الصفحة";
+      }
+
+    }
+  );
+
+}
+
+loadSiteContentAdmin();
+
 </script>
 </body>
 </html>
