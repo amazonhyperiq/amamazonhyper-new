@@ -2258,6 +2258,14 @@ existingProduct.addEventListener(
     productActive.checked =
       product.active !== false;
 
+    // خطوة الوزن الخاصة بهذه المادة
+    document.getElementById("weightStep").value =
+      String(
+        Number(product.step) > 0
+          ? Number(product.step)
+          : 1
+      );
+
 
     const unitRadios =
       document.querySelectorAll(
