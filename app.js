@@ -1320,9 +1320,13 @@ const category =
 const step =
   isWeight
     ? (
-        Number(category?.step) > 0
-          ? Number(category.step)
-          : 1
+        Number(product.step) > 0
+          ? Number(product.step)
+          : (
+              Number(category?.step) > 0
+                ? Number(category.step)
+                : 1
+            )
       )
     : 1;
 
@@ -1396,6 +1400,40 @@ function getCurrentDeliveryInfo(){
           deliveryFee = Number(area.fee) || 0;
         }
       }
+    }
+  }
+
+  // بيانات المنطقة المحفوظة للزبون هي المرجع الاحتياطي.
+  if(
+    currentCustomer &&
+    (!deliveryGroupName || !deliveryAreaName || deliveryFee <= 0)
+  ){
+    const savedGroup = String(
+      currentCustomer.city ||
+      currentCustomer.delivery_group ||
+      ""
+    ).trim();
+
+    const savedArea = String(
+      currentCustomer.region ||
+      currentCustomer.delivery_area ||
+      ""
+    ).trim();
+
+    const group = deliveryGroups.find(
+      item => String(item?.name || "").trim() === savedGroup
+    );
+
+    const area = group && Array.isArray(group.areas)
+      ? group.areas.find(
+          item => String(item?.name || "").trim() === savedArea
+        )
+      : null;
+
+    if(group && area){
+      deliveryGroupName = group.name || "";
+      deliveryAreaName = area.name || "";
+      deliveryFee = Number(area.fee) || 0;
     }
   }
 
@@ -2194,6 +2232,17 @@ if(whatsappBtn){
 
       const deliveryInfo =
         getCurrentDeliveryInfo();
+
+      if(
+        !deliveryInfo.deliveryGroupName ||
+        !deliveryInfo.deliveryAreaName ||
+        deliveryInfo.deliveryFee <= 0
+      ){
+        alert(
+          "يرجى تحديد منطقة وعنوان التوصيل أولاً حتى تتم إضافة أجور التوصيل إلى الطلب."
+        );
+        return;
+      }
 
       deliveryGroupName =
         deliveryInfo.deliveryGroupName;
