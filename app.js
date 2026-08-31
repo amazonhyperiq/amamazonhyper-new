@@ -301,7 +301,7 @@ async function loadProductsFromSupabase(){
             step:
               Number(product.step) > 0
                 ? Number(product.step)
-                : 0,
+                : 1,
 
             icon:
               product.icon || "🛒"
@@ -375,6 +375,11 @@ async function loadProductsFromSupabase(){
 
                 unit:
                   product.unit || "قطعة",
+
+                step:
+                  Number(product.step) > 0
+                    ? Number(product.step)
+                    : 1,
 
                 icon:
                   product.icon || "🛒"
@@ -918,6 +923,7 @@ function renderDeliveryGroups(){
       !deliveryGroups[index]
     ){
 
+      updateCart();
       return;
 
     }
@@ -981,6 +987,8 @@ function renderDeliveryGroups(){
 
     areaSelect.disabled =
       false;
+
+    updateCart();
 
   };
 
@@ -1050,6 +1058,9 @@ function renderDeliveryGroups(){
       area.name,
       fee
     );
+
+    // تحديث إجمالي السلة فور تغيير منطقة التوصيل.
+    updateCart();
 
   };
 
@@ -1307,17 +1318,13 @@ const category =
 
 
 const step =
-   isWeight
-     ? (
-         Number(product.step) > 0
-           ? Number(product.step)
-           : (
-               Number(category?.step) > 0
-                 ? Number(category.step)
-                 : 1
-             )
-       )
-     : 1;
+  isWeight
+    ? (
+        Number(category?.step) > 0
+          ? Number(category.step)
+          : 1
+      )
+    : 1;
 
 
 const q =
@@ -1355,33 +1362,10 @@ const q =
    تحديث السلة
 ===================================================== */
 
-function updateCart(){
+function getCurrentDeliveryInfo(){
 
-  let productsTotal = 0;
-  let count = 0;
-
-  for(
-    const [id,q]
-    of cart
-  ){
-
-    const p =
-      products.find(
-        x =>
-          x.id === id
-      );
-
-    if(p){
-
-      productsTotal +=
-        Number(p.price || 0) *
-        Number(q || 0);
-
-      count +=
-        Number(q || 0);
-    }
-  }
-
+  let deliveryGroupName = "";
+  let deliveryAreaName = "";
   let deliveryFee = 0;
 
   const groupSelect =
@@ -1392,70 +1376,87 @@ function updateCart(){
 
   if(
     groupSelect &&
-    groupSelect.value !== "" &&
-    areaSelect &&
-    areaSelect.value !== ""
+    groupSelect.value !== ""
   ){
+    const groupIndex = Number(groupSelect.value);
+    const group = deliveryGroups[groupIndex];
 
-    const group =
-      deliveryGroups[
-        Number(groupSelect.value)
-      ];
+    if(group){
+      deliveryGroupName = group.name || "";
 
-    const area =
-      group?.areas?.[
-        Number(areaSelect.value)
-      ];
+      if(
+        areaSelect &&
+        areaSelect.value !== ""
+      ){
+        const areaIndex = Number(areaSelect.value);
+        const area = group.areas?.[areaIndex];
 
-    if(area){
-      deliveryFee =
-        Number(area.fee) || 0;
+        if(area){
+          deliveryAreaName = area.name || "";
+          deliveryFee = Number(area.fee) || 0;
+        }
+      }
     }
   }
 
-  const grandTotal =
-    productsTotal + deliveryFee;
+  return {
+    deliveryGroupName,
+    deliveryAreaName,
+    deliveryFee
+  };
+}
 
-  const cartTotal =
-    document.getElementById(
-      "cartTotal"
-    );
+function updateCart(){
 
-  if(cartTotal){
-    cartTotal.textContent =
-      money(grandTotal);
+  let productsTotal = 0;
+  let count = 0;
+
+  for(const [id,q] of cart){
+    const p = products.find(x => x.id === id);
+
+    if(p){
+      productsTotal +=
+        Number(p.price || 0) * Number(q || 0);
+      count += Number(q || 0);
+    }
   }
 
-  const deliveryLine =
-    document.getElementById(
-      "cartDeliveryFee"
-    );
+  let {
+    deliveryFee
+  } = getCurrentDeliveryInfo();
 
-  if(deliveryLine){
-    deliveryLine.textContent =
-      money(deliveryFee);
+  const total = productsTotal + deliveryFee;
+
+  const cartTotal =
+    document.getElementById("cartTotal");
+
+  if(cartTotal){
+    cartTotal.textContent = money(total);
+  }
+
+  const cartDeliveryFee =
+    document.getElementById("cartDeliveryFee");
+
+  if(cartDeliveryFee){
+    cartDeliveryFee.textContent = money(deliveryFee);
   }
 
   const cartCount =
-    document.getElementById(
-      "cartCount"
-    );
+    document.getElementById("cartCount");
 
   if(cartCount){
-    cartCount.textContent =
-      count;
+    cartCount.textContent = count;
   }
 
   const cartCountTop =
-    document.getElementById(
-      "cartCountTop"
-    );
+    document.getElementById("cartCountTop");
 
   if(cartCountTop){
-    cartCountTop.textContent =
-      count;
+    cartCountTop.textContent = count;
   }
+
 }
+
 
 
 /* =====================================================
@@ -1499,47 +1500,49 @@ function fillCustomerOrderFields(customer){
   if(phone) phone.value = customer.phone || "";
   if(address) address.value = customer.address || "";
 
-  /*
-     المدينة والمنطقة محفوظتان في city و area داخل حساب الزبون.
-     داخل حساب الزبون، بدون إضافة أعمدة جديدة إلى قاعدة البيانات.
-  */
-
   const groupSelect = document.getElementById("deliveryGroup");
   const areaSelect = document.getElementById("deliveryArea");
 
-  if(groupSelect && customer.city){
-    const groupIndex = deliveryGroups.findIndex(
-      group => String(group?.name || "").trim() === String(customer.city).trim()
-    );
+  if(!groupSelect || !areaSelect) return;
 
-    if(groupIndex >= 0){
-      groupSelect.value = String(groupIndex);
-      groupSelect.dispatchEvent(new Event("change"));
+  const savedGroup = String(
+    customer.city || customer.delivery_group || ""
+  ).trim();
 
-      const savedRegion =
-        customer.region ||
-        customer.area ||
-        "";
+  const savedArea = String(
+    customer.region || customer.area || customer.delivery_area || ""
+  ).trim();
 
-      if(areaSelect && savedRegion){
-        const group = deliveryGroups[groupIndex];
+  const groupIndex = deliveryGroups.findIndex(
+    group => String(group?.name || "").trim() === savedGroup
+  );
 
-        const areaIndex =
-          Array.isArray(group?.areas)
-            ? group.areas.findIndex(
-                area =>
-                  String(area?.name || "").trim() ===
-                  String(savedRegion).trim()
-              )
-            : -1;
+  if(groupIndex < 0){
+    updateCart();
+    return;
+  }
 
-        if(areaIndex >= 0){
-          areaSelect.value = String(areaIndex);
-          areaSelect.dispatchEvent(new Event("change"));
-        }
-      }
+  // اختيار المنطقة الرئيسية تلقائياً من بيانات حساب الزبون.
+  groupSelect.value = String(groupIndex);
+  groupSelect.dispatchEvent(new Event("change"));
+
+  if(savedArea){
+    const group = deliveryGroups[groupIndex];
+    const areaIndex = Array.isArray(group?.areas)
+      ? group.areas.findIndex(
+          area => String(area?.name || "").trim() === savedArea
+        )
+      : -1;
+
+    if(areaIndex >= 0){
+      // اختيار المنطقة الفرعية تلقائياً.
+      areaSelect.value = String(areaIndex);
+      areaSelect.dispatchEvent(new Event("change"));
     }
   }
+
+  // تحديث السلة بعد اختيار المنطقة حتى تدخل أجرة التوصيل بالإجمالي.
+  updateCart();
 }
 
 function updateCustomerAccountUI(){
@@ -1584,164 +1587,6 @@ function setCustomerStatus(message, isError = false){
   status.style.color = isError ? "#b42318" : "#333";
 }
 
-function renderCustomerRegionOptions(selectedRegion = ""){
-  const select =
-    document.getElementById("registerRegion");
-
-  const customWrap =
-    document.getElementById("customRegionWrap");
-
-  const customInput =
-    document.getElementById("registerRegionCustom");
-
-  if(!select) return;
-
-  const regions = [];
-
-  if(Array.isArray(deliveryGroups)){
-    deliveryGroups.forEach(group => {
-      if(!group || !Array.isArray(group.areas)) return;
-
-      group.areas.forEach(area => {
-        const regionName =
-          String(area?.name || "").trim();
-
-        if(
-          regionName &&
-          !regions.includes(regionName)
-        ){
-          regions.push(regionName);
-        }
-      });
-    });
-  }
-
-  select.innerHTML =
-    '<option value="">اختر المنطقة</option>';
-
-  regions.forEach(regionName => {
-    const option =
-      document.createElement("option");
-
-    option.value =
-      regionName;
-
-    option.textContent =
-      regionName;
-
-    select.appendChild(option);
-  });
-
-  const otherOption =
-    document.createElement("option");
-
-  otherOption.value =
-    "__OTHER__";
-
-  otherOption.textContent =
-    "منطقتي غير موجودة";
-
-  select.appendChild(otherOption);
-
-  const savedRegion =
-    String(selectedRegion || "").trim();
-
-  if(
-    savedRegion &&
-    regions.includes(savedRegion)
-  ){
-    select.value = savedRegion;
-
-    if(customWrap)
-      customWrap.style.display = "none";
-
-    if(customInput)
-      customInput.value = "";
-
-  }else if(savedRegion){
-
-    select.value = "__OTHER__";
-
-    if(customWrap)
-      customWrap.style.display = "block";
-
-    if(customInput)
-      customInput.value = savedRegion;
-
-  }else{
-
-    select.value = "";
-
-    if(customWrap)
-      customWrap.style.display = "none";
-
-    if(customInput)
-      customInput.value = "";
-  }
-}
-
-function getCustomerSelectedRegion(){
-  const select =
-    document.getElementById("registerRegion");
-
-  const customInput =
-    document.getElementById("registerRegionCustom");
-
-  if(!select)
-    return "";
-
-  if(select.value === "__OTHER__"){
-    return String(
-      customInput?.value || ""
-    ).trim();
-  }
-
-  return String(
-    select.value || ""
-  ).trim();
-}
-
-function setupCustomerRegionSelector(){
-  const select =
-    document.getElementById("registerRegion");
-
-  const customWrap =
-    document.getElementById("customRegionWrap");
-
-  const customInput =
-    document.getElementById("registerRegionCustom");
-
-  if(!select)
-    return;
-
-  select.addEventListener(
-    "change",
-    () => {
-
-      const isOther =
-        select.value === "__OTHER__";
-
-      if(customWrap){
-        customWrap.style.display =
-          isOther
-            ? "block"
-            : "none";
-      }
-
-      if(!isOther && customInput){
-        customInput.value = "";
-      }
-
-      if(isOther){
-        customInput?.focus();
-      }
-    }
-  );
-}
-
-setupCustomerRegionSelector();
-
-
 function openCustomerModal(){
   const modal = document.getElementById("customerModal");
   if(!modal) return;
@@ -1756,16 +1601,11 @@ function openCustomerModal(){
     if(name) name.value = currentCustomer.name || "";
     if(phone) phone.value = currentCustomer.phone || "";
     if(city) city.value = currentCustomer.city || "بغداد";
-
-    renderCustomerRegionOptions(
-      currentCustomer.region || ""
-    );
-
+    if(region) region.value = currentCustomer.region || "";
     if(address) address.value = currentCustomer.address || "";
 
     setCustomerStatus("بيانات حسابك محفوظة. يمكنك تعديلها ثم الضغط على حفظ بياناتي.");
   }else{
-    renderCustomerRegionOptions("");
     setCustomerStatus("");
   }
 
@@ -1803,7 +1643,10 @@ async function saveCustomer(){
       .trim() || "بغداد";
 
   const area =
-    getCustomerSelectedRegion();
+    document
+      .getElementById("registerRegion")
+      ?.value
+      .trim();
 
   const address =
     document
@@ -2349,47 +2192,67 @@ if(whatsappBtn){
         document.getElementById("deliveryArea");
 
 
+      const deliveryInfo =
+        getCurrentDeliveryInfo();
+
+      deliveryGroupName =
+        deliveryInfo.deliveryGroupName;
+
+      deliveryAreaName =
+        deliveryInfo.deliveryAreaName;
+
+      deliveryFee =
+        deliveryInfo.deliveryFee;
+
+      // حماية إضافية: إذا لم تُملأ القوائم لسبب ما،
+      // نستخرج المنطقة المحفوظة من حساب الزبون مباشرة.
       if(
-        groupSelect &&
-        groupSelect.value !== ""
+        currentCustomer &&
+        (!deliveryAreaName || deliveryFee === 0)
       ){
+        const savedGroupName =
+          String(
+            currentCustomer.city ||
+            currentCustomer.delivery_group ||
+            ""
+          ).trim();
 
-        const groupIndex =
-          Number(groupSelect.value);
+        const savedAreaName =
+          String(
+            currentCustomer.region ||
+            currentCustomer.area ||
+            currentCustomer.delivery_area ||
+            ""
+          ).trim();
 
-        const group =
-          deliveryGroups[groupIndex];
+        const savedGroup =
+          deliveryGroups.find(
+            group =>
+              String(group?.name || "").trim() ===
+              savedGroupName
+          );
 
-        if(group){
-
+        if(savedGroup){
           deliveryGroupName =
-            group.name || "";
+            savedGroup.name || deliveryGroupName;
 
-          if(
-            areaSelect &&
-            areaSelect.value !== ""
-          ){
+          const savedArea =
+            Array.isArray(savedGroup.areas)
+              ? savedGroup.areas.find(
+                  area =>
+                    String(area?.name || "").trim() ===
+                    savedAreaName
+                )
+              : null;
 
-            const areaIndex =
-              Number(areaSelect.value);
+          if(savedArea){
+            deliveryAreaName =
+              savedArea.name || deliveryAreaName;
 
-            const area =
-              group.areas?.[areaIndex];
-
-            if(area){
-
-              deliveryAreaName =
-                area.name || "";
-
-              deliveryFee =
-                Number(area.fee) || 0;
-
-            }
-
+            deliveryFee =
+              Number(savedArea.fee) || 0;
           }
-
         }
-
       }
 
 
@@ -2505,11 +2368,15 @@ if(whatsappBtn){
         "9647842000516";
 
 
-      /* فتح واتساب بنفس الصفحة لتجنب حظر النوافذ المنبثقة على iPhone */
-      const whatsappMessage = lines.join("\n");
       const whatsappUrl =
-        `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`;
+        `https://wa.me/${whatsappNumber}?text=${
+          encodeURIComponent(
+            lines.join("\n")
+          )
+        }`;
 
+      // الانتقال المباشر أكثر موثوقية على iPhone/Safari
+      // من window.open بعد انتظار حفظ الطلب في Supabase.
       window.location.href = whatsappUrl;
 
     }
@@ -2615,14 +2482,13 @@ updateCart();
 
 loadTicker();
 
-loadProductsFromSupabase().then(() => {
-
-  renderCustomerRegionOptions(
-    currentCustomer?.region || ""
-  );
-
+Promise.all([
+  loadProductsFromSupabase(),
+  loadSavedCustomer()
+]).then(() => {
   if(currentCustomer){
     fillCustomerOrderFields(currentCustomer);
   }
 
+  updateCart();
 });
