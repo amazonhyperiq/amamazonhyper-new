@@ -4797,7 +4797,17 @@ loadDeliveryGroups();
    تشغيل لوحة المواد
 ===================================================== */
 
-loadProducts();
+loadProducts().then(() => {
+  if(typeof fillBulkCategoryOptions === "function"){
+    fillBulkCategoryOptions();
+  }
+  if(typeof fillProductVisibilityCategories === "function"){
+    fillProductVisibilityCategories();
+    if(typeof renderProductVisibilityStatus === "function"){
+      renderProductVisibilityStatus();
+    }
+  }
+});
 
 /* =====================================================
    إدارة الطلبات
@@ -5403,7 +5413,6 @@ async function saveBulkProducts(){
 if(addBulkRowButton){
   addBulkRowButton.addEventListener("click",addBulkProductRow);
   saveBulkProductsButton.addEventListener("click",saveBulkProducts);
-  fillBulkCategoryOptions();
   addBulkProductRow();
 }
 
