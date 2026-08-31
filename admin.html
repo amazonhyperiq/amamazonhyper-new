@@ -2236,6 +2236,11 @@ if(productFilterCategory){
 
     renderProductsTable();
 
+    // تعبئة قائمة قسم الإضافة الجماعية بعد تحميل الأقسام فعلياً
+    if(typeof fillBulkCategoryOptions === "function"){
+      fillBulkCategoryOptions();
+    }
+
 
   }catch(error){
 
@@ -5467,7 +5472,6 @@ async function saveBulkProducts(){
 if(addBulkRowButton){
   addBulkRowButton.addEventListener("click",addBulkProductRow);
   saveBulkProductsButton.addEventListener("click",saveBulkProducts);
-  fillBulkCategoryOptions();
   addBulkProductRow();
 }
 
