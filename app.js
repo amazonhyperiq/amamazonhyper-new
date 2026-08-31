@@ -1302,13 +1302,17 @@ const category =
 
 
 const step =
-  isWeight
-    ? (
-        Number(category?.step) > 0
-          ? Number(category.step)
-          : 1
-      )
-    : 1;
+   isWeight
+     ? (
+         Number(product.step) > 0
+           ? Number(product.step)
+           : (
+               Number(category?.step) > 0
+                 ? Number(category.step)
+                 : 1
+             )
+       )
+     : 1;
 
 
 const q =
