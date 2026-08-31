@@ -298,6 +298,11 @@ async function loadProductsFromSupabase(){
             unit:
               product.unit || "قطعة",
 
+            step:
+              Number(product.step) > 0
+                ? Number(product.step)
+                : 0,
+
             icon:
               product.icon || "🛒"
 
@@ -1352,10 +1357,8 @@ const q =
 
 function updateCart(){
 
-  let total = 0;
-
+  let productsTotal = 0;
   let count = 0;
-
 
   for(
     const [id,q]
@@ -1368,64 +1371,91 @@ function updateCart(){
           x.id === id
       );
 
-
     if(p){
 
-      total +=
-        p.price * q;
+      productsTotal +=
+        Number(p.price || 0) *
+        Number(q || 0);
 
       count +=
-        q;
-
+        Number(q || 0);
     }
-
   }
 
+  let deliveryFee = 0;
+
+  const groupSelect =
+    document.getElementById("deliveryGroup");
+
+  const areaSelect =
+    document.getElementById("deliveryArea");
+
+  if(
+    groupSelect &&
+    groupSelect.value !== "" &&
+    areaSelect &&
+    areaSelect.value !== ""
+  ){
+
+    const group =
+      deliveryGroups[
+        Number(groupSelect.value)
+      ];
+
+    const area =
+      group?.areas?.[
+        Number(areaSelect.value)
+      ];
+
+    if(area){
+      deliveryFee =
+        Number(area.fee) || 0;
+    }
+  }
+
+  const grandTotal =
+    productsTotal + deliveryFee;
 
   const cartTotal =
     document.getElementById(
       "cartTotal"
     );
 
-
   if(cartTotal){
-
     cartTotal.textContent =
-      money(total);
-
+      money(grandTotal);
   }
 
+  const deliveryLine =
+    document.getElementById(
+      "cartDeliveryFee"
+    );
+
+  if(deliveryLine){
+    deliveryLine.textContent =
+      money(deliveryFee);
+  }
 
   const cartCount =
     document.getElementById(
       "cartCount"
     );
 
-
   if(cartCount){
-
     cartCount.textContent =
       count;
-
   }
-
 
   const cartCountTop =
     document.getElementById(
       "cartCountTop"
     );
 
-
   if(cartCountTop){
-
     cartCountTop.textContent =
       count;
-
   }
-
 }
-
-
 
 
 /* =====================================================
@@ -1486,13 +1516,22 @@ function fillCustomerOrderFields(customer){
       groupSelect.value = String(groupIndex);
       groupSelect.dispatchEvent(new Event("change"));
 
-      if(areaSelect && customer.area){
+      const savedRegion =
+        customer.region ||
+        customer.area ||
+        "";
+
+      if(areaSelect && savedRegion){
         const group = deliveryGroups[groupIndex];
-        const areaIndex = Array.isArray(group?.areas)
-          ? group.areas.findIndex(
-              area => String(area?.name || "").trim() === String(customer.area).trim()
-            )
-          : -1;
+
+        const areaIndex =
+          Array.isArray(group?.areas)
+            ? group.areas.findIndex(
+                area =>
+                  String(area?.name || "").trim() ===
+                  String(savedRegion).trim()
+              )
+            : -1;
 
         if(areaIndex >= 0){
           areaSelect.value = String(areaIndex);
