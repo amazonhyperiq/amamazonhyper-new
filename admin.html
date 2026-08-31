@@ -718,6 +718,39 @@ style="margin:0">
 حذف
 
 </button>
+<div
+  class="panel"
+  style="
+    margin-top:18px;
+    padding:14px;
+    background:#f8fbf9;
+    border:1px solid #dce6df;
+  "
+>
+  <h3 style="margin:0 0 6px;color:#075d2d">
+    إدارة ظهور المواد
+  </h3>
+  <p class="hint" style="margin:0 0 10px">
+    اختر قسماً لعرض مواده فقط، ثم فعّل أو أخفِ كل مادة بدون عرض قائمة المتجر كاملة.
+  </p>
+
+  <label>
+    القسم
+    <select id="productVisibilityCategory">
+      <option value="">اختر القسم</option>
+    </select>
+  </label>
+
+  <div
+    id="productVisibilityList"
+    style="margin-top:12px"
+  ></div>
+</div>
+
+
+<div class="hint" style="margin-top:10px">
+  البحث والقائمة التفصيلية للمواد تبقى متاحة عند الحاجة.
+</div>
 <div style="
     display:grid;
     grid-template-columns:1fr 1fr;
@@ -2123,7 +2156,9 @@ if(productFilterCategory){
 
   }
 
-}
+
+  fillProductVisibilityCategories();
+  renderProductVisibilityList();}
 
 
 /* =====================================================
@@ -5423,6 +5458,269 @@ if(saveCategoryOrderButton){
 
     }
   );
+
+}
+
+
+/* =====================================================
+   إدارة ظهور المواد حسب القسم — واجهة مختصرة
+   لا تغيّر إضافة/تعديل المواد الحالية.
+===================================================== */
+
+function fillProductVisibilityCategories(){
+
+  const select =
+    document.getElementById(
+      "productVisibilityCategory"
+    );
+
+  if(!select) return;
+
+  const previous =
+    select.value;
+
+  select.innerHTML =
+    '<option value="">اختر القسم</option>';
+
+  (categories || []).forEach(
+    c => {
+
+      const option =
+        document.createElement("option");
+
+      option.value =
+        String(c.id);
+
+      option.textContent =
+        String(c.name || "قسم");
+
+      select.appendChild(option);
+    }
+  );
+
+  if(
+    previous &&
+    categories.some(
+      c => String(c.id) === String(previous)
+    )
+  ){
+    select.value = previous;
+  }
+}
+
+async function toggleProductVisibilityCompact(
+  productId,
+  nextActive
+){
+
+  try{
+
+    const {
+      data:row,
+      error
+    } = await db
+      .from("products")
+      .select("id,data")
+      .eq("id",1)
+      .single();
+
+    if(error)
+      throw error;
+
+    const data =
+      row.data || {};
+
+    const list =
+      Array.isArray(data.products)
+        ? data.products
+        : [];
+
+    const index =
+      list.findIndex(
+        p => String(p.id) === String(productId)
+      );
+
+    if(index < 0)
+      throw new Error("لم يتم العثور على المادة.");
+
+    list[index] = {
+      ...list[index],
+      active: Boolean(nextActive)
+    };
+
+    data.products = list;
+
+    const {
+      error:updateError
+    } = await db
+      .from("products")
+      .update({data})
+      .eq("id",1);
+
+    if(updateError)
+      throw updateError;
+
+    await loadProducts();
+
+    renderProductVisibilityList();
+
+  }catch(error){
+
+    console.error(error);
+
+    alert(
+      "فشل تغيير ظهور المادة: " +
+      error.message
+    );
+
+  }
+}
+
+function renderProductVisibilityList(){
+
+  const listEl =
+    document.getElementById(
+      "productVisibilityList"
+    );
+
+  const select =
+    document.getElementById(
+      "productVisibilityCategory"
+    );
+
+  if(!listEl || !select)
+    return;
+
+  const categoryId =
+    String(select.value || "");
+
+  if(!categoryId){
+
+    listEl.innerHTML =
+      '<div class="hint">اختر قسماً لعرض مواده.</div>';
+
+    return;
+  }
+
+  const items =
+    (allProducts || [])
+      .filter(
+        p =>
+          String(p.cat) === categoryId
+      );
+
+  if(!items.length){
+
+    listEl.innerHTML =
+      '<div class="hint">لا توجد مواد في هذا القسم.</div>';
+
+    return;
+  }
+
+  listEl.innerHTML =
+    items.map(
+      p => `
+
+        <div
+          style="
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:10px;
+            padding:10px 0;
+            border-bottom:1px solid #e4ebe6;
+          "
+        >
+
+          <div style="min-width:0">
+            <strong
+              style="
+                display:block;
+                overflow-wrap:anywhere;
+              "
+            >
+              ${String(p.name || "مادة")}
+            </strong>
+
+            <span
+              class="hint"
+            >
+              ${Number(p.price || 0).toLocaleString("ar-IQ")} د.ع
+              —
+              ${String(p.unit || "قطعة")}
+            </span>
+          </div>
+
+          <label
+            style="
+              display:flex;
+              align-items:center;
+              gap:7px;
+              white-space:nowrap;
+              cursor:pointer;
+            "
+          >
+            <input
+              type="checkbox"
+              class="product-visibility-check"
+              data-product-id="${String(p.id)}"
+              ${p.active !== false ? "checked" : ""}
+            >
+
+            <span>
+              ${p.active !== false ? "ظاهر" : "مخفي"}
+            </span>
+
+          </label>
+
+        </div>
+
+      `
+    )
+    .join("");
+
+  listEl
+    .querySelectorAll(
+      ".product-visibility-check"
+    )
+    .forEach(
+      checkbox => {
+
+        checkbox.addEventListener(
+          "change",
+          async event => {
+
+            const nextActive =
+              event.target.checked;
+
+            event.target.disabled =
+              true;
+
+            await toggleProductVisibilityCompact(
+              event.target.dataset.productId,
+              nextActive
+            );
+
+          }
+        );
+
+      }
+    );
+}
+
+const productVisibilityCategory =
+  document.getElementById(
+    "productVisibilityCategory"
+  );
+
+if(productVisibilityCategory){
+
+  productVisibilityCategory.addEventListener(
+    "change",
+    renderProductVisibilityList
+  );
+
+  fillProductVisibilityCategories();
 
 }
 
