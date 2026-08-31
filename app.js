@@ -298,6 +298,12 @@ async function loadProductsFromSupabase(){
             unit:
               product.unit || "قطعة",
 
+            // خطوة الوزن الخاصة بالمادة، وليس القسم فقط
+            step:
+              Number(product.step) > 0
+                ? Number(product.step)
+                : 0,
+
             icon:
               product.icon || "🛒"
 
@@ -370,6 +376,12 @@ async function loadProductsFromSupabase(){
 
                 unit:
                   product.unit || "قطعة",
+
+                // دعم خطوة الوزن الخاصة بالمادة في البيانات القديمة أيضاً
+                step:
+                  Number(product.step) > 0
+                    ? Number(product.step)
+                    : 0,
 
                 icon:
                   product.icon || "🛒"
