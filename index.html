@@ -639,13 +639,35 @@
 
         المنطقة
 
-        <input
+        <select
           id="registerRegion"
+        >
+          <option value="">
+            اختر المنطقة
+          </option>
+        </select>
+
+      </label>
+
+      <label
+        id="customRegionWrap"
+        style="display:none;"
+      >
+
+        اسم المنطقة
+
+        <input
+          id="registerRegionCustom"
           type="text"
-          placeholder="مثال: المنصور"
+          placeholder="اكتب اسم منطقتك"
+          autocomplete="address-level2"
         >
 
       </label>
+
+      <small class="customer-region-note">
+        إذا لم تجد منطقتك اختر «منطقتي غير موجودة» واكتب اسمها.
+      </small>
 
 
       <label>
