@@ -298,12 +298,6 @@ async function loadProductsFromSupabase(){
             unit:
               product.unit || "قطعة",
 
-            // خطوة الوزن الخاصة بالمادة، وليس القسم فقط
-            step:
-              Number(product.step) > 0
-                ? Number(product.step)
-                : 0,
-
             icon:
               product.icon || "🛒"
 
@@ -376,12 +370,6 @@ async function loadProductsFromSupabase(){
 
                 unit:
                   product.unit || "قطعة",
-
-                // دعم خطوة الوزن الخاصة بالمادة في البيانات القديمة أيضاً
-                step:
-                  Number(product.step) > 0
-                    ? Number(product.step)
-                    : 0,
 
                 icon:
                   product.icon || "🛒"
@@ -1498,11 +1486,18 @@ function fillCustomerOrderFields(customer){
       groupSelect.value = String(groupIndex);
       groupSelect.dispatchEvent(new Event("change"));
 
-      if(areaSelect && customer.area){
+      const savedAreaName =
+        customer.region ||
+        customer.area ||
+        "";
+
+      if(areaSelect && savedAreaName){
         const group = deliveryGroups[groupIndex];
         const areaIndex = Array.isArray(group?.areas)
           ? group.areas.findIndex(
-              area => String(area?.name || "").trim() === String(customer.area).trim()
+              area =>
+                String(area?.name || "").trim() ===
+                String(savedAreaName).trim()
             )
           : -1;
 
@@ -2205,6 +2200,53 @@ if(whatsappBtn){
 
       }
 
+
+      /*
+         حماية إضافية: إذا كانت منطقة الزبون محفوظة
+         لكن قوائم الاختيار لم تُحمّل، نستخرج الأجرة
+         مباشرة من بيانات مناطق التوصيل.
+      */
+      if(
+        currentCustomer &&
+        (!deliveryAreaName || deliveryFee === 0)
+      ){
+        const savedGroupName =
+          currentCustomer.city || "";
+
+        const savedAreaName =
+          currentCustomer.region ||
+          currentCustomer.area ||
+          "";
+
+        const savedGroup =
+          deliveryGroups.find(
+            group =>
+              String(group?.name || "").trim() ===
+              String(savedGroupName).trim()
+          );
+
+        if(savedGroup){
+          deliveryGroupName =
+            savedGroup.name || deliveryGroupName;
+
+          const savedArea =
+            Array.isArray(savedGroup.areas)
+              ? savedGroup.areas.find(
+                  area =>
+                    String(area?.name || "").trim() ===
+                    String(savedAreaName).trim()
+                )
+              : null;
+
+          if(savedArea){
+            deliveryAreaName =
+              savedArea.name || deliveryAreaName;
+
+            deliveryFee =
+              Number(savedArea.fee) || 0;
+          }
+        }
+      }
 
       /* ==============================================
          حساب إجمالي المواد
