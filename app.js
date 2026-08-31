@@ -479,6 +479,9 @@ let deliveryGroups = [];
 
 let selectedCategory = "food";
 
+/* البحث عن المواد للزبون */
+let productSearchQuery = "";
+
 const cart = new Map();
 
 
@@ -551,10 +554,13 @@ function renderCategories(){
           selectedCategory =
             btn.dataset.cat;
 
+          productSearchQuery = "";
 
           renderCategories();
 
           renderProducts();
+
+          updateProductSearchUI();
 
 
           const title =
@@ -1176,12 +1182,23 @@ function renderProducts(){
   }
 
 
+  const query =
+    String(productSearchQuery || "")
+      .trim()
+      .toLowerCase();
+
   const list =
-    products.filter(
-      p =>
-        p.cat ===
-        selectedCategory
-    );
+    query
+      ? products.filter(p =>
+          String(p.name || "")
+            .toLowerCase()
+            .includes(query)
+        )
+      : products.filter(
+          p =>
+            p.cat ===
+            selectedCategory
+        );
 
 
   el.innerHTML =
@@ -1279,7 +1296,11 @@ function renderProducts(){
         "
       >
 
-        لا توجد مواد في هذا القسم حالياً.
+        ${
+          productSearchQuery
+            ? "لا توجد مواد مطابقة للبحث حالياً."
+            : "لا توجد مواد في هذا القسم حالياً."
+        }
 
       </div>
 
@@ -2736,9 +2757,128 @@ async function loadTicker(){
 }
 
 
+
+/* =====================================================
+   البحث عن المواد للزبون
+   يبحث في جميع المواد المتاحة ولا يغيّر السلة أو الوزن.
+===================================================== */
+
+function updateProductSearchUI(){
+
+  const clearBtn =
+    document.getElementById("clearProductSearch");
+
+  const hint =
+    document.getElementById("productSearchHint");
+
+  if(clearBtn){
+    clearBtn.classList.toggle(
+      "show",
+      Boolean(String(productSearchQuery || "").trim())
+    );
+  }
+
+  if(hint){
+
+    const query =
+      String(productSearchQuery || "")
+        .trim()
+        .toLowerCase();
+
+    if(query){
+
+      const count =
+        products.filter(p =>
+          String(p.name || "")
+            .toLowerCase()
+            .includes(query)
+        ).length;
+
+      hint.textContent =
+        `نتائج البحث: ${count} مادة`;
+
+    }else{
+
+      hint.textContent =
+        "ابحث في جميع المواد المتاحة في المتجر";
+
+    }
+  }
+}
+
+function initProductSearch(){
+
+  const input =
+    document.getElementById("productSearchInput");
+
+  const clearBtn =
+    document.getElementById("clearProductSearch");
+
+  if(!input)
+    return;
+
+  input.addEventListener(
+    "input",
+    function(){
+
+      productSearchQuery =
+        String(input.value || "").trim();
+
+      const title =
+        document.getElementById("productsTitle");
+
+      if(title){
+
+        title.textContent =
+          productSearchQuery
+            ? "نتائج البحث"
+            : (
+                categories.find(
+                  c => c.id === selectedCategory
+                )?.name || "المواد"
+              );
+      }
+
+      updateProductSearchUI();
+      renderProducts();
+    }
+  );
+
+  if(clearBtn){
+
+    clearBtn.addEventListener(
+      "click",
+      function(){
+
+        productSearchQuery = "";
+        input.value = "";
+
+        const title =
+          document.getElementById("productsTitle");
+
+        if(title){
+          title.textContent =
+            categories.find(
+              c => c.id === selectedCategory
+            )?.name || "المواد";
+        }
+
+        updateProductSearchUI();
+        renderProducts();
+        input.focus();
+      }
+    );
+  }
+
+  updateProductSearchUI();
+}
+
+
 /* =====================================================
    تشغيل الموقع
 ===================================================== */
+
+initProductSearch();
 
 renderSiteContent();
 
