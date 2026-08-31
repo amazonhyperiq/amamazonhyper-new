@@ -161,6 +161,79 @@
   }
 
 }
+
+/* =====================================================
+   البحث عن المواد للزبون
+===================================================== */
+.site-search-box{
+  background:#fff;
+  border:1px solid #dfeae2;
+  border-radius:18px;
+  padding:16px;
+  margin:12px 0;
+  box-shadow:0 3px 14px rgba(0,0,0,.04);
+}
+.site-search-title{
+  font-weight:900;
+  font-size:18px;
+  color:#145c36;
+  margin-bottom:10px;
+}
+.site-search-wrap{
+  position:relative;
+  display:flex;
+  align-items:center;
+}
+.site-search-wrap input{
+  width:100%;
+  box-sizing:border-box;
+  min-height:48px;
+  padding:12px 46px 12px 42px;
+  border:1px solid #d7e3da;
+  border-radius:12px;
+  outline:none;
+  font-size:16px;
+  background:#fbfdfb;
+}
+.site-search-wrap input:focus{
+  border-color:#198754;
+  box-shadow:0 0 0 3px rgba(25,135,84,.10);
+  background:#fff;
+}
+.site-search-icon{
+  position:absolute;
+  right:14px;
+  z-index:2;
+  pointer-events:none;
+  font-size:18px;
+}
+.site-search-clear{
+  position:absolute;
+  left:8px;
+  z-index:2;
+  width:34px;
+  height:34px;
+  border:0;
+  border-radius:50%;
+  background:#eef3ef;
+  color:#555;
+  cursor:pointer;
+  font-size:22px;
+  line-height:1;
+  display:none;
+}
+.site-search-clear.show{display:block;}
+.site-search-hint{
+  margin-top:7px;
+  color:#748078;
+  font-size:13px;
+}
+@media(max-width:600px){
+  .site-search-box{padding:13px;}
+  .site-search-title{font-size:16px;}
+  .site-search-wrap input{font-size:15px;}
+}
+
 </style>
 
 </head>
@@ -246,6 +319,29 @@
 
 <main class="container page">
   <div id="siteWelcomeMount"></div>
+  <div class="site-search-box" id="siteSearchBox">
+    <div class="site-search-title">🔎 ابحث عن المادة</div>
+    <div class="site-search-wrap">
+      <span class="site-search-icon">🔍</span>
+      <input
+        id="productSearchInput"
+        type="search"
+        autocomplete="off"
+        placeholder="اكتب اسم المادة للبحث..."
+        aria-label="البحث عن مادة"
+      >
+      <button
+        id="clearProductSearch"
+        type="button"
+        class="site-search-clear"
+        aria-label="مسح البحث"
+        title="مسح"
+      >×</button>
+    </div>
+    <div id="productSearchHint" class="site-search-hint">
+      ابحث في جميع المواد المتاحة في المتجر
+    </div>
+  </div>
 
 
 
