@@ -298,20 +298,6 @@ async function loadProductsFromSupabase(){
             unit:
               product.unit || "قطعة",
 
-            /* حفظ خطوة الوزن الخاصة بالمنتج إن كانت موجودة */
-            step:
-              Number(
-                product.step ??
-                product.weightStep ??
-                product.quantityStep
-              ) > 0
-                ? Number(
-                    product.step ??
-                    product.weightStep ??
-                    product.quantityStep
-                  )
-                : null,
-
             icon:
               product.icon || "🛒"
 
@@ -384,20 +370,6 @@ async function loadProductsFromSupabase(){
 
                 unit:
                   product.unit || "قطعة",
-
-                /* دعم خطوة الوزن في البيانات القديمة أيضاً */
-                step:
-                  Number(
-                    product.step ??
-                    product.weightStep ??
-                    product.quantityStep
-                  ) > 0
-                    ? Number(
-                        product.step ??
-                        product.weightStep ??
-                        product.quantityStep
-                      )
-                    : null,
 
                 icon:
                   product.icon || "🛒"
@@ -1308,91 +1280,50 @@ function changeQty(
   }
 
 
-  /* =====================================================
-     تحديد ما إذا كانت المادة تباع بالوزن
-     ندعم جميع الصيغ الشائعة حتى لا تتحول الكمية إلى 1 كغم
-  ===================================================== */
-
-  const unit =
-    String(
-      product.unit || ""
-    )
-      .trim()
-      .toLowerCase();
+ const unit =
+  String(
+    product.unit || ""
+  )
+    .trim()
+    .toLowerCase();
 
 
-  const isWeight =
-    unit.includes("كغم") ||
-    unit.includes("كغ") ||
-    unit.includes("كيلو") ||
-    unit.includes("كجم") ||
-    unit.includes("kg") ||
-    unit.includes("وزن");
+const isWeight =
+  unit.includes("كغم") ||
+  unit.includes("كغ") ||
+  unit.includes("كيلو") ||
+  unit.includes("kg");
 
 
-  const category =
-    categories.find(
-      c => c.id === product.cat
-    );
+const category =
+  categories.find(
+    c => c.id === product.cat
+  );
 
 
-  /*
-     الأولوية:
-     1) خطوة المنتج التي حفظتها لوحة الإدارة
-     2) خطوة القسم
-     3) 0.5 كغم كافتراضي للمواد الوزنية
-     المواد بالقطعة تبقى 1
-  */
-
-  let step = 1;
-
-  if(isWeight){
-
-    const productStep =
-      Number(product.step);
-
-    const categoryStep =
-      Number(category?.step);
-
-    if(productStep > 0){
-
-      step = productStep;
-
-    }else if(categoryStep > 0){
-
-      step = categoryStep;
-
-    }else{
-
-      step = 0.5;
-
-    }
-
-  }
-
-
-  /*
-     الحساب بوحدة 0.01 كغم لمنع أخطاء الكسور العشرية
-     مثل 0.25 + 0.25 = 0.50
-  */
-
-  const currentQty =
-    Number(cart.get(id) || 0);
-
-  const newQty =
-    currentQty +
-    (Number(delta) * step);
-
-  const q =
-    Math.max(
-      0,
-      Number(
-        newQty.toFixed(2)
+const step =
+  isWeight
+    ? (
+        Number(category?.step) > 0
+          ? Number(category.step)
+          : 1
       )
-    );
+    : 1;
 
 
-  if(q > 0){
+const q =
+  Math.max(
+    0,
+    Number(
+      (
+        (cart.get(id) || 0) +
+        (delta * step)
+      ).toFixed(2)
+    )
+  );
+
+
+  if(q){
 
     cart.set(
       id,
@@ -1411,8 +1342,6 @@ function changeQty(
   updateCart();
 
 }
-
-
 /* =====================================================
    تحديث السلة
 ===================================================== */
@@ -2296,8 +2225,13 @@ if(whatsappBtn){
           total: itemTotal
         });
 
+        /* تنسيق WhatsApp: عزل القيم المختلطة عربي/أرقام لمنع انقلاب الاتجاه */
+        const RTL = "\u200F";
+        const LTR = "\u200E";
+
         lines.push(
-          `- ${p.name}: ${q} ${p.unit} — ${money(itemTotal)}`
+          RTL +
+          `• ${p.name} — الكمية: ${LTR}${q}${LTR} ${p.unit} — السعر: ${LTR}${money(itemTotal)}${LTR}`
         );
 
       }
@@ -2307,20 +2241,25 @@ if(whatsappBtn){
         productsTotal + deliveryFee;
 
 
+      const safePhone = `${LTR}${phone}${LTR}`;
+      const safeDeliveryFee = `${LTR}${money(deliveryFee)}${LTR}`;
+      const safeProductsTotal = `${LTR}${money(productsTotal)}${LTR}`;
+      const safeTotal = `${LTR}${money(total)}${LTR}`;
+
       lines.push(
         "",
-        `الاسم: ${name}`,
-        `الهاتف: ${phone}`,
-        `المدينة: ${currentCustomer.city || "بغداد"}`,
-        `منطقة التوصيل الرئيسية: ${deliveryGroupName || currentCustomer.city || "لم يتم الاختيار"}`,
-        `منطقة التوصيل: ${deliveryAreaName || currentCustomer.region || "لم يتم الاختيار"}`,
-        `أجور التوصيل: ${money(deliveryFee)}`,
-        `العنوان: ${address}`,
-        `الملاحظات: ${notes || "لا توجد"}`,
-        `المجموع التقريبي للمواد: ${money(productsTotal)}`,
-        `الإجمالي التقريبي: ${money(total)}`,
+        RTL + `الاسم: ${name}`,
+        RTL + `الهاتف: ${safePhone}`,
+        RTL + `المدينة: ${currentCustomer.city || "بغداد"}`,
+        RTL + `منطقة التوصيل الرئيسية: ${deliveryGroupName || currentCustomer.city || "لم يتم الاختيار"}`,
+        RTL + `منطقة التوصيل: ${deliveryAreaName || currentCustomer.region || "لم يتم الاختيار"}`,
+        RTL + `أجور التوصيل: ${safeDeliveryFee}`,
+        RTL + `العنوان: ${address}`,
+        RTL + `الملاحظات: ${notes || "لا توجد"}`,
+        RTL + `المجموع التقريبي للمواد: ${safeProductsTotal}`,
+        RTL + `الإجمالي التقريبي: ${safeTotal}`,
         "",
-        "تنويه: المواد التي تباع بالوزن قد يختلف وزنها وسعرها النهائي قليلاً بعد التجهيز، وسيتم تأكيد السعر النهائي قبل التسليم."
+        RTL + "تنويه: المواد التي تباع بالوزن قد يختلف وزنها وسعرها النهائي قليلاً بعد التجهيز، وسيتم تأكيد السعر النهائي قبل التسليم."
       );
 
 
