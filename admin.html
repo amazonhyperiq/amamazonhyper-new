@@ -736,6 +736,16 @@ style="margin:0">
 <div id="productImagePreview" class="admin-image-preview">لا توجد صورة جديدة</div>
 </label>
 </div>
+<div class="unit-box" style="margin-top:12px">
+<b>خيارات المادة (ألوان / نكهات / أنواع)</b>
+<p class="hint">أضف صور الخيارات التي يمكن للزبون الاختيار بينها. السعر الأساسي يبقى للمادة نفسها.</p>
+<div id="productVariantsList" class="admin-variants-list"></div>
+<div class="admin-variant-add">
+  <input id="variantName" placeholder="اسم الخيار مثل: فراولة"/>
+  <input accept="image/*" id="variantImage" type="file"/>
+  <button type="button" class="save" id="variantAddButton">إضافة الخيار</button>
+</div>
+</div>
 <div class="unit-box">
 <b>
 طريقة بيع المادة
@@ -2368,6 +2378,26 @@ document.getElementById(
 
 const productImage = document.getElementById("productImage");
 const productImagePreview = document.getElementById("productImagePreview");
+const variantNameInput = document.getElementById("variantName");
+const variantImageInput = document.getElementById("variantImage");
+const variantAddButton = document.getElementById("variantAddButton");
+const productVariantsList = document.getElementById("productVariantsList");
+let editingProductVariants = [];
+
+function renderProductVariantsAdmin(){
+  if(!productVariantsList) return;
+  if(!editingProductVariants.length){ productVariantsList.innerHTML='<div class="hint">لا توجد خيارات مضافة حاليًا.</div>'; return; }
+  productVariantsList.innerHTML=editingProductVariants.map((v,i)=>`<div class="admin-variant-row"><div class="admin-variant-thumb">${v.image?`<img src="${String(v.image).replace(/"/g,'&quot;')}" alt="${String(v.name||'').replace(/"/g,'&quot;')}">`:'🖼️'}</div><div class="admin-variant-name"><b>${String(v.name||'خيار').replace(/</g,'&lt;')}</b>${v.file?' <small>صورة جديدة</small>':''}</div><button type="button" class="delete admin-variant-remove" data-variant-index="${i}">حذف</button></div>`).join('');
+}
+function resetProductVariants(){ editingProductVariants=[]; renderProductVariantsAdmin(); }
+function loadProductVariants(product){ editingProductVariants=Array.isArray(product?.variants)?product.variants.map((v,i)=>({id:String(v?.id??i+1),name:String(v?.name??'').trim(),image:String(v?.image??'').trim(),file:null})).filter(v=>v.name||v.image):[]; renderProductVariantsAdmin(); }
+variantAddButton?.addEventListener('click',()=>{
+  const name=String(variantNameInput?.value||'').trim(); const file=variantImageInput?.files?.[0]||null;
+  if(!name){alert('اكتب اسم الخيار أولاً');return;} if(!file){alert('اختر صورة الخيار أولاً');return;}
+  editingProductVariants.push({id:`new-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,name,image:URL.createObjectURL(file),file});
+  if(variantNameInput) variantNameInput.value=''; if(variantImageInput) variantImageInput.value=''; renderProductVariantsAdmin();
+});
+productVariantsList?.addEventListener('click',e=>{const btn=e.target.closest('[data-variant-index]');if(!btn)return;const idx=Number(btn.dataset.variantIndex);if(Number.isInteger(idx))editingProductVariants.splice(idx,1);renderProductVariantsAdmin();});
 
 categoryImage?.addEventListener("change",()=>previewImageFile(categoryImage,categoryImagePreview));
 productImage?.addEventListener("change",()=>previewImageFile(productImage,productImagePreview));
@@ -2427,11 +2457,43 @@ async function loadProducts(){
       row;
 
 
-    categories =
-      normalizeCategories(
-        row.data &&
-        row.data.categories
-      );
+    /*
+       توافق مع البيانات القديمة:
+       بعض النسخ السابقة خزّنت الكتالوج داخل data.store
+       بالشكل: [{ category, products: [...] }] بدل
+       data.categories + data.products.
+       لا نحذف ولا نغيّر store؛ فقط نقرأه عند غياب
+       الحقول الجديدة حتى تظهر الأقسام والمواد في لوحة التحكم.
+    */
+    const savedCategories =
+      row.data && Array.isArray(row.data.categories)
+        ? row.data.categories
+        : null;
+
+    const legacyStore =
+      row.data && Array.isArray(row.data.store)
+        ? row.data.store
+        : [];
+
+    if(savedCategories && savedCategories.length){
+      categories = normalizeCategories(savedCategories);
+    }else if(legacyStore.length){
+      categories = legacyStore.map((entry, index) => {
+        const rawName = String(entry?.category || `قسم ${index + 1}`).trim();
+        const known = defaultCategories.find(
+          c => c.name === rawName || c.id === rawName
+        );
+        return normalizeCategories([{
+          id: known?.id || slugifyCategory(rawName),
+          name: known?.name || rawName,
+          icon: known?.icon || "🛒",
+          unit: known?.unit || "قطعة",
+          step: known?.step || 1
+        }])[0];
+      });
+    }else{
+      categories = normalizeCategories([]);
+    }
 
     // تعبئة قائمة الأقسام في نموذج إضافة / تعديل المادة
     renderCategoryOptions();
@@ -2471,20 +2533,45 @@ if(productFilterCategory){
   );
 
 }
-    const savedProducts =
-
+    let savedProducts =
       row.data &&
-      Array.isArray(
-        row.data.products
-      )
-
+      Array.isArray(row.data.products)
         ? row.data.products
+        : null;
 
-        : [];
+    /* إذا كانت المنتجات موجودة فقط داخل store، نفردها
+       إلى القائمة التي تستخدمها لوحة التحكم. لا نكتبها
+       إلى قاعدة البيانات هنا؛ القراءة فقط حتى نضمن عدم
+       فقدان البيانات الأصلية. */
+    if(!savedProducts && legacyStore.length){
+      let nextId = 1;
+      savedProducts = [];
 
+      legacyStore.forEach(entry => {
+        const rawCat = String(entry?.category || "food").trim();
+        const matchedCategory = categories.find(
+          c => c.id === rawCat || c.name === rawCat
+        );
 
-    allProducts =
-      savedProducts;
+        (Array.isArray(entry?.products) ? entry.products : []).forEach(product => {
+          savedProducts.push({
+            id: Number(product?.id) > 0 ? Number(product.id) : nextId,
+            cat: matchedCategory?.id || rawCat,
+            name: String(product?.name || "مادة"),
+            price: Number(product?.price) || 0,
+            unit: product?.unit || matchedCategory?.unit || "قطعة",
+            step: Number(product?.step) > 0 ? Number(product.step) : (matchedCategory?.step || 1),
+            icon: product?.icon || "🛒",
+            active: product?.active !== false,
+            image: String(product?.image || ""),
+            variants: Array.isArray(product?.variants) ? product.variants : []
+          });
+          nextId = Math.max(nextId, Number(savedProducts.at(-1)?.id) || 0) + 1;
+        });
+      });
+    }
+
+    allProducts = savedProducts || [];
 
 
     refreshProductSelector();
@@ -2686,6 +2773,7 @@ existingProduct.addEventListener(
     if(productImagePreview){
       productImagePreview.innerHTML = product.image ? `<img src="${String(product.image).replace(/"/g,"&quot;")}" alt="صورة المادة">` : "لا توجد صورة محفوظة";
     }
+    loadProductVariants(product);
 
     productActive.checked =
       product.active !== false;
@@ -2728,6 +2816,7 @@ function clearProductForm(){
 
   if(productImage) productImage.value="";
   if(productImagePreview) productImagePreview.textContent="لا توجد صورة جديدة";
+  resetProductVariants();
 
   productActive.checked =
     true;
@@ -2770,6 +2859,7 @@ productSaveButton.addEventListener(
       productActive.checked;
 
     const selectedImageFile = productImage?.files?.[0] || null;
+    const variantsDraft = editingProductVariants.map(v=>({...v}));
 
 
     const unitRadio =
@@ -2903,6 +2993,13 @@ productSaveButton.addEventListener(
         }
 
 
+        const finalVariants = [];
+        for(let i=0;i<variantsDraft.length;i++){
+          const v=variantsDraft[i];
+          const uploadedImage=v.file?await uploadCatalogImage(v.file,"products",`${selectedId}-variant-${i+1}`):String(v.image||"").trim();
+          if(String(v.name||"").trim() && uploadedImage) finalVariants.push({id:String(v.id||i+1),name:String(v.name).trim(),image:uploadedImage});
+        }
+
         products[index] = {
 
           ...products[index],
@@ -2921,7 +3018,9 @@ productSaveButton.addEventListener(
 
           image: selectedImageFile
             ? await uploadCatalogImage(selectedImageFile,"products",selectedId)
-            : (products[index].image || "")
+            : (products[index].image || ""),
+
+          variants: finalVariants
 
         };
 
@@ -2986,6 +3085,12 @@ productSaveButton.addEventListener(
 
             : 1;
 
+        const finalVariants = [];
+        for(let i=0;i<variantsDraft.length;i++){
+          const v=variantsDraft[i];
+          const uploadedImage=v.file?await uploadCatalogImage(v.file,"products",`${newId}-variant-${i+1}`):String(v.image||"").trim();
+          if(String(v.name||"").trim() && uploadedImage) finalVariants.push({id:String(v.id||i+1),name:String(v.name).trim(),image:uploadedImage});
+        }
 
         products.push({
 
@@ -3007,7 +3112,9 @@ productSaveButton.addEventListener(
 
           image: selectedImageFile
             ? await uploadCatalogImage(selectedImageFile,"products",newId)
-            : ""
+            : "",
+
+          variants: finalVariants
 
         });
 
