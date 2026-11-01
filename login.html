@@ -11,7 +11,7 @@
 <button type="submit">دخول لوحة التحكم</button><div class="error" id="error"></div></form>
 <a class="back" href="index.html">العودة إلى المتجر</a></div>
 <script>
-const USERNAME="omar", PASSWORD_HASH="e72aaeda7ed7022994ea27419638a416b5db6c4e09e1719367bc9d70d5d35fce";
+const USERNAME="omar", PASSWORD_HASH="6c7bb76f6aa4dcf95e97e02d1b519b2b61a6393072633ae7fa899f669991e0e0";
 async function sha256(text){const data=new TextEncoder().encode(text);const hash=await crypto.subtle.digest("SHA-256",data);return [...new Uint8Array(hash)].map(b=>b.toString(16).padStart(2,"0")).join("");}
 document.getElementById("loginForm").addEventListener("submit",async e=>{e.preventDefault();const u=document.getElementById("username").value.trim(),p=document.getElementById("password").value;const ok=u===USERNAME&&(await sha256(p))===PASSWORD_HASH;if(ok){sessionStorage.setItem("adminLoggedIn","1");location.href="admin.html";}else document.getElementById("error").textContent="اسم المستخدم أو كلمة المرور غير صحيحة.";})
 </script></body></html>
